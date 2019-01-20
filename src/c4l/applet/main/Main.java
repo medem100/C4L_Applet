@@ -1,7 +1,8 @@
 package c4l.applet.main;
 
-/*
+/**
  * Hauptablauf
+ * @version 0.1
  */
 public class Main {
 	
