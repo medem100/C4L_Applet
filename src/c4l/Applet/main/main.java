@@ -1,4 +1,4 @@
-package c4l.main;
+package c4l.Applet.main;
 
 public class main {
 
