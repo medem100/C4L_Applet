@@ -4,8 +4,6 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="lib" path="jars/arduino.jar"/>
 	<classpathentry kind="lib" path="jars/core.jar"/>
-	<classpathentry kind="lib" path="jars/filo-firmata-0.1.11.jar"/>
-	<classpathentry kind="lib" path="jars/firmata4j-2.3.5.jar"/>
 	<classpathentry kind="lib" path="jars/jssc-2.8.0.jar"/>
 	<classpathentry kind="lib" path="jars/OpenDmx.jar"/>
 	<classpathentry kind="lib" path="jars/serial.jar"/>

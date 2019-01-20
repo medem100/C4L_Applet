@@ -1,7 +1,7 @@
 package c4l.applet.output;
 
 import com.juanjo.openDmx.OpenDmx;
-import c4l.applet.main.Constans;
+import c4l.applet.main.Constants;
 
 
 /*
@@ -31,10 +31,10 @@ public class DmxOut {
 	}
 
 	public String setValue(int Channel , int Value) {
-		if(Channel<Constans.MINCHANNEL)Channel=1;
-		if(Channel>Constans.MAXCHANNEL)Channel=512;
-		if(Value<Constans.MINVALUE)Value=0;
-		if(Value>Constans.MAXVALUE)Value=255;
+		if(Channel<Constants.MINCHANNEL)Channel=1;
+		if(Channel>Constants.MAXCHANNEL)Channel=512;
+		if(Value<Constants.MINVALUE)Value=0;
+		if(Value>Constants.MAXVALUE)Value=255;
 		try {
 			OpenDmx.setValue(Channel-1,Value);
 		}catch (Exception e) {
