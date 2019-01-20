@@ -1,13 +1,14 @@
 package c4l.applet.main;
 
 /*
- * Constanten für das gesamte projeckt
+ * Constants for the whole project
  */
 
 public class Constants {
 	
 	// Input constants
 	public final static int FADER_TOLERANCE = 3;
+	public final static int ROTARY_RANGE = 256; //TODO maybe adjust value
 	
 	
 	// Output constants
