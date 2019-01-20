@@ -5,6 +5,9 @@ package c4l.applet.main;
  */
 
 public class Constants {
+	//General
+	
+	public final static int DEVICE_CHANNELS = 16;
 	
 	// Input constants
 	public final static int FADER_TOLERANCE = 3;
@@ -17,5 +20,7 @@ public class Constants {
 	public final static int  MAXVALUE = 255;
 	public final static int  MINVALUE = 0;
 
-
+	
+	//Effects constants
+	public final static int EFFECTRANGE = 65536;
 }
