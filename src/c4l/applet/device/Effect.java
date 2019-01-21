@@ -29,5 +29,8 @@ public class Effect {
 	public void tick() {
 		state = (state + speed) % Constants.EFFECTRANGE;
 	}
+	public int[] apply(int[] in) {
+		return in; //TODO
+	}
 	
 }
