@@ -20,6 +20,7 @@ public class Device {
 	//Constructors
 	public Device(int[] permutation) {
 		this.inputs = new int[Constants.DEVICE_CHANNELS];
+		this.p_outputs = new int[Constants.DEVICE_CHANNELS];
 		this.perm = permutation;
 		
 		this.effects = new LinkedList<Effect>();
@@ -70,4 +71,7 @@ public class Device {
 		
 		return p_outputs;
 	}
+	
+	
+
 }
