@@ -8,7 +8,6 @@ import c4l.applet.main.Constants;
  *
  */
 public class Effect {
-	@SuppressWarnings("unused")
 	private int size;
 	private int speed;
 	private int offset;
@@ -23,9 +22,15 @@ public class Effect {
 		this.state = offset;
 	}
 	
+	/**
+	 * Set current state of the effect to start state when loaded again.
+	 */
 	public void makeThisStateDefault() {
 		offset = (state + offset) % Constants.EFFECTRANGE;
 	}
+	/**
+	 * Let effect progress further. Should be called on a regular basis if effect is used
+	 */
 	public void tick() {
 		state = (state + speed) % Constants.EFFECTRANGE;
 	}

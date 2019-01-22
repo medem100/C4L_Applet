@@ -53,7 +53,11 @@ public class Device {
 		effects.remove(index);
 	}
 	
-	//Other functions
+	/**
+	 * Compute output-values of the device this includes Effects and Output-Patch.
+	 * The Effects are ticked here. To avoid this use {@link #getOutput_unticked() getOutput_unticked}.
+	 * @return Array of integers with output values
+	 */
 	public int[] getOutput() {
 		outputs = inputs;
 		//apply Effects
@@ -61,6 +65,27 @@ public class Device {
 		for (ListIterator<Effect> it = effects.listIterator(); it.hasNext(); ) {
 			e = it.next(); 
 			e.tick();
+			outputs = e.apply(outputs);
+		}
+		
+		//Apply output-patch
+		for (int i = 0; i < Constants.DEVICE_CHANNELS; i++) {
+			p_outputs[i] = outputs[perm[i]];
+		}
+		
+		return p_outputs;
+	}
+	/**
+	 * Compute output-values of the device this includes Effects and Output-Patch.
+	 * The Effects aren't ticked here. To do this use {@link #getOutput() getOutput}.
+	 * @return Array of integers with output values
+	 */
+	public int[] getOutput_unticked() {
+		outputs = inputs;
+		//apply Effects
+		Effect e;
+		for (ListIterator<Effect> it = effects.listIterator(); it.hasNext(); ) {
+			e = it.next();
 			outputs = e.apply(outputs);
 		}
 		
