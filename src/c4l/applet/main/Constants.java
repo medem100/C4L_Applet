@@ -6,12 +6,14 @@ package c4l.applet.main;
 
 public class Constants {
 	//General
-	
+	/** Number of channels a device has. */
 	public final static int DEVICE_CHANNELS = 16;
 	
 	// Input constants
+	/** Tolerance of variation on the hardware-faders, that are interpreted as side-effects, rather than as inputs. */
 	public final static int FADER_TOLERANCE = 3;
-	public final static int ROTARY_RANGE = 256; //TODO maybe adjust value
+	/** Range of the rotary value. */
+	public final static int ROTARY_RANGE = 1024; //TODO maybe adjust value
 	
 	
 	// Output constants
@@ -22,5 +24,6 @@ public class Constants {
 
 	
 	//Effects constants
+	/** Range of the state of an effect. Loopover-point for it. */
 	public final static int EFFECTRANGE = 65536;
 }
