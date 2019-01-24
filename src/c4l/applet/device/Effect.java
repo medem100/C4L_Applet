@@ -8,11 +8,11 @@ import c4l.applet.main.Constants;
  *
  */
 public class Effect {
-	private int size;
+	protected int size;
 	private int speed;
 	private int offset;
 	
-	private int state;
+	protected int state;
 
 	public Effect(int size, int speed, int offset) {
 		super();
@@ -28,17 +28,30 @@ public class Effect {
 	public void makeThisStateDefault() {
 		offset = (state + offset) % Constants.EFFECTRANGE;
 	}
+	
 	/**
 	 * Let effect progress further. Should be called on a regular basis if effect is used
 	 */
 	public void tick() {
 		state = (state + speed) % Constants.EFFECTRANGE;
 	}
+	
+	/**
+	 * Apply effect.
+	 * @param in	Array of length {@value Constants.#DEVICE_CHANNELS}, which is modified by the effect
+	 * @return		Array of same length with modified values.
+	 */
 	public int[] apply(int[] in) {
 		System.out.println("Applying Effect." + String.valueOf(size));
-		return in; //TODO
+		return in; //Real Effects are implemented in subclasses
 	}
 	
+	/** Intern function to pack any value into the DMX-Protocol-Interval */
+	protected static int cutOff(int x) {
+		if (x < Constants.MINVALUE) return Constants.MINVALUE;
+		if (x > Constants.MAXVALUE) return Constants.MAXVALUE;
+		return x;
+	}
 	
 	//Test-Main
 	public static void main(String[] args) {
