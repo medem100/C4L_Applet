@@ -1,5 +1,6 @@
 package c4l.applet.device;
 
+import c4l.applet.device.Effect_Simple.Effecttype_det;
 import c4l.applet.main.Constants;
 
 /**
@@ -59,7 +60,7 @@ public class Effect {
 		Device d = new Device(perm);
 		d.setInputs(perm);
 		Effect e = new Effect(0, 0, 0);
-		Effect e1 = new Effect(1, 0, 0);
+		Effect e1 = new Effect_Simple(1, 0, 0, Effecttype_det.RAMP, perm);
 		d.addEffect(e);
 		d.addEffect(e1);
 		d.getOutput();
