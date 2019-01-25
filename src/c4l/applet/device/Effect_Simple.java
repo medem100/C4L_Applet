@@ -62,9 +62,9 @@ public class Effect_Simple extends Effect {
 				break;
 			case RAINBOW:
 				break; //TODO implement that HSV/RGB stuff and write this function
-			}
-			
-		}
+			} /* switch */
+		}/* for*/
 		return in;
-	}
+	} /* apply*/
+	
 }
