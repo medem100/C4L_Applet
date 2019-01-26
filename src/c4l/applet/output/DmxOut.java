@@ -13,7 +13,7 @@ import c4l.applet.main.Constants;
 
 public class DmxOut {
 	
-	DmxOut() {
+	public DmxOut() {
 		if(!OpenDmx.connect(OpenDmx.OPENDMX_TX)){
 			System.out.println("Open Dmx widget not detected!");
 			return;
