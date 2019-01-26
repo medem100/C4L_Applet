@@ -8,8 +8,11 @@ public class Constants {
 	//General
 	/** Number of channels a device has. */
 	public final static int DEVICE_CHANNELS = 16;
+	/** Number of full-featured devices */
 	public final static int DYNAMIC_DEVICES = 30;
-	public final static int STATIC_DEVICES = 2;
+	/** Number of devices with reduced features */
+	public final static int STATIC_DEVICES = 2; //QUESTION Ist das sinnvoll, dass noch als Device zu handhaben? Würde am Anfang einfach stumpf die Werte durchschleusen
+	/** Total number of Devices */
 	public final static int ALL_DEVICES = DYNAMIC_DEVICES + STATIC_DEVICES;
 	
 	// Input constants
@@ -20,10 +23,13 @@ public class Constants {
 	
 	
 	// Output constants
-	/** constanten für den Output handling mit entec **/
+	/** Last Channel for Enttec-Output **/
 	public final static int  MAXCHANNEL = 511;
+	/** First Channel for Enttec-Output */
 	public final static int  MINCHANNEL = 0;
+	/** Maximum output-value for DMX-protocol */
 	public final static int  MAXVALUE = 255;
+	/** Minimum output-value for DMX-protocol */
 	public final static int  MINVALUE = 0;
 
 	
