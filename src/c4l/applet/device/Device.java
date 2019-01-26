@@ -6,9 +6,10 @@ import java.util.ListIterator;
 import c4l.applet.main.Constants;
 
 /**
+ * Definition of a single Device, consisting of Input values, a list of Effects and an Output permutation
  * 
- * Definition der einzelnen Geräte
- * AS: 19.01.26:  Einbau von Polymorphie für die Output untickt / Tickt funcktzion 
+ * @author Timon
+ * @author Andre
  */
 
 public class Device {
@@ -28,9 +29,8 @@ public class Device {
 		
 		this.effects = new LinkedList<Effect>();
 	}
-	// add Address
-	public Device(int[] permutation, int startAddres ) {
-		this.startAddress = startAddres;
+	public Device(int[] permutation, int startAddress) {
+		this.startAddress = startAddress;
 		this.inputs = new int[Constants.DEVICE_CHANNELS];
 		this.p_outputs = new int[Constants.DEVICE_CHANNELS];
 		this.perm = permutation;
@@ -48,8 +48,13 @@ public class Device {
 	public void setInput(int index, int value) {
 		this.inputs[index] = value;
 	}
-	
-	public void setStartAddres(Integer address) {
+	public int[] getPerm() {
+		return perm;
+	}
+	public void setPerm(int[] perm) {
+		this.perm = perm;
+	}
+	public void setStartAddress(Integer address) {
 		this.startAddress = address;
 	}
 	
@@ -93,11 +98,18 @@ public class Device {
 	}
 	
 	/**
+	 * Tick effects
+	 */
+	public void tick() {
+		for (ListIterator<Effect> it = effects.listIterator(); it.hasNext(); it.next().tick());
+	}
+	
+	/**
 	 * 
-	 * Compute output-values of the device . This includes Effects and Output-Patch.
+	 * Compute output-values of the device. This includes Effects and Output-Patch.
 	 * 
 	 * @param tick_effects 	whether Effects should be ticked
-	 * @return 			Array of integers with output values
+	 * @return 				Array of integers with output values
 	 */
 	private int[] getOutput(Boolean tick_effects) {
 		outputs = inputs;
