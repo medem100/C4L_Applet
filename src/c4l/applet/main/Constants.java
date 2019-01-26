@@ -21,8 +21,8 @@ public class Constants {
 	
 	// Output constants
 	/** constanten für den Output handling mit entec **/
-	public final static int  MAXCHANNEL = 512;
-	public final static int  MINCHANNEL = 1;
+	public final static int  MAXCHANNEL = 511;
+	public final static int  MINCHANNEL = 0;
 	public final static int  MAXVALUE = 255;
 	public final static int  MINVALUE = 0;
 
