@@ -5,8 +5,10 @@ import java.util.ListIterator;
 
 import c4l.applet.main.Constants;
 
-/*
- * Definition der einzelnen Geräte 
+/**
+ * 
+ * Definition der einzelnen Geräte
+ * AS: 19.01.26:  Einbau von Polymorphie für die Output untickt / Tickt funcktzion 
  */
 
 public class Device {
@@ -53,11 +55,14 @@ public class Device {
 		effects.remove(index);
 	}
 	
+	/* @Timon Falls es doch einen Grund Giebt das So getrännt zu machen habe ich sie erst mal nur auskomentiert
+	
 	/**
 	 * Compute output-values of the device this includes Effects and Output-Patch.
 	 * The Effects are ticked here. To avoid this use {@link #getOutput_unticked() getOutput_unticked}.
 	 * @return Array of integers with output values
 	 */
+	/*
 	public int[] getOutput() {
 		outputs = inputs;
 		//apply Effects
@@ -80,6 +85,7 @@ public class Device {
 	 * The Effects aren't ticked here. To do this use {@link #getOutput() getOutput}.
 	 * @return Array of integers with output values
 	 */
+	/*
 	public int[] getOutput_unticked() {
 		outputs = inputs;
 		//apply Effects
@@ -95,6 +101,54 @@ public class Device {
 		}
 		
 		return p_outputs;
+	}
+	*/
+	
+	/**
+	 * Compute output-values of the device this includes Effects and Output-Patch.
+	 * The Effects are ticked here. To avoid this use {@link #getOutput_unticked() getOutput_unticked}.
+	 * @return Array of integers with output values
+	 */
+	public int[] getOutput() {
+		return getOutput(true);
+	}
+	
+	/**
+	 * Compute output-values of the device this includes Effects and Output-Patch.
+	 * The Effects aren't ticked here. To do this use {@link #getOutput() getOutput}.
+	 * @return Array of integers with output values
+	 */
+	
+	public int[] getOutput_unticked() {
+		return getOutput(false);
+	}
+	
+	/**
+	 * 
+	 * Compute output-values of the device this includes Effects and Output-Patch.
+	 * The Effects are ticked (true) or arn´t tickt (false) here.
+	 * 
+	 * @param TICKT true = Tickt ,false = arn´t tickt
+	 * @return Array of integers with output values / Tickt or untickt
+	 */
+	private int[] getOutput(Boolean TICKT) {
+		outputs = inputs;
+		//apply Effects
+		Effect e;
+		for (ListIterator<Effect> it = effects.listIterator(); it.hasNext(); ) {
+			e = it.next(); 
+			if(TICKT)
+				e.tick();
+			outputs = e.apply(outputs);
+		}
+		
+		//Apply output-patch
+		for (int i = 0; i < Constants.DEVICE_CHANNELS; i++) {
+			p_outputs[i] = outputs[perm[i]];
+		}
+		
+		return p_outputs;
+		
 	}
 	
 	
