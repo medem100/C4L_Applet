@@ -16,11 +16,21 @@ public class Device {
 	private int[] outputs;
 	private int[] p_outputs;
 	private int[] perm; //Input -> Output mapping (applied after effects)
+	private int startAddres;
 	
 	public LinkedList<Effect> effects;
 	
 	//Constructors
 	public Device(int[] permutation) {
+		this.inputs = new int[Constants.DEVICE_CHANNELS];
+		this.p_outputs = new int[Constants.DEVICE_CHANNELS];
+		this.perm = permutation;
+		
+		this.effects = new LinkedList<Effect>();
+	}
+	// add As
+	public Device(int[] permutation, int startAddres ) {
+		this.startAddres = startAddres;
 		this.inputs = new int[Constants.DEVICE_CHANNELS];
 		this.p_outputs = new int[Constants.DEVICE_CHANNELS];
 		this.perm = permutation;
@@ -37,6 +47,14 @@ public class Device {
 	}
 	public void setInput(int index, int value) {
 		this.inputs[index] = value;
+	}
+	
+	public void setStartAddres(Integer address) {
+		this.startAddres = address;
+	}
+	
+	public int getStartAddres() {
+		return this.startAddres;
 	}
 
 	/*
