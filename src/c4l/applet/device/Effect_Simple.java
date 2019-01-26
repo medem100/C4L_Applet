@@ -1,13 +1,15 @@
 package c4l.applet.device;
 
+import java.awt.Color;
+
 import c4l.applet.main.Constants;
 
 /**
- * @author Timon
- *
  * Defines a simple, deterministic effect.
  * An effect of this class may affect output values in one or multiple ways.
  * Each of this affections can be applied to none, one ore multiple channels
+ * 
+ * @author Timon
  */
 public class Effect_Simple extends Effect {
 	public enum Effecttype_det {
@@ -39,6 +41,11 @@ public class Effect_Simple extends Effect {
 		
 	public int[] apply(int[] in) {
 		System.out.println("Applying Single-Effect." + String.valueOf(size));
+		Color color = null;
+		if (type == Effecttype_det.RAINBOW) {
+			color = Color.getHSBColor(((float) state)/Constants.EFFECTRANGE, 1, 1);
+		} /* if */
+		
 		for (int i = 0; i < Constants.DEVICE_CHANNELS; i++) {
 			switch (type) {
 			//Single-channel-effects
@@ -61,7 +68,10 @@ public class Effect_Simple extends Effect {
 				if (channels[i] == 2) in[i] = cutOff((int) (in[i] + size/2*Math.cos(state*2*Math.PI/Constants.EFFECTRANGE)));
 				break;
 			case RAINBOW:
-				break; //TODO implement that HSV/RGB stuff and write this function
+				if (channels[i] == 1) in[i] = cutOff((int) (in[i] + (size*(color.getRed() - 0.5*Constants.MAXVALUE))/Constants.MAXVALUE));
+				if (channels[i] == 2) in[i] = cutOff((int) (in[i] + (size*(color.getGreen() - 0.5*Constants.MAXVALUE))/Constants.MAXVALUE));
+				if (channels[i] == 3) in[i] = cutOff((int) (in[i] + (size*(color.getBlue() - 0.5*Constants.MAXVALUE))/Constants.MAXVALUE));
+				break;
 			} /* switch */
 		}/* for*/
 		return in;

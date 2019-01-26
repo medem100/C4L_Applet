@@ -3,10 +3,10 @@ package c4l.applet.device;
 import c4l.applet.main.Constants;
 
 /**
- * @author Timon
- *
  * Defines Effects, that work randomly.
  * Note: This will look slightly different every time you execute it. This class provides no tools to fix one random outcome for future uses.
+ * 
+ * @author Timon
  */
 public class Effect_Random extends Effect {
 	public enum Effecttype_Random {
