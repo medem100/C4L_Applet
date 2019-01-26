@@ -16,7 +16,7 @@ public class Device {
 	private int[] outputs;
 	private int[] p_outputs;
 	private int[] perm; //Input -> Output mapping (applied after effects)
-	private int startAddres;
+	private int startAddress;
 	
 	public LinkedList<Effect> effects;
 	
@@ -28,9 +28,9 @@ public class Device {
 		
 		this.effects = new LinkedList<Effect>();
 	}
-	// add As
+	// add Address
 	public Device(int[] permutation, int startAddres ) {
-		this.startAddres = startAddres;
+		this.startAddress = startAddres;
 		this.inputs = new int[Constants.DEVICE_CHANNELS];
 		this.p_outputs = new int[Constants.DEVICE_CHANNELS];
 		this.perm = permutation;
@@ -50,11 +50,11 @@ public class Device {
 	}
 	
 	public void setStartAddres(Integer address) {
-		this.startAddres = address;
+		this.startAddress = address;
 	}
 	
 	public int getStartAddres() {
-		return this.startAddres;
+		return this.startAddress;
 	}
 
 	/*
@@ -73,57 +73,8 @@ public class Device {
 		effects.remove(index);
 	}
 	
-	/* @Timon Falls es doch einen Grund Giebt das So getrännt zu machen habe ich sie erst mal nur auskomentiert
-	
 	/**
-	 * Compute output-values of the device this includes Effects and Output-Patch.
-	 * The Effects are ticked here. To avoid this use {@link #getOutput_unticked() getOutput_unticked}.
-	 * @return Array of integers with output values
-	 */
-	/*
-	public int[] getOutput() {
-		outputs = inputs;
-		//apply Effects
-		Effect e;
-		for (ListIterator<Effect> it = effects.listIterator(); it.hasNext(); ) {
-			e = it.next(); 
-			e.tick();
-			outputs = e.apply(outputs);
-		}
-		
-		//Apply output-patch
-		for (int i = 0; i < Constants.DEVICE_CHANNELS; i++) {
-			p_outputs[i] = outputs[perm[i]];
-		}
-		
-		return p_outputs;
-	}
-	/**
-	 * Compute output-values of the device this includes Effects and Output-Patch.
-	 * The Effects aren't ticked here. To do this use {@link #getOutput() getOutput}.
-	 * @return Array of integers with output values
-	 */
-	/*
-	public int[] getOutput_unticked() {
-		outputs = inputs;
-		//apply Effects
-		Effect e;
-		for (ListIterator<Effect> it = effects.listIterator(); it.hasNext(); ) {
-			e = it.next();
-			outputs = e.apply(outputs);
-		}
-		
-		//Apply output-patch
-		for (int i = 0; i < Constants.DEVICE_CHANNELS; i++) {
-			p_outputs[i] = outputs[perm[i]];
-		}
-		
-		return p_outputs;
-	}
-	*/
-	
-	/**
-	 * Compute output-values of the device this includes Effects and Output-Patch.
+	 * Compute output-values of the device. This includes Effects and Output-Patch.
 	 * The Effects are ticked here. To avoid this use {@link #getOutput_unticked() getOutput_unticked}.
 	 * @return Array of integers with output values
 	 */
@@ -132,7 +83,7 @@ public class Device {
 	}
 	
 	/**
-	 * Compute output-values of the device this includes Effects and Output-Patch.
+	 * Compute output-values of the device. This includes Effects and Output-Patch.
 	 * The Effects aren't ticked here. To do this use {@link #getOutput() getOutput}.
 	 * @return Array of integers with output values
 	 */
@@ -143,19 +94,18 @@ public class Device {
 	
 	/**
 	 * 
-	 * Compute output-values of the device this includes Effects and Output-Patch.
-	 * The Effects are ticked (true) or arn´t tickt (false) here.
+	 * Compute output-values of the device . This includes Effects and Output-Patch.
 	 * 
-	 * @param TICKT true = Tickt ,false = arn´t tickt
-	 * @return Array of integers with output values / Tickt or untickt
+	 * @param tick_effects 	whether Effects should be ticked
+	 * @return 			Array of integers with output values
 	 */
-	private int[] getOutput(Boolean TICKT) {
+	private int[] getOutput(Boolean tick_effects) {
 		outputs = inputs;
 		//apply Effects
 		Effect e;
 		for (ListIterator<Effect> it = effects.listIterator(); it.hasNext(); ) {
 			e = it.next(); 
-			if(TICKT)
+			if(tick_effects)
 				e.tick();
 			outputs = e.apply(outputs);
 		}
