@@ -2,6 +2,8 @@ package c4l.applet.main;
 
 import c4l.applet.output.DmxOut;
 import cc.arduino.Arduino;
+import c4l.applet.device.Device;
+import c4l.applet.main.TestObjeckte;
 
 /**
  * Hauptablauf
@@ -11,7 +13,7 @@ import cc.arduino.Arduino;
  */
 public class Main {
 
-	DmxOut DMXobjeckt = null;
+	static DmxOut DMXobjeckt = null;
 
 	/*
 	 * Einsammeln der Input werte aus c4l.applet.input
@@ -31,11 +33,14 @@ public class Main {
 		Main C4l = new Main();
 		C4l.setup();
 		while(true) {
-			C4l.setOutput(1, 200);
+			DMXobjeckt.setOutput(TestObjeckte.generateDevices());
 		}
 	}
 	
-	
+	/**
+	 * catcht den Arduino am vorgeben comPort und den Entec Dongel
+	 * TO DO: Com Port für Arduino mus in die Props/ oder VM argumente ?
+	 */
 	private void setup() {
 		/*
 		 * TO DO : Aktuelle Konfiguratzion für den Arduino 
@@ -49,12 +54,4 @@ public class Main {
 		DMXobjeckt = new DmxOut();
 	}
 	
-	
-	private void setOutput(Integer Addresse, Integer value) {
-		DMXobjeckt.setValue(Addresse, value);
-	}
-	
-	
-	
-
 }
