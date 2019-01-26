@@ -12,7 +12,7 @@ public class TestObjeckte {
 
 	public Device[] generateDevices() {
 		for(byte i = 0; i <= Constants.ALL_DEVICES ;i++) {
-			Device device = new Device(perm);
+			Device device = new Device(perm,1+(i*16) );
 			device.setInput(1, 200); // Sollte noch durch Random erweitert wertden 
 			device.setInput(2, 100);
 			this.Devices[i] = device;
