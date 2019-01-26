@@ -8,6 +8,9 @@ public class Constants {
 	//General
 	/** Number of channels a device has. */
 	public final static int DEVICE_CHANNELS = 16;
+	public final static int DYNAMIC_DEVICES = 30;
+	public final static int STATIC_DEVICES = 2;
+	public final static int ALL_DEVICES = DYNAMIC_DEVICES + STATIC_DEVICES;
 	
 	// Input constants
 	/** Tolerance of variation on the hardware-faders, that are interpreted as side-effects, rather than as inputs. */
