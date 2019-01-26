@@ -4,9 +4,11 @@ import com.juanjo.openDmx.OpenDmx;
 import c4l.applet.main.Constants;
 
 
-/*
+/**
+ * @author Andre
  * klasse für die Ausgabe mit Entec OpenDMX
  * 
+ * 19.01.26 : Konfiguration der DLL und implementierung der Constants
  */
 
 public class DmxOut {
