@@ -13,9 +13,16 @@ import c4l.applet.main.Constants;
  */
 public class Effect_Simple extends Effect {
 	public enum Effecttype_det {
-		SINUS, RAMP, REVRAMP, LINEAR, //single channel
-		CIRCLE, //two channels
-		RAINBOW, //three channels
+		//single channel
+		/** Add a sine-wave of amplitude size/2 */								SINUS,
+		/** linear fade from -size/2 to +size/2, jump back */					RAMP,
+		/** linear fade from +size/2 to -size/2, jump back */					REVRAMP,
+		/** linear fade from +size/2 to -size/2, fade back */					LINEAR,
+		/** Channel is active size/256 parts of effect time, zero afterwards */	STROBO,
+		//two channels
+		/** sine on first channel, cosine on second */							CIRCLE,
+		//three channels
+		/** fade through a rainbow (assuming 1,2,3 as RGB) */					RAINBOW,
 	}
 	
 	private Effecttype_det type;
@@ -60,6 +67,9 @@ public class Effect_Simple extends Effect {
 				break;
 			case LINEAR:
 				if (channels[i] == 1) in[i] = cutOff((int) (in[i] + size*(2*Math.abs(state/Constants.EFFECTRANGE - 0.5)) - 0.5));
+				break;
+			case STROBO:
+				if (channels[i] == 1) if (size*(Constants.EFFECTRANGE/(Constants.MAXVALUE + 1)) > state) in[i] = 0;
 				break;
 				
 			//Multi-channel-effect
