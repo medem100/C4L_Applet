@@ -112,7 +112,7 @@ public class Device {
 	 * @return 				Array of integers with output values
 	 */
 	private int[] getOutput(Boolean tick_effects) {
-		outputs = inputs;
+		outputs = inputs.clone();
 		//apply Effects
 		Effect e;
 		for (ListIterator<Effect> it = effects.listIterator(); it.hasNext(); ) {

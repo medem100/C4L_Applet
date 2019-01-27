@@ -39,7 +39,7 @@ public class Effect_Simple extends Effect {
 		this.channels = channels;
 	}
 		
-	public int[] apply(int[] in) {
+	@Override public int[] apply(int[] in) {
 		System.out.println("Applying Single-Effect." + String.valueOf(size));
 		Color color = null;
 		if (type == Effecttype_det.RAINBOW) {

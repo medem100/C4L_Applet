@@ -48,7 +48,7 @@ public class Effect_Random extends Effect {
 	}
 
 	
-	public int[] apply(int[] in) {
+	@Override public int[] apply(int[] in) {
 		System.out.println("Applying Random-Effect." + String.valueOf(size));
 		switch (type) { //change random values
 		case JUMP:
