@@ -77,6 +77,12 @@ public class Device {
 	public void deleteEffect(int index) {
 		effects.remove(index);
 	}
+	public void setSpeed(int value) {
+		for (ListIterator<Effect> it = effects.listIterator(); it.hasNext(); it.next().setSpeed(value));
+	}
+	public void setSize(int value) {
+		for (ListIterator<Effect> it = effects.listIterator(); it.hasNext(); it.next().setSize(value));
+	}
 	
 	/**
 	 * Compute output-values of the device. This includes Effects and Output-Patch.

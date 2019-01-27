@@ -23,6 +23,14 @@ public class Effect {
 		this.state = offset;
 	}
 	
+	public void setSize(int size) {
+		this.size = size;
+	}
+
+	public void setSpeed(int speed) {
+		this.speed = speed;
+	}
+
 	/**
 	 * Set current state of the effect to start state when loaded again.
 	 */
