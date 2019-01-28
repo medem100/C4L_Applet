@@ -2,6 +2,7 @@ package c4l.applet.device;
 
 import java.awt.Color;
 
+import c4l.applet.device.Effect_Random.Effecttype_Random;
 import c4l.applet.main.Constants;
 
 /**
