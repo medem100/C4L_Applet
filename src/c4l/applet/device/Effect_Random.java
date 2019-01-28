@@ -20,6 +20,13 @@ public class Effect_Random extends Effect {
 	private double[] last; //holds randomness applied at last call (or last call to Math.random())
 	private double[] next; //additional value-holder for some effects
 
+	//Overloading Constructors
+	public Effect_Random(int size, int speed, int offset, Effecttype_Random type, int[] channels) {
+		this(size, speed, offset, true, type, channels);
+	}
+	public Effect_Random(int size, int speed, int offset, Effecttype_Random type, int[] channels, boolean acceptInput) {
+		this(size, speed, offset, acceptInput, type, channels);
+	}
 	/**
 	 * Constructor
 	 * @param size		passed to super
@@ -30,8 +37,8 @@ public class Effect_Random extends Effect {
 	 * 					0 or invalid: no change;
 	 * 					1, 2, ... output-values of the effect.
 	 */
-	public Effect_Random(int size, int speed, int offset, Effecttype_Random type, int[] channels) {
-		super(size, speed, offset);
+	public Effect_Random(int size, int speed, int offset, boolean acceptInput, Effecttype_Random type, int[] channels) {
+		super(size, speed, offset, acceptInput);
 		if (type == null) throw new NullPointerException("Make sure to define a effect-type.");
 		this.type = type;
 		this.channels = channels;

@@ -2,6 +2,7 @@ package c4l.applet.device;
 
 import java.awt.Color;
 
+import c4l.applet.device.Effect_Random.Effecttype_Random;
 import c4l.applet.main.Constants;
 
 /**
@@ -29,6 +30,13 @@ public class Effect_Simple extends Effect {
 	private Effecttype_det type;
 	private int[] channels;
 
+	//Overloading Constructors
+	public Effect_Simple(int size, int speed, int offset, Effecttype_det type, int[] channels) {
+		this(size, speed, offset, true, type, channels);
+	}
+	public Effect_Simple(int size, int speed, int offset, Effecttype_det type, int[] channels, boolean acceptInput) {
+		this(size, speed, offset, acceptInput, type, channels);
+	}
 	/**
 	 * Constructor
 	 * @param size		passed to super
@@ -40,8 +48,8 @@ public class Effect_Simple extends Effect {
 	 * 					1, 2, ... output-values of the effect.
 	 * 
 	 */
-	public Effect_Simple(int size, int speed, int offset, Effecttype_det type, int[] channels) {
-		super(size, speed, offset);
+	public Effect_Simple(int size, int speed, int offset, boolean acceptInput, Effecttype_det type, int[] channels) {
+		super(size, speed, offset, acceptInput);
 		if (type == null) throw new NullPointerException("Make sure to define a effect-type.");
 		this.type = type;
 		this.channels = channels;
