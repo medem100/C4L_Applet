@@ -19,7 +19,6 @@ public class Effect_Random extends Effect {
 	private int n_channels = 0; //holds the largest numbered channel we need to hold and generate values for
 	private double[] last; //holds randomness applied at last call (or last call to Math.random())
 	private double[] next; //additional value-holder for some effects
-	private int last_state;
 
 	/**
 	 * Constructor
@@ -50,25 +49,23 @@ public class Effect_Random extends Effect {
 	
 	@Override public int[] apply(int[] in) {
 		System.out.println("Applying Random-Effect." + String.valueOf(size));
-		switch (type) { //change random values
-		case JUMP:
-			if (state > last_state + Constants.EFFECTSTEP) {
+		if ((state > last_state + Constants.EFFECTSTEP) || (state < last_state)) {
+			switch (type) { //change random values
+			case JUMP:
 				last_state = (last_state + Constants.EFFECTSTEP) % Constants.EFFECTRANGE;
 				for (int j = 0; j < n_channels; j++) {
 					last[j] = Math.random();
 				}
-			}
-			break;
-		case WILD:
-			if (state > last_state + Constants.EFFECTSTEP) {
+				break;
+			case WILD:
 				last_state = (last_state + Constants.EFFECTSTEP) % Constants.EFFECTRANGE;
 				for (int j = 0; j < n_channels; j++) {
 					last[j] = next[j];
 					next[j] = Math.random();
 				}
-			}
-			break;
-		} /* switch */
+				break;
+			} /* switch */
+		} /* if */
 		
 		for (int i = 0; i < Constants.DEVICE_CHANNELS; i++) {
 			switch (type) {

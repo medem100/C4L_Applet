@@ -19,6 +19,7 @@ public class Effect_Simple extends Effect {
 		/** linear fade from +size/2 to -size/2, jump back */					REVRAMP,
 		/** linear fade from +size/2 to -size/2, fade back */					LINEAR,
 		/** Channel is active size/256 parts of effect time, zero afterwards */	STROBO,
+		/** Strobo without changing colors when on */							STROBO_HOLD,
 		//two channels
 		/** sine on first channel, cosine on second */							CIRCLE,
 		//three channels
@@ -44,14 +45,19 @@ public class Effect_Simple extends Effect {
 		if (type == null) throw new NullPointerException("Make sure to define a effect-type.");
 		this.type = type;
 		this.channels = channels;
+		this.last_state = Constants.EFFECTRANGE + 1;
 	}
 		
 	@Override public int[] apply(int[] in) {
-		System.out.println("Applying Single-Effect." + String.valueOf(size));
-		Color color = null;
+		System.out.println("Applying Single-Effect." + String.valueOf(size));		
+		
+		Color color = null; int[] out = null;
 		if (type == Effecttype_det.RAINBOW) {
 			color = Color.getHSBColor(((float) state)/Constants.EFFECTRANGE, 1, 1);
 		} /* if */
+		if (type == Effecttype_det.STROBO_HOLD) {
+			if (state < last_state) out = in.clone();
+		}
 		
 		for (int i = 0; i < Constants.DEVICE_CHANNELS; i++) {
 			switch (type) {
@@ -69,8 +75,9 @@ public class Effect_Simple extends Effect {
 				if (channels[i] == 1) in[i] = cutOff((int) (in[i] + size*(2*Math.abs(state/Constants.EFFECTRANGE - 0.5)) - 0.5));
 				break;
 			case STROBO:
-				if (channels[i] == 1) if (size*(Constants.EFFECTRANGE/(Constants.MAXVALUE + 1)) > state) in[i] = 0;
+				if (channels[i] == 1) {if (size*(Constants.EFFECTRANGE/(Constants.MAXVALUE + 1)) <= state) in[i] = out[i]; else in[i] = 0;}
 				break;
+			case STROBO_HOLD:
 				
 			//Multi-channel-effect
 			case CIRCLE:
@@ -84,6 +91,7 @@ public class Effect_Simple extends Effect {
 				break;
 			} /* switch */
 		}/* for*/
+		last_state = state;
 		return in;
 	} /* apply*/
 	
