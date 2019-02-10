@@ -4,11 +4,12 @@
  */
 package c4l.applet.input.arduino;
 
+import c4l.applet.main.Constants;
 import cc.arduino.Arduino;
 
 /**
  * Manages communication with the Arduino inside of the custom hardware console.
- * The Arduino has to be flashed with a compatible firmware (known: MEGAv0).
+ * The Arduino has to be flashed with a compatible firmware (known: MEGAv0.1).
  * 
  * @author Timon
  * @version v1pre
@@ -22,6 +23,9 @@ public class WingController {
 	
 	private ProFirmata hardware;
 	private Arduino arduino;
+	private boolean[] lastState; //last state of DeviceTransmission
+	private boolean[] activityChanged; //whether there was a change to öastSTate
+	private boolean[] lastSelection; //last transmitted DeviceSelection
 	
 	/**
 	 * Returns list of active COM-Ports
@@ -40,6 +44,9 @@ public class WingController {
 		super();
 		this.faders = new int[16];
 		this.bFaders = new int[8];
+		this.lastState = new boolean[30];
+		this.activityChanged = new boolean[30];
+		this.lastSelection = new boolean[30];
 		
 		this.hardware = new ProFirmata(port);
 		this.arduino = hardware.device;
@@ -68,16 +75,52 @@ public class WingController {
 		if ((index < 0) || (index > 2)) throw new IndexOutOfBoundsException("You can only get a Rotary for index 0 to 2");
 		return arduino.analogRead(index + 13);
 	}
-	public boolean[] getActiveDevices() {
-		boolean[] activeDevices = new boolean[30];
-		for (int i = 0; i < 30; i++) {
-			activeDevices[i] = isactive(i);
-		}	
-		return activeDevices;
+//	public boolean[] getActiveDevices() {
+//		boolean[] activeDevices = new boolean[30];
+//		for (int i = 0; i < 30; i++) {
+//			activeDevices[i] = isactive(i);
+//		}	
+//		return activeDevices;
+//	}
+//	public boolean isactive(int index) {
+//		if ((index < 0) || (index > 29)) throw new IndexOutOfBoundsException("You can only get device activity for index 0 to 29");
+//		return (arduino.digitalRead(index + 16) == Arduino.HIGH);
+//	}
+
+	/**
+	 * Check for input on device selection.
+	 * @param use	if true, changes reported this time won't be reported again (default)
+	 * @return Boolean array, indicating true if an odd number of inputs occurred for this device since last check.
+	 */
+	public boolean[] checkActivity(boolean use) {
+		boolean state;
+		for (int i = 0; i < Constants.DYNAMIC_DEVICES; i++) {
+			state = (arduino.digitalRead(i + ProFirmata.FIRST_DEVICE_TRANSMISSION) == Arduino.HIGH);
+			activityChanged[i] = (state != lastState[i]);
+			if (use) lastState[i] = state;
+		} /* for */
+		
+		return activityChanged;
 	}
-	public boolean isactive(int index) {
-		if ((index < 0) || (index > 29)) throw new IndexOutOfBoundsException("You can only get device activity for index 0 to 29");
-		return (arduino.digitalRead(index + 16) == Arduino.HIGH);
+	public boolean[] checkActivity() {
+		return checkActivity(true);
+	}
+	
+	/**
+	 * Give active devices to wing.
+	 * @param isActive	Boolean array containing activity-state for each device
+	 * @param force		force transmission
+	 */
+	public void setActiveDevices(boolean[] isActive, boolean force) {
+		for (int i = 0; i < Constants.DYNAMIC_DEVICES; i++) {
+			if (force || (lastSelection[i] != isActive[i])) {
+				arduino.digitalWrite(i + ProFirmata.FIRST_DEVICE_SELECTION, (isActive[i]) ? Arduino.HIGH : Arduino.LOW);
+				lastSelection[i] = isActive[i];
+			} /* if */
+		} /* for */
+	}
+	public void setActiveDevices(boolean[] isActive) {
+		setActiveDevices(isActive, false);
 	}
 	
 	public void tick() {

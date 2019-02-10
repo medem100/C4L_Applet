@@ -26,4 +26,10 @@ public class ProFirmata extends PApplet {
 		device = new Arduino(this, port, baud_rate);
 		device.pinMode(13, Arduino.OUTPUT);
 	}
+	
+	/** First Channel of DeviceTransmission */
+	public static final int FIRST_DEVICE_TRANSMISSION = 16;
+	
+	/** First Channel of DeviceSelection */
+	public static final int FIRST_DEVICE_SELECTION = 64;
 }

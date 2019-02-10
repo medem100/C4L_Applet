@@ -5,11 +5,10 @@ package c4l.applet.main;
  */
 
 public class Constants {
-	//Ports and adrres
+	//Ports and addresses
 	/** Port, where Arduino of Hardware-Controller is connected */
 	public final static String ARDUINO_PORT = "COM6";
-	
-	/** Addres from the server **/
+	/** Addresses from the server **/
 	public final static String SERVER_IP = "127.0.0.1";
     public final static String SERVER_Port = "127.0.0.1";
     public final static String SERVER_ADDRESS = SERVER_IP+"::"+SERVER_Port;
