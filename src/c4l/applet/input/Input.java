@@ -17,9 +17,13 @@ public class Input {
 	private DashboardInput server;
 	C4L_Launcher parent;
 	
+	/** last know (and processed) hardware-fader position */
 	private int[] h_faders;
+	/** last know (and processed) hardware-x-fader position */
 	private int[] h_xfaders;
+	/** last know (and processed) hardware-rotary encoder position */
 	private int[] h_rotary;
+	/** Array indicating, which devices are active, that is to say they are  affected by current inputs */
 	private boolean[] active;
 	
 	public Input(String arduinoPort, C4L_Launcher main) {
@@ -74,13 +78,15 @@ public class Input {
 			} /* if */
 		} /* for */
 		//check rotary encoders
-		for (int i = 0; i < 3; i++) {
-			temp = wing.getRotary(i);
-			
-			//TODO adjust value in main by (temp - h_rotary[i]) maybe add/subtract Constants.ROTARY_RANGE
-			
-			h_rotary[i] = temp;
-		} /* for */
+		for (int i = 0; i < Constants.ROTARY_COUNT; i++) {
+			temp = wing.getRotary(i) - h_rotary[i];
+			h_rotary[i] += temp;
+			if (temp > Constants.ROTARY_RANGE/2) temp -= Constants.ROTARY_RANGE;
+			if (temp < -Constants.ROTARY_RANGE/2) temp += Constants.ROTARY_RANGE;
+			for (int j = 0; j < Constants.DYNAMIC_DEVICES; j++) {
+				if (active[j]) parent.deviceHandle[j].applyRotary(i, temp/Constants.ROTARY_CORRECTIONDIVISOR);
+			} /* for devices */
+		} /* for rotary encoders */
 		//TODO B-faders
 		
 		

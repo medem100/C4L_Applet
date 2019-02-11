@@ -24,7 +24,7 @@ public class C4L_Launcher {
 		
 		deviceHandle = new Device[Constants.DYNAMIC_DEVICES];
 		for (int i = 0; i < Constants.DYNAMIC_DEVICES; i++) {
-			deviceHandle[i] = new Device(Constants.PERMUTATION, i*Constants.DEVICE_CHANNELS);
+			deviceHandle[i] = new Device(Constants.STANDART_PERMUTATION, i*Constants.DEVICE_CHANNELS);
 		}
 	}
 	

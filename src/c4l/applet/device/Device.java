@@ -17,23 +17,21 @@ public class Device {
 	private int[] outputs;
 	private int[] p_outputs;
 	private int[] perm; //Input -> Output mapping (applied after effects)
+	private int[] rotary_channels; //which channels shall be affected by the rotary encoders
 	private int startAddress;
 	
 	public LinkedList<Effect> effects;
 	
 	//Constructors
-	public Device(int[] permutation) {
-		this.inputs = new int[Constants.DEVICE_CHANNELS];
-		this.p_outputs = new int[Constants.DEVICE_CHANNELS];
-		this.perm = permutation;
-		
-		this.effects = new LinkedList<Effect>();
+	public Device(int[] permutation, int startAddress) { //for backwards compatibility with MAin and TestObjeckte
+		this(permutation, Constants.STANDART_ROTARY_CHANNELS, startAddress);
 	}
-	public Device(int[] permutation, int startAddress) {
+	public Device(int[] permutation, int[] rotarys, int startAddress) {
 		this.startAddress = startAddress;
 		this.inputs = new int[Constants.DEVICE_CHANNELS];
 		this.p_outputs = new int[Constants.DEVICE_CHANNELS];
 		this.perm = permutation;
+		this.rotary_channels = rotarys;
 		
 		this.effects = new LinkedList<Effect>();
 	}
@@ -54,12 +52,21 @@ public class Device {
 	public void setPerm(int[] perm) {
 		this.perm = perm;
 	}
+	public int[] getRotary_channels() {
+		return rotary_channels;
+	}
+	public void setRotary_channels(int[] rotary_channels) {
+		this.rotary_channels = rotary_channels;
+	}
+	public int getStartAddres() {
+		return this.startAddress;
+	}
 	public void setStartAddress(Integer address) {
 		this.startAddress = address;
 	}
 	
-	public int getStartAddres() {
-		return this.startAddress;
+	public void applyRotary(int index, int value) {
+		inputs[rotary_channels[index]] = Effect.cutOff(inputs[rotary_channels[index]] + value);
 	}
 
 	/*
@@ -98,7 +105,6 @@ public class Device {
 	 * The Effects aren't ticked here. To do this use {@link #getOutput() getOutput}.
 	 * @return Array of integers with output values
 	 */
-	
 	public int[] getOutput_unticked() {
 		return getOutput(false);
 	}
@@ -136,7 +142,4 @@ public class Device {
 		return p_outputs;
 		
 	}
-	
-	
-
 }
