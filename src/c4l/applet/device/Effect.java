@@ -1,6 +1,5 @@
 package c4l.applet.device;
 
-import c4l.applet.device.Effect_Simple.Effecttype_det;
 import c4l.applet.main.Constants;
 
 /**
@@ -100,7 +99,6 @@ public class Effect {
 	 * @return		Array of same length with modified values.
 	 */
 	public int[] apply(int[] in) {
-		System.out.println("Applying Effect." + String.valueOf(size));
 		return in; //Real Effects are implemented in subclasses
 	}
 	
@@ -110,16 +108,4 @@ public class Effect {
 		if (x > Constants.MAXVALUE) return Constants.MAXVALUE;
 		return x;
 	}
-	
-	//Test-Main
-	public static void main(String[] args) {
-		int[] perm = {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15};
-		Device d = new Device(perm);
-		d.setInputs(perm);
-		Effect e = new Effect(0, 0, 0);
-		Effect e1 = new Effect_Simple(1, 0, 0, Effecttype_det.RAMP, perm);
-		d.addEffect(e);
-		d.addEffect(e1);
-		d.getOutput();
-	}	
 }

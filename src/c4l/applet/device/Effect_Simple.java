@@ -56,8 +56,6 @@ public class Effect_Simple extends Effect {
 	}
 		
 	@Override public int[] apply(int[] in) {
-		System.out.println("Applying Single-Effect." + String.valueOf(size));		
-		
 		Color color = null; int[] out = null;
 		if (type == Effecttype_det.RAINBOW) {
 			color = Color.getHSBColor(((float) state)/Constants.EFFECTRANGE, 1, 1);
