@@ -20,7 +20,7 @@ public class C4L_Launcher {
 	 */
 	C4L_Launcher () {
 		dmxHandle = new DmxOut();
-		inputHandle = new Input(Constants.ARDUINO_PORT, this);
+		inputHandle = new Input(this, Constants.ARDUINO_PORT);
 		
 		deviceHandle = new Device[Constants.DYNAMIC_DEVICES];
 		for (int i = 0; i < Constants.DYNAMIC_DEVICES; i++) {
