@@ -13,6 +13,7 @@ import c4l.applet.main.Constants;
  */
 public class Input {
 	private WingController wing;
+	private Boolean ServerAvailable;
 	@SuppressWarnings("unused")
 	private DashboardInput server;
 	C4L_Launcher parent;
@@ -28,12 +29,23 @@ public class Input {
 	
 	//Constructors
 	public Input(C4L_Launcher parent, String arduinoPort) {
-		this(parent, new WingController(arduinoPort));
+		this(parent, new WingController(arduinoPort),false);
+	}
+	
+	public Input(C4L_Launcher parent, String arduinoPort,Boolean ServerAvailable ) {
+		this(parent, new WingController(arduinoPort),ServerAvailable);
 	}
 	public Input(C4L_Launcher parent) {
-		this(parent, (WingController) null);
+		this(parent, (WingController) null,false);
 	}
-	public Input(C4L_Launcher parent, WingController wing) {
+
+	public Input(C4L_Launcher parent,Boolean ServerAvailable) {
+		this(parent, (WingController) null,ServerAvailable);
+	}
+
+	
+	public Input(C4L_Launcher parent, WingController wing,Boolean ServerAvailable) {
+		this.ServerAvailable = ServerAvailable;
 		this.wing = wing;
 		this.server = new DashboardInput(); //TODO modify Constructor if necessary
 		this.parent = parent;
@@ -46,6 +58,7 @@ public class Input {
 		wing.setActiveDevices(active, true);
 	}
 	
+
 	public void deleteWing() {
 		this.wing = null;
 	}
@@ -107,6 +120,10 @@ public class Input {
 		} /* if wing exists */
 		
 		//TODO check dashboard
+		
+		if (ServerAvailable) {
+			
+		}
 		
 		
 	} /* function tick() */
