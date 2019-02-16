@@ -3,7 +3,9 @@ package c4l.applet.input;
 import c4l.applet.input.arduino.WingController;
 import c4l.applet.main.C4L_Launcher;
 import c4l.applet.main.Constants;
-
+import java.net.URL;
+import java.io.*;
+import org.json.*;
 /**
  * Manages all inputs to the program (wing, server, MIDI, other APIs) and filters out what to adjust.
  * This especially includes figuring out, which input stream on the same item (e.g. fader value) has the latest update
@@ -120,11 +122,11 @@ public class Input {
 		} /* if wing exists */
 		
 		//TODO check dashboard
-		
+		/*
 		if (ServerAvailable) {
-			
+			JsonObject request = readJsonFromUrl("");
 		}
-		
+		*/
 		
 	} /* function tick() */
 
