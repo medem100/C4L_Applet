@@ -8,10 +8,11 @@ public class Constants {
 	//Ports and addresses
 	/** Port, where Arduino of Hardware-Controller is connected */
 	public final static String ARDUINO_PORT = "COM6";
-	/** Addresses from the server **/
-	public final static String SERVER_IP = "127.0.0.1";
-    public final static String SERVER_Port = "127.0.0.1";
-    public final static String SERVER_ADDRESS = SERVER_IP+"::"+SERVER_Port;
+	/** Addresses from the server sollte langfristig in die propertis **/
+	public final static String SERVER_IP = "localhost";
+    public final static String SERVER_Port = "8080";
+    public final static String SERVER_ADDRESS = SERVER_IP+":"+SERVER_Port;
+    public final static String INFORMATIONPFAD = "C4L_Server/helpJSP/info.jsp?info=true";
     					
 			
 	//General
