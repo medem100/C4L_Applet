@@ -19,8 +19,9 @@ public class C4L_Launcher {
 	 * Constructor
 	 */
 	C4L_Launcher () {
+		//toDO : check for ServerAvalibale
 		dmxHandle = new DmxOut();
-		inputHandle = new Input(this, Constants.ARDUINO_PORT);
+		inputHandle = new Input(this, Constants.ARDUINO_PORT,true);
 		
 		deviceHandle = new Device[Constants.DYNAMIC_DEVICES];
 		for (int i = 0; i < Constants.DYNAMIC_DEVICES; i++) {
