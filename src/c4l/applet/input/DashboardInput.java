@@ -1,6 +1,7 @@
 package c4l.applet.input;
 
 
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.io.*;
@@ -12,35 +13,85 @@ import c4l.applet.main.Constants;
  */
 public final class DashboardInput {
 	
+	private Boolean[] devices = new Boolean[Constants.DYNAMIC_DEVICES];
+	private int[] faders = new int[Constants.DEVICE_CHANNELS];
+	private int effectSize;
+	private int effectSpeed;
+	private int effectID = 0 ; // 0 = kein Effect  
+	private int caseID;
+	private int[] scenenID;
 	
-	private static String readAll(Reader rd) throws IOException {
-        StringBuilder sb = new StringBuilder();
-        int cp;
-        while ((cp = rd.read()) != -1) {
-            sb.append((char) cp);
-        }
-        return sb.toString();
-    }
+	
+	public int[] getFaders() {
+		return faders;
+	}
+	
+	
+	// Getter
+	
+	public Boolean[] getDevices() {
+		return devices;
+	}
+	
+	public int[] getFader() {
+		return faders;
+	}
+	
+	public int getEffectSize() {
+		return effectSize ;
+	}
+	
+	public int getEffectSpeed() {
+		return effectSpeed ;
+	}
+	
+	public int getEffectID() {
+		return effectID ;
+	}
+	
+	public int getCaseID() {
+		return caseID ;
+	}
+	
+	public int[] getScenenID() {
+		return scenenID ;
+	}
+	
+	public int getFader(int index) {
+		if ((index < 0) || (index > Constants.DEVICE_CHANNELS -1)) throw new IndexOutOfBoundsException("You can only get a Fader for index 0 to 15");
+		return faders[index];
+	}
+	
+	/**
+	 * 
+	 * @param url
+	 * @return
+	 */
+    private static String readStringFromUrl(String url) { 
+    URL readURL;
+    String response = "";
+	try {
+		readURL = new URL(url);
+	
+    BufferedReader in = new BufferedReader(
+    new InputStreamReader(readURL.openStream()));
 
-    private static String readStringFromUrl(String url) throws IOException {
-        InputStream is = new URL(url).openStream();
-        try {
-            BufferedReader rd = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")));
-            String jsonText = readAll(rd);
-            // JSONObject json = new JSONObject(jsonText);
-            return jsonText;
-        } finally {
-            is.close();
-        }
+    String inputLine;
+    while ((inputLine = in.readLine()) != null)
+    	response = response + inputLine ;
+    in.close();
+    
+    return response;
+	} catch (Exception e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+		return null;
+	}
     }
     
-    public JSONObject getResponse() {
+    public static JSONObject getResponse() {
     	String ResponsString;
-		try {
-			ResponsString = readStringFromUrl(Constants.SERVER_ADDRESS+"/"+Constants.INFORMATIONPFAD);
-		} catch (IOException e) {
-			return null;
-		}
+		ResponsString = readStringFromUrl(Constants.SERVER_ADDRESS+"/"+Constants.INFORMATIONPFAD);
     	return new JSONObject(ResponsString);
     }
     
