@@ -10,7 +10,8 @@ import c4l.applet.main.Constants;
  */
 public class Effect_Random extends Effect {
 	public enum Effecttype_Random {
-		WILD, JUMP
+		/** Move to random spots (range size) */ WILD,
+		/** Jump to random spots (range size) */ JUMP
 	}
 	
 	private Effecttype_Random type;
@@ -51,6 +52,11 @@ public class Effect_Random extends Effect {
 		this.last_state = 0;
 	}
 
+	
+	public Effecttype_Random getType() {
+		return type;
+	}
+	
 	
 	@Override public int[] apply(int[] in) {
 		if ((state > last_state + Constants.EFFECTSTEP) || (state < last_state)) {

@@ -53,6 +53,10 @@ public class Effect_Simple extends Effect {
 		this.last_state = Constants.EFFECTRANGE + 1;
 	}
 		
+	public Effecttype_det getType() {
+		return type;
+	}
+	
 	@Override public int[] apply(int[] in) {
 		Color color = null; int[] out = null;
 		if (type == Effecttype_det.RAINBOW) {
