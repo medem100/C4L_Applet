@@ -9,9 +9,12 @@ public class Constants {
 	/** Port, where Arduino of Hardware-Controller is connected */
 	public final static String ARDUINO_PORT = "COM6";
 	/** Addresses from the server sollte langfristig in die propertis **/
-	public final static String SERVER_IP = "localhost";
+	public final static String SERVER_IP = "http://127.0.0.1"; // Protokol mus immer Mitgegeben werde !!!!!
+	/** Server Port für API*/
     public final static String SERVER_Port = "8080";
+    /** Gesamte server addresse */
     public final static String SERVER_ADDRESS = SERVER_IP+":"+SERVER_Port;
+    /** Pfad für die api Abfrage */
     public final static String INFORMATIONPFAD = "C4L_Server/helpJSP/info.jsp?info=true";
     					
 			
