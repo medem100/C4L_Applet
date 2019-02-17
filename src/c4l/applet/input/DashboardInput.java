@@ -11,7 +11,7 @@ import c4l.applet.main.Constants;
 /**
  * Fragt die Api vom c4l Server ab und sammelt die 
  */
-public final class DashboardInput {
+public class DashboardInput {
 	
 	private Boolean[] devices = new Boolean[Constants.DYNAMIC_DEVICES];
 	private int[] faders = new int[Constants.DEVICE_CHANNELS];
@@ -61,6 +61,23 @@ public final class DashboardInput {
 		if ((index < 0) || (index > Constants.DEVICE_CHANNELS -1)) throw new IndexOutOfBoundsException("You can only get a Fader for index 0 to 15");
 		return faders[index];
 	}
+	
+	public int getDevice(int index) {
+		if ((index < 0) || (index > Constants.DYNAMIC_DEVICES -1)) throw new IndexOutOfBoundsException("You can only get a device for index 0 to 29");
+		return faders[index];
+	}
+	
+	
+	public void tick() {
+		// TODO senden das die EFFect taste gelesen wurde
+		JSONObject newValues = getResponse();
+		JSONArray jsonFader = newValues.getJSONArray("fader");
+		JSONArray jsonDevices = newValues.getJSONArray("devices");
+	}
+	
+	
+	
+	
 	
 	/**
 	 * 
