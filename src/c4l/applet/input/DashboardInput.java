@@ -4,6 +4,7 @@ package c4l.applet.input;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.io.*;
 import org.json.*;
 
@@ -17,9 +18,9 @@ public class DashboardInput {
 	private int[] faders = new int[Constants.DEVICE_CHANNELS];
 	private int effectSize;
 	private int effectSpeed;
-	private int effectID = 0 ; // 0 = kein Effect  
+	private int effect= 0 ; // 0 = kein Effect  
 	private int caseID;
-	private int[] scenenID;
+	ArrayList<Integer> scenenID = new ArrayList<>();
 	
 	
 	public int[] getFaders() {
@@ -46,14 +47,14 @@ public class DashboardInput {
 	}
 	
 	public int getEffectID() {
-		return effectID ;
+		return effect ;
 	}
 	
 	public int getCaseID() {
 		return caseID ;
 	}
 	
-	public int[] getScenenID() {
+	public ArrayList<Integer> getScenenID() {
 		return scenenID ;
 	}
 	
@@ -73,17 +74,38 @@ public class DashboardInput {
 		JSONObject newValues = getResponse();
 		JSONArray jsonFader = newValues.getJSONArray("fader");
 		JSONArray jsonDevices = newValues.getJSONArray("devices");
+		JSONArray jsonScenenID = newValues.getJSONArray("scenenID");
+		
+		effect = newValues.getInt("effect");
+		effectSpeed = newValues.getInt("effectSpeed");
+		effectSize = newValues.getInt("effectSize");
+		caseID = newValues.getInt("caseID");
+		
+		for (int i = 0 ; i <= jsonFader.length(); i++)
+			faders[i] = jsonFader.getInt(i);
+		
+		for (int i = 0 ; i <= jsonScenenID.length(); i++)
+			scenenID.add(jsonScenenID.getInt(i));
+		
+		
+		// ein bisher nicht min. 1 mal angewähltes device hat null 
+		for (int i = 0 ; i <= jsonDevices.length(); i++) {
+			if(jsonDevices.get(i) == null || !(jsonDevices.getBoolean(i))) {
+				devices[i] = false;
+			}else {
+				devices[i] = true;
+			}
+		}
+		
 	}
 	
 	
 	
 	
 	
-	/**
-	 * 
-	 * @param url
-	 * @return
-	 */
+	// Hilfs funcktzionen 
+	
+	
     private static String readStringFromUrl(String url) { 
     URL readURL;
     String response = "";
