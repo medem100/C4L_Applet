@@ -14,7 +14,6 @@ public class Effect_Random extends Effect {
 	}
 	
 	private Effecttype_Random type;
-	private int[] channels;
 	
 	private int n_channels = 0; //holds the largest numbered channel we need to hold and generate values for
 	private double[] last; //holds randomness applied at last call (or last call to Math.random())
@@ -38,10 +37,9 @@ public class Effect_Random extends Effect {
 	 * 					1, 2, ... output-values of the effect.
 	 */
 	public Effect_Random(int size, int speed, int offset, boolean acceptInput, Effecttype_Random type, int[] channels) {
-		super(size, speed, offset, acceptInput);
+		super(size, speed, offset, acceptInput, channels);
 		if (type == null) throw new NullPointerException("Make sure to define a effect-type.");
 		this.type = type;
-		this.channels = channels;
 		
 		for (int i = 0; i < Constants.DEVICE_CHANNELS; i++) {
 			if (channels[i] > n_channels) n_channels = channels[i];

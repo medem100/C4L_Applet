@@ -12,20 +12,22 @@ public class Effect {
 	private int speed;
 	private int offset;
 	private boolean acceptInput;
+	protected int[] channels;
 	
 	protected int state;
 	protected int last_state;
 		
 
-	public Effect(int size, int speed, int offset) {
-		this(size, speed, offset, true); //call larger Constructor
+	public Effect(int size, int speed, int offset, int[] channels) {
+		this(size, speed, offset, true, channels); //call larger Constructor
 	}
-	public Effect(int size, int speed, int offset, boolean acceptInput) {
+	public Effect(int size, int speed, int offset, boolean acceptInput, int[] channels) {
 		super();
 		this.size = size;
 		this.speed = speed;
 		this.offset = offset;
 		this.state = offset;
+		this.channels = channels;
 		
 		this.acceptInput = acceptInput;
 	}

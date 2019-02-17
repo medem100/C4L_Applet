@@ -27,7 +27,6 @@ public class Effect_Simple extends Effect {
 	}
 	
 	private Effecttype_det type;
-	private int[] channels;
 
 	//Overloading Constructors
 	public Effect_Simple(int size, int speed, int offset, Effecttype_det type, int[] channels) {
@@ -48,10 +47,9 @@ public class Effect_Simple extends Effect {
 	 * 
 	 */
 	public Effect_Simple(int size, int speed, int offset, boolean acceptInput, Effecttype_det type, int[] channels) {
-		super(size, speed, offset, acceptInput);
+		super(size, speed, offset, acceptInput, channels);
 		if (type == null) throw new NullPointerException("Make sure to define a effect-type.");
 		this.type = type;
-		this.channels = channels;
 		this.last_state = Constants.EFFECTRANGE + 1;
 	}
 		
