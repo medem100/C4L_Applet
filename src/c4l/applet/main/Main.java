@@ -2,8 +2,14 @@ package c4l.applet.main;
 
 import c4l.applet.output.DmxOut;
 import cc.arduino.Arduino;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import c4l.applet.device.Device;
+import c4l.applet.input.DashboardInput;
 import c4l.applet.main.TestObjeckte;
+
 
 /**
  * Hauptablauf
@@ -30,11 +36,9 @@ public class Main {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		Main C4l = new Main();
-		C4l.setup();
-		while(true) {
-			DMXobjeckt.setOutput(TestObjeckte.generateDevices());
-		}
+		JSONObject DasboardValues = DashboardInput.getResponse();
+		JSONArray faderValues = DasboardValues.getJSONArray("fader");
+		System.out.println(faderValues.get(1));
 	}
 	
 	/**
