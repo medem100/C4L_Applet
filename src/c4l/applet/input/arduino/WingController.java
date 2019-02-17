@@ -42,7 +42,7 @@ public class WingController {
 	 */
 	public WingController(String port) {
 		super();
-		this.faders = new int[16];
+		this.faders = new int[Constants.DEVICE_CHANNELS];
 		this.bFaders = new int[8];
 		this.lastState = new boolean[30];
 		this.activityChanged = new boolean[30];
@@ -57,7 +57,7 @@ public class WingController {
 		return faders;
 	}
 	public int getFader(int index) {
-		if ((index < 0) || (index > 15)) throw new IndexOutOfBoundsException("You can only get a Fader for index 0 to 15");
+		if ((index < 0) || (index > Constants.DEVICE_CHANNELS-1)) throw new IndexOutOfBoundsException("You can only get a Fader for index 0 to 15");
 		return faders[index];
 	}
 	public int getXFader(int index) {
