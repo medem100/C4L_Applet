@@ -12,6 +12,7 @@ public class C4L_Launcher {
 	DmxOut dmxHandle;
 	Input inputHandle;
 	public Device[] deviceHandle;
+	String resourcePath;
 	
 	static boolean quit = false;
 	
@@ -19,9 +20,15 @@ public class C4L_Launcher {
 	 * Constructor
 	 */
 	C4L_Launcher () {
+		//This is some weird solution: definitely ugly, but may work
+		resourcePath = Thread.currentThread().getContextClassLoader().getResource(".").getPath();
+		resourcePath = resourcePath.substring(0, resourcePath.lastIndexOf("/"));
+		resourcePath = resourcePath.substring(0, resourcePath.lastIndexOf("/")) + "/resources/";
+		System.out.println("Resource path:"); System.out.println(resourcePath);
+		
 		//toDO : check for ServerAvalibale
 		dmxHandle = new DmxOut();
-		inputHandle = new Input(this, Constants.ARDUINO_PORT,true);
+		inputHandle = new Input(this, resourcePath + Constants.PROPERTIES_PATH + Constants.ARDUINO_PROPERTIES_PATH,true);
 		
 		deviceHandle = new Device[Constants.DYNAMIC_DEVICES];
 		for (int i = 0; i < Constants.DYNAMIC_DEVICES; i++) {
@@ -48,5 +55,4 @@ public class C4L_Launcher {
 			}
 		}
 	}
-
 }

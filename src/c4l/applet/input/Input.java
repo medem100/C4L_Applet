@@ -4,6 +4,7 @@ import c4l.applet.input.arduino.WingController;
 import c4l.applet.main.C4L_Launcher;
 import c4l.applet.main.Constants;
 import java.net.URL;
+import java.util.Properties;
 import java.io.*;
 import org.json.*;
 /**
@@ -30,19 +31,23 @@ public class Input {
 	private boolean[] active;
 	
 	//Constructors
-	public Input(C4L_Launcher parent, String arduinoPort) {
-		this(parent, new WingController(arduinoPort),false);
+	public Input(C4L_Launcher parent, Properties arduinoProperties) {
+		this(parent, new WingController(arduinoProperties),false);
 	}
-	
-	public Input(C4L_Launcher parent, String arduinoPort,Boolean ServerAvailable ) {
-		this(parent, new WingController(arduinoPort),ServerAvailable);
+	public Input(C4L_Launcher parent, Properties arduinoProperties,Boolean ServerAvailable ) {
+		this(parent, new WingController(arduinoProperties),ServerAvailable);
+	}
+	public Input(C4L_Launcher parent, String arduinoPropertiesPath) {
+		this(parent, new WingController(WingController.openPropertiesFile(arduinoPropertiesPath)),false);
+	}
+	public Input(C4L_Launcher parent, String arduinoPropertiesPath,Boolean ServerAvailable ) {
+		this(parent, new WingController(WingController.openPropertiesFile(arduinoPropertiesPath)),ServerAvailable);
 	}
 	public Input(C4L_Launcher parent) {
-		this(parent, (WingController) null,false);
+		this(parent, (WingController) null, false);
 	}
-
 	public Input(C4L_Launcher parent,Boolean ServerAvailable) {
-		this(parent, (WingController) null,ServerAvailable);
+		this(parent, (WingController) null, ServerAvailable);
 	}
 
 	
@@ -93,7 +98,7 @@ public class Input {
 			//check wing-x-faders
 			for (int i = 0; i < 4; i++) {
 				temp = wing.getXFader(i);
-				if (Math.abs(temp - h_xfaders[i]) > Constants.FADER_TOLERANCE) {
+				if (Math.abs(temp - h_xfaders[i]) > wing.FADER_TOLERANCE) {
 					h_xfaders[i] = temp;
 					switch (i) {
 					case 0:
