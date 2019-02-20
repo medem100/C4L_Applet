@@ -34,16 +34,10 @@ public class Constants {
 	public final static int[] STANDART_ROTARY_CHANNELS = {0,1,2};
 	
 	// Input constants
-	/** Tolerance of variation on the hardware-faders, that are interpreted as side-effects, rather than as inputs. */
-	public final static int FADER_TOLERANCE = 3;
 	/** Correction factor to change from hardware range (0-1023) to DMX-Range (0-255) */
 	public final static int CORRECTIONDIVISOR = 4;
-	/** Range of the rotary value. */
-	public final static int ROTARY_RANGE = 1024; //TODO maybe adjust value
 	/** Number of rotary encoders */
 	public final static int ROTARY_COUNT = 3;
-	/** Correction factor for rotary encoder */
-	public final static int ROTARY_CORRECTIONDIVISOR = 4;
 	
 	
 	// Output constants

@@ -56,6 +56,7 @@ public class WingController {
 	/** First Channel of multiplex information pins */		public final int OFFSET_MULTIPLEX_PINS;
 	
 	/** Fader movement, which is interpreted as noise */	public final int FADER_TOLERANCE;
+	/** Range of the rotary value. */						public final int ROTARY_RANGE;
 	
 	/** Port, where the Arduino is connected */				public final String ARDUINO_PORT;
 	
@@ -91,6 +92,8 @@ public class WingController {
 		OFFSET_MULTIPLEX_PINS		= Integer.parseInt(prop.getProperty("OFFSET_MULTIPLEX_PINS", "1"));
 		
 		FADER_TOLERANCE				= Integer.parseInt(prop.getProperty("FADER_TOLERANCE", "0"));
+		ROTARY_RANGE				= Integer.parseInt(prop.getProperty("ROTARY_RANGE", "1024"));
+		
 		
 		ARDUINO_PORT				= prop.getProperty("ARDUINO_PORT");
 		

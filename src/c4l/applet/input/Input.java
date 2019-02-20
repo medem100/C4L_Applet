@@ -88,7 +88,7 @@ public class Input {
 			//check wing-faders
 			for (int i = 0; i < 16; i++) {
 				temp = wing.getFader(i);
-				if (Math.abs(temp - h_faders[i]) > Constants.FADER_TOLERANCE) {
+				if (Math.abs(temp - h_faders[i]) > wing.FADER_TOLERANCE) {
 					h_faders[i] = temp;
 					for (int j = 0; j < Constants.DYNAMIC_DEVICES; j++) {
 						if (active[j]) parent.deviceHandle[j].setInput(i, h_faders[i]/Constants.CORRECTIONDIVISOR);
@@ -117,10 +117,10 @@ public class Input {
 			for (int i = 0; i < Constants.ROTARY_COUNT; i++) {
 				temp = wing.getRotary(i) - h_rotary[i];
 				h_rotary[i] += temp;
-				if (temp > Constants.ROTARY_RANGE/2) temp -= Constants.ROTARY_RANGE;
-				if (temp < -Constants.ROTARY_RANGE/2) temp += Constants.ROTARY_RANGE;
+				if (temp > wing.ROTARY_RANGE/2) temp -= wing.ROTARY_RANGE;
+				if (temp < -wing.ROTARY_RANGE/2) temp += wing.ROTARY_RANGE;
 				for (int j = 0; j < Constants.DYNAMIC_DEVICES; j++) {
-					if (active[j]) parent.deviceHandle[j].applyRotary(i, temp/Constants.ROTARY_CORRECTIONDIVISOR);
+					if (active[j]) parent.deviceHandle[j].applyRotary(i, temp);
 				} /* for devices */
 			} /* for rotary encoders */
 			//TODO B-faders
