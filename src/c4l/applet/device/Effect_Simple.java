@@ -18,6 +18,8 @@ public class Effect_Simple extends Effect {
 		/** linear fade from -size/2 to +size/2, jump back */					RAMP,
 		/** linear fade from +size/2 to -size/2, jump back */					REVRAMP,
 		/** linear fade from +size/2 to -size/2, fade back */					LINEAR,
+		/** like linear, but pausing at low-point */							LINEAR_HOLDL,
+		/** like linear, but pausing at high-point */							LINEAR_HOLDH,
 		/** Channel is active size/256 parts of effect time, zero afterwards */	STROBO,
 		/** Strobo without changing colors when on */							STROBO_HOLD,
 		//two channels
@@ -81,10 +83,18 @@ public class Effect_Simple extends Effect {
 			case LINEAR:
 				if (channels[i] == 1) in[i] = cutOff((int) (in[i] + size*(2*Math.abs(state/Constants.EFFECTRANGE - 0.5)) - 0.5));
 				break;
+			case LINEAR_HOLDL:
+				if (channels[i] == 1) {if (state < Constants.EFFECTRANGE/2) in[i] = cutOff((int) (in[i] + size*(2*Math.abs(2*state/Constants.EFFECTRANGE - 0.5)) - 0.5)); else in[i] = cutOff(in[i] - size/2);}
+				break;
+			case LINEAR_HOLDH:
+				if (channels[i] == 1) {if (state < Constants.EFFECTRANGE/4 || state >= Constants.EFFECTRANGE*3/4) in[i] = cutOff((int) (in[i] + size*(4*Math.abs(2*state/Constants.EFFECTRANGE - 0.25)) - 0.5)); else in[i] = cutOff(in[i] + size/2);}
+				break;
 			case STROBO:
-				if (channels[i] == 1) {if (size*(Constants.EFFECTRANGE/(Constants.MAXVALUE + 1)) <= state) in[i] = out[i]; else in[i] = 0;}
+				if (channels[i] == 1) {if (size*(Constants.EFFECTRANGE/(Constants.MAXVALUE + 1)) <= state) in[i] = in[i]; else in[i] = 0;}
 				break;
 			case STROBO_HOLD:
+				if (channels[i] == 1) {if (size*(Constants.EFFECTRANGE/(Constants.MAXVALUE + 1)) <= state) in[i] = out[i]; else in[i] = 0;}
+				break;
 				
 			//Multi-channel-effect
 			case CIRCLE:

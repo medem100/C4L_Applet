@@ -24,6 +24,32 @@ public class Effect_Generator {
 			devices[i].addEffect(new Effect_Simple((Constants.MAXVALUE + 1)/n, speed, i*Constants.EFFECTRANGE/n, type, channels, false));
 		}
 	}
+	
+	/**
+	 * Create a triangle-effect (similar to the one known from the Scanoperator FX II)
+	 * @param devices	device(s), on which effect shall be added
+	 * @param speed
+	 * @param size
+	 * @param offset
+	 * @param channels	the channels the effect works on. Triangle supports two different channels (1 and 2) all others are ignored (default for that purpose should be 0)
+	 */
+	public static void triangle(Device[] devices, int speed, int size, int offset, int channels[]) {
+		//Remap channel-association
+		int[] channels1 = channels.clone();
+		for (int i = 0; i < channels.length; i++) {
+			if (channels1[i] == 1) channels1[i] = 0; 
+			if (channels[i] == 2) {
+				channels[i] = 0;
+				channels1[i] = 1;
+			}
+		}
+		
+		//Add LINEAR and LINEAR_HOLDL effect, that combine to triangle
+		for (int i = 0; i < devices.length; i++) {
+			devices[i].addEffect(new Effect_Simple(size, speed, offset, Effecttype_det.LINEAR, channels, true));
+			devices[i].addEffect(new Effect_Simple(size, speed, offset, Effecttype_det.LINEAR_HOLDL, channels1, true));
+		}
+	}
 
 	
 }
