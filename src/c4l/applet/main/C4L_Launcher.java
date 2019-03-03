@@ -26,7 +26,7 @@ public class C4L_Launcher {
 		resourcePath = resourcePath.substring(0, resourcePath.lastIndexOf("/")) + "/resources/";
 		System.out.println("Resource path:"); System.out.println(resourcePath);
 		
-		//toDO : check for ServerAvalibale
+		//TODO : check for ServerAvalibale
 		dmxHandle = new DmxOut();
 		inputHandle = new Input(this, resourcePath + Constants.PROPERTIES_PATH + Constants.ARDUINO_PROPERTIES_PATH,true);
 		
