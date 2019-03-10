@@ -1,71 +1,92 @@
 package c4l.applet.output;
 
+import org.apache.log4j.Logger;
+import org.apache.log4j.PropertyConfigurator;
+
 import com.juanjo.openDmx.OpenDmx;
 import c4l.applet.main.Constants;
+import c4l.applet.main.Util;
 import c4l.applet.device.*;
 
-
 /**
- * @author Andre
- * klasse für die Ausgabe mit Entec OpenDMX
+ * @author Andre for the output whit the ENTEC USB DMX plug.
  * 
- * 19.01.26 : Konfiguration der DLL und implementierung der Constants
+ *         19.01.26 : Konfiguration der DLL und implementierung der Constants
  */
 
 public class DmxOut {
+
+	private Logger Log = Logger.getLogger(DmxOut.class);
 	
+
 	public DmxOut() {
-		if(!OpenDmx.connect(OpenDmx.OPENDMX_TX)){
-			System.out.println("Open Dmx widget not detected!");
-			return;
+		PropertyConfigurator.configure("resources/properties/log4j.properties");
+		if (!(Util.getTestRun())) {
+			if (!OpenDmx.connect(OpenDmx.OPENDMX_TX)) {
+				Log.error("Open Dmx widget not detected!");
+				return;
+			}
+		}else {
+			Log.warn("TEST RUN Output !!!");
 		}
+
 	}
-	
-	public static void main(String[] args) {
-		DmxOut DMXobjeckt = new DmxOut();
-		DMXobjeckt.setValue(0, 200);
-		try {
-			Thread.sleep(1000000);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		DMXobjeckt.Close();
-	
-	}
-	
-	
+
 	public void Close() {
 		OpenDmx.disconnect();
 	}
 
-	public String setValue(int Channel , int Value) {
-		if(Channel<Constants.MINCHANNEL)Channel=0;
-		if(Channel>Constants.MAXCHANNEL)Channel=511;
-		if(Value<Constants.MINVALUE)Value=0;
-		if(Value>Constants.MAXVALUE)Value=255;
-		try {
-			OpenDmx.setValue(Channel,Value); // evtl -1 kommt drauf an wie intern gezählt wird
-		}catch (Exception e) {
-			return e.toString();
-		}
-		return "OK";
-		
-	}
-	
 	/**
-	 * Send the Output valus From the Devices Objekts to The entec Dongel 
-	 * TO DO : Apfangen wen geräte keine start adresse haben 
+	 * Send value to ENTEC Dongel
+	 * 
+	 * @param Channel
+	 * @param Value
+	 * @return
+	 */
+	public void setValue(int Channel, int Value) {
+		if (Channel < Constants.MINCHANNEL)
+			Channel = 0;
+		if (Channel > Constants.MAXCHANNEL)
+			Channel = 511;
+		if (Value < Constants.MINVALUE)
+			Value = 0;
+		if (Value > Constants.MAXVALUE)
+			Value = 255;
+		try {
+			OpenDmx.setValue(Channel, Value);
+			Log.debug("channel: " + Channel + " Value: " + Value);
+		} catch (Exception e) {
+			Log.error("Fail to commit the channel :" + Channel + " for the Value : " + Value, e);
+		}
+
+	}
+
+	/**
+	 * Send the Output values From the Devices Objects to The entec Dongel
+	 * 
 	 * @param devices
 	 */
 	public void setOutput(Device[] devices) {
+		Log.debug(devices.toString());
 		for (Device device : devices) {
 			int[] Output = device.getOutput_unticked();
-			int addres = device.getStartAddres();
-			for (int i = 0 ; i < Constants.DEVICE_CHANNELS;i++) {
-				setValue(addres+i, Output[i]);
+			Log.debug(Output.toString());
+			try {
+				int addres = device.getStartAddres();
+				for (int i = 0; i < Constants.DEVICE_CHANNELS; i++) {
+					// for Debug runs Without Entec dongel
+					if (!(Util.getTestRun())) {
+						// no test Run
+						setValue(addres + i, Output[i]);
+					} else {
+						// test Run
+						Log.info("addresse :" + addres + i + " " + Output[i]);
+					}
+				}
+			} catch (Exception e) {
+				Log.error("Fail to interpret the Output of all devices, faild by output : " + Output, e);
 			}
 		}
 	}
-	
+
 }
