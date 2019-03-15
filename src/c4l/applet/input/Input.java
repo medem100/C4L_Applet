@@ -3,13 +3,13 @@ package c4l.applet.input;
 import c4l.applet.input.arduino.WingController;
 import c4l.applet.main.C4L_Launcher;
 import c4l.applet.main.Constants;
-import java.net.URL;
 import java.util.Properties;
-import java.io.*;
 import org.json.*;
+
 /**
- * Manages all inputs to the program (wing, server, MIDI, other APIs) and filters out what to adjust.
- * This especially includes figuring out, which input stream on the same item (e.g. fader value) has the latest update
+ * Manages all inputs to the program (wing, server, MIDI, other APIs) and
+ * filters out what to adjust. This especially includes figuring out, which
+ * input stream on the same item (e.g. fader value) has the latest update
  * 
  * @author Timon
  *
@@ -17,8 +17,8 @@ import org.json.*;
 public class Input {
 	private WingController wing;
 	private Boolean ServerAvailable;
-	@SuppressWarnings("unused")
 	private DashboardInput server;
+	private JSONObject OldResponse;
 	C4L_Launcher parent;
 	
 	/** last know (and processed) hardware-fader position */
@@ -127,12 +127,19 @@ public class Input {
 		} /* if wing exists */
 		
 		//TODO check dashboard
-		/*
-		if (ServerAvailable) {
-			JsonObject request = readJsonFromUrl("");
-		}
-		*/
 		
-	} /* function tick() */
+		if (ServerAvailable) {
+			server.tick();
+			// Only when there are new data from the Dashboard
+			if(!(server.usedRespons.equals(OldResponse))) {
+				for(int i : server.getChosenDevices()) {
+					parent.deviceHandle[i].setInputs(server.getFader());
+				}
+			}
+			
+		}
+	
+		
+	} 
 
 }
