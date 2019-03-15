@@ -10,6 +10,7 @@ import org.apache.log4j.Logger;
 import org.json.*;
 
 import c4l.applet.main.Constants;
+import sun.util.logging.resources.logging;
 
 /**
  * Get Data from The C4L Server
@@ -22,6 +23,7 @@ public class DashboardInput {
 	private int effectSpeed;
 	private int effect = 0; // 0 = kein Effect
 	private int caseID;
+	public JSONObject usedRespons = new JSONObject();
 	ArrayList<Integer> scenenID = new ArrayList<>();
 
 	private Logger Log = Logger.getLogger(DashboardInput.class);
@@ -72,19 +74,33 @@ public class DashboardInput {
 		return faders[index];
 	}
 
+	/**
+	 * Return All chosen Values in the Dashboard
+	 * 
+	 * @return
+	 */
+	public ArrayList<Integer> getChosenDevices() {
+		ArrayList<Integer> chosenDevices = new ArrayList<>();
+		for (int i = 0; i <= devices.length; i++) {
+			if (devices[i])
+				chosenDevices.add(i);
+		}
+		return chosenDevices;
+	}
+
 	public void tick() {
 		// TODO senden das die EFFect taste gelesen wurde
-		JSONObject newValues = getResponse();
-		JSONArray jsonFader = newValues.getJSONArray("fader");
-		JSONArray jsonDevices = newValues.getJSONArray("devices");
-		JSONArray jsonScenenID = newValues.getJSONArray("scenenID");
+		usedRespons = getResponse();
+		JSONArray jsonFader = usedRespons.getJSONArray("fader");
+		JSONArray jsonDevices = usedRespons.getJSONArray("devices");
+		JSONArray jsonScenenID = usedRespons.getJSONArray("scenenID");
 
-		effect = newValues.getInt("effect");
-		effectSpeed = newValues.getInt("effectSpeed");
-		effectSize = newValues.getInt("effectSize");
-		caseID = newValues.getInt("caseID");
+		effect = usedRespons.getInt("effect");
+		effectSpeed = usedRespons.getInt("effectSpeed");
+		effectSize = usedRespons.getInt("effectSize");
+		caseID = usedRespons.getInt("caseID");
 
-		Log.debug(newValues.toString());
+		Log.debug(usedRespons.toString());
 
 		for (int i = 0; i < jsonFader.length(); i++)
 			faders[i] = jsonFader.getInt(i);
@@ -92,22 +108,25 @@ public class DashboardInput {
 		for (int i = 0; i < jsonScenenID.length(); i++)
 			scenenID.add(jsonScenenID.getInt(i));
 
-		// ein bisher nicht min. 1 mal angewähltes device hat null
+		// a device what wasn´t used is null
 		for (int i = 0; i < jsonDevices.length(); i++) {
-			switch (jsonDevices.get(i).toString()) {
+			String value = jsonDevices.get(i).toString();
+			switch (value) {
 			case "null":
 				devices[i] = false;
+				break;
 			case "false":
 				devices[i] = false;
+				break;
 			case "true":
 				devices[i] = true;
+				break;
+			default:
+				Log.error("Allowed device values only null/true/false");
+				throw new NullPointerException("Allowed device values only null/true/false");
 
 			}
-			/*
-			 * 
-			 * if (jsonDevices.get(i) == null || !(jsonDevices.getBoolean(i))) { devices[i]
-			 * = false; } else { devices[i] = true; }
-			 */
+
 		}
 
 	}
@@ -130,13 +149,13 @@ public class DashboardInput {
 			return response;
 		} catch (Exception e) {
 			Log.error("fail to Read Respons ", e);
-			return null;
+			return "{}";
 		}
 	}
 
 	public JSONObject getResponse() {
 		String ResponsString;
-		String URL = Constants.SERVER_ADDRESS + "/" + Constants.INFORMATIONPFAD;
+		String URL = Constants.SERVER_ADDRESS + Constants.INFORMATIONPFAD;
 		Log.debug("ServerURL :" + URL);
 		ResponsString = readStringFromUrl(URL);
 		return new JSONObject(ResponsString);
