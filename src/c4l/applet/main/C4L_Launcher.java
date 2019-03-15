@@ -31,8 +31,8 @@ public class C4L_Launcher {
 		PropertyConfigurator.configure(resourcePath + Constants.PROPERTIES_PATH + Constants.LOG4J_PROPERTIES_PATH); // not nice , but the system variable don´t work now
 		//TODO : check for ServerAvalibale
 		dmxHandle = new DmxOut();
-		inputHandle = new Input(this, resourcePath + Constants.PROPERTIES_PATH + Constants.ARDUINO_PROPERTIES_PATH,true);
-		
+	//	inputHandle = new Input(this, resourcePath + Constants.PROPERTIES_PATH + Constants.ARDUINO_PROPERTIES_PATH,true);
+		inputHandle = new Input(this, Util.getServerAvalibal()); // Dev Dasboard input
 		deviceHandle = new Device[Constants.DYNAMIC_DEVICES];
 		for (int i = 0; i < Constants.DYNAMIC_DEVICES; i++) {
 			deviceHandle[i] = new Device(Constants.STANDART_PERMUTATION, i*Constants.DEVICE_CHANNELS);
