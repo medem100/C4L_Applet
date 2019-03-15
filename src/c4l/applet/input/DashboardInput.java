@@ -83,22 +83,31 @@ public class DashboardInput {
 		effectSpeed = newValues.getInt("effectSpeed");
 		effectSize = newValues.getInt("effectSize");
 		caseID = newValues.getInt("caseID");
-		
+
 		Log.debug(newValues.toString());
 
-		for (int i = 0; i <= jsonFader.length(); i++)
+		for (int i = 0; i < jsonFader.length(); i++)
 			faders[i] = jsonFader.getInt(i);
 
-		for (int i = 0; i <= jsonScenenID.length(); i++)
+		for (int i = 0; i < jsonScenenID.length(); i++)
 			scenenID.add(jsonScenenID.getInt(i));
 
 		// ein bisher nicht min. 1 mal angewähltes device hat null
-		for (int i = 0; i <= jsonDevices.length(); i++) {
-			if (jsonDevices.get(i) == null || !(jsonDevices.getBoolean(i))) {
+		for (int i = 0; i < jsonDevices.length(); i++) {
+			switch (jsonDevices.get(i).toString()) {
+			case "null":
 				devices[i] = false;
-			} else {
+			case "false":
+				devices[i] = false;
+			case "true":
 				devices[i] = true;
+
 			}
+			/*
+			 * 
+			 * if (jsonDevices.get(i) == null || !(jsonDevices.getBoolean(i))) { devices[i]
+			 * = false; } else { devices[i] = true; }
+			 */
 		}
 
 	}
@@ -120,7 +129,7 @@ public class DashboardInput {
 			Log.debug(response);
 			return response;
 		} catch (Exception e) {
-			Log.error("fail to Read Respons ",e);
+			Log.error("fail to Read Respons ", e);
 			return null;
 		}
 	}
