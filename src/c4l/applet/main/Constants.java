@@ -9,6 +9,8 @@ public class Constants {
 	public static final String PROPERTIES_PATH = "properties/";
 	/** Path of the Arduino-Properties-file */
 	public static final String ARDUINO_PROPERTIES_PATH = "arduino.properties"; //Move in general property file later
+	/** Path to the Log4J-Properties-file */
+	public static final String LOG4J_PROPERTIES_PATH = "arduino.properties"; //Move in general property file later
 	/** Addresses from the server sollte langfristig in die propertis **/
 	public final static String SERVER_IP = "http://127.0.0.1"; // Protokol mus immer Mitgegeben werde !!!!!
 	/** Server Port for API*/
@@ -17,7 +19,8 @@ public class Constants {
     public final static String SERVER_ADDRESS = SERVER_IP + ":" + SERVER_Port;
     /** Path for API-Request */
     public final static String INFORMATIONPFAD = "C4L_Server/helpJSP/info.jsp?info=true";
-    					
+    /** Path for read Effect jsp */
+    public final static String EFFECTPATH = "C4L_Server/helpJSP/readEffect.jsp";					
 			
 	//General
 	/** Number of channels a device has. */
