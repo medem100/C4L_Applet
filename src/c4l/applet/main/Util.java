@@ -6,13 +6,13 @@ public final class Util {
 		if (!(System.getProperty("TestRun") == null)) {
 			return Boolean.valueOf(System.getProperty("TestRun"));
 		} else {
-			return false; // it isn´t a Test Run When the the Property isn´t set  
+			return false; // it isn´t a Test Run When the the Property isn´t set
 		}
 
 	}
 	/*
-	public static Boolean getServerAvailable() {
-	//	httpResponse.getStatusLine().getStatusCode()
-	}*/
+	 * public static Boolean getServerAvailable() { //
+	 * httpResponse.getStatusLine().getStatusCode() }
+	 */
 
 }
