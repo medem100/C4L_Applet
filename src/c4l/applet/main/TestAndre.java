@@ -3,6 +3,8 @@ package c4l.applet.main;
 import c4l.applet.output.DmxOut;
 import cc.arduino.Arduino;
 
+import org.apache.log4j.PropertyConfigurator;
+import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -17,7 +19,7 @@ import c4l.applet.main.TestObjeckte;
  * @version 0.1
  * @author Andre 19.01.16 : Output implementierung
  */
-public class Main {
+public class TestAndre {
 
 	static DmxOut DMXobjeckt = null;
 
@@ -36,9 +38,17 @@ public class Main {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		JSONObject DasboardValues = DashboardInput.getResponse();
+		/*JSONObject DasboardValues = DashboardInput.getResponse();
 		JSONArray faderValues = DasboardValues.getJSONArray("fader");
-		System.out.println(faderValues.get(1));
+		System.out.println(faderValues.get(1)); */
+		
+		 PropertyConfigurator.configure("resources/properties/log4j.properties");
+		 Logger logger = Logger.getLogger(TestAndre.class);
+		 System.out.println(System.getProperty("test"));
+		 logger.debug("test debuge");
+		 logger.info("test Info ");
+		 logger.error("test Error");
+		 
 	}
 	
 	/**
