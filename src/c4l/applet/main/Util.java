@@ -23,7 +23,7 @@ public final class Util {
 	
 	public static Boolean getServerAvalibal() {
 		try {
-		URL url = new URL("http://example.com");
+		URL url = new URL(Constants.SERVER_ADDRESS+Constants.INDEXPATH);
 		HttpURLConnection connection = (HttpURLConnection)url.openConnection();
 		connection.setRequestMethod("GET");
 		connection.connect();
@@ -40,9 +40,6 @@ public final class Util {
 		}
 		
 	}
-	/*
-	 * public static Boolean getServerAvailable() { //
-	 * httpResponse.getStatusLine().getStatusCode() }
-	 */
+	
 
 }
