@@ -17,10 +17,15 @@ public class Constants {
     public final static String SERVER_Port = "8080";
     /** Complete server address */
     public final static String SERVER_ADDRESS = SERVER_IP + ":" + SERVER_Port;
+    /** Name of the Server web-app */
+    public final static String WEB_APP = "C4L_Server";
     /** Path for API-Request */
-    public final static String INFORMATIONPFAD = "C4L_Server/helpJSP/info.jsp?info=true";
+    public final static String INFORMATIONPFAD = "/"+WEB_APP+"/helpJSP/info.jsp?info=true";
     /** Path for read Effect jsp */
-    public final static String EFFECTPATH = "C4L_Server/helpJSP/readEffect.jsp";					
+    public final static String EFFECTPATH = "/"+WEB_APP+"/helpJSP/readEffect.jsp";
+    /** Path for check is server Available **/
+    public final static String INDEXPATH = "/"+WEB_APP+"/index.jsp";
+    
 			
 	//General
 	/** Number of channels a device has. */
