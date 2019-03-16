@@ -28,7 +28,8 @@ public class C4L_Launcher {
 		resourcePath = resourcePath.substring(0, resourcePath.lastIndexOf("/")) + "/resources/";
 		System.out.println("Resource path:"); System.out.println(resourcePath);
 		
-		PropertyConfigurator.configure(resourcePath + Constants.PROPERTIES_PATH + Constants.LOG4J_PROPERTIES_PATH); // not nice , but the system variable don´t work now
+		//PropertyConfigurator.configure(resourcePath + Constants.PROPERTIES_PATH + Constants.LOG4J_PROPERTIES_PATH); // not nice , but the system variable don´t work now
+		PropertyConfigurator.configure("resources/properties/log4j.properties"); // Ugly But work Now 
 		//TODO : check for ServerAvalibale
 		dmxHandle = new DmxOut();
 	//	inputHandle = new Input(this, resourcePath + Constants.PROPERTIES_PATH + Constants.ARDUINO_PROPERTIES_PATH,true);
@@ -50,12 +51,11 @@ public class C4L_Launcher {
 		while (!quit) {
 			program.inputHandle.tick();
 			program.dmxHandle.setOutput(program.deviceHandle);
-			
 			time = System.currentTimeMillis();
 			if (time-last_time > Constants.EFFECTTICKMILLIS) {
 				last_time += Constants.EFFECTTICKMILLIS;
 				for(Device d : program.deviceHandle) d.tick();
-			}
+			} 
 		}
 	}
 }
