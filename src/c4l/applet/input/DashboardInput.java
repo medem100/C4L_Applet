@@ -81,7 +81,7 @@ public class DashboardInput {
 	 */
 	public ArrayList<Integer> getChosenDevices() {
 		ArrayList<Integer> chosenDevices = new ArrayList<>();
-		for (int i = 0; i <= devices.length; i++) {
+		for (int i = 0; i < devices.length; i++) {
 			if (devices[i])
 				chosenDevices.add(i);
 		}
@@ -100,7 +100,7 @@ public class DashboardInput {
 		effectSize = usedRespons.getInt("effectSize");
 		caseID = usedRespons.getInt("caseID");
 
-		Log.debug(usedRespons.toString());
+		//Log.debug(usedRespons.toString());
 
 		for (int i = 0; i < jsonFader.length(); i++)
 			faders[i] = jsonFader.getInt(i);
