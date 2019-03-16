@@ -20,7 +20,6 @@ public class DmxOut {
 	
 
 	public DmxOut() {
-		PropertyConfigurator.configure("resources/properties/log4j.properties");
 		if (!(Util.getTestRun())) {
 			if (!OpenDmx.connect(OpenDmx.OPENDMX_TX)) {
 				Log.error("Open Dmx widget not detected!");
@@ -54,7 +53,7 @@ public class DmxOut {
 			Value = 255;
 		try {
 			OpenDmx.setValue(Channel, Value);
-			Log.debug("channel: " + Channel + " Value: " + Value);
+			//Log.debug("channel: " + Channel + " Value: " + Value);
 		} catch (Exception e) {
 			Log.error("Fail to commit the channel :" + Channel + " for the Value : " + Value, e);
 		}
@@ -69,8 +68,8 @@ public class DmxOut {
 	public void setOutput(Device[] devices) {
 		Log.debug(devices.toString());
 		for (Device device : devices) {
-			int[] Output = device.getOutput_unticked();
-			Log.debug(Output.toString());
+			int[] Output = device.getOutput_unticked(); // TODO change in the Future
+		//	Log.debug(Output.toString());
 			try {
 				int addres = device.getStartAddres();
 				for (int i = 0; i < Constants.DEVICE_CHANNELS; i++) {
