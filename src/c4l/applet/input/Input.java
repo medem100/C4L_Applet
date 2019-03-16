@@ -148,26 +148,26 @@ public class Input {
 		// TODO check dashboard
 
 		if (ServerAvailable) {
-			server.tick(parent);
+			server.tick();
 			// Only when there are new data from the Dashboard
-			JSONObject respons = server.usedRespons;
-			if (!(respons.toString().equals(OldResponse.toString()))) { // TODO
+			if (!(server.usedRespons.toString().equals(OldResponse.toString()))) { // TODO
 				log.debug("New Respons");
-				ArrayList<Integer> devices = server.getChosenDevices();
-				for (int i : devices) {
+				for (int i : server.getChosenDevices()) {
 					log.debug(i);
 					/*
-					 * int[] fader = server.getFader(); parent.deviceHandle[i].setInputs(fader); I don´t now wy but thy dont work Correctly
+					 * int[] fader = server.getFader(); parent.deviceHandle[i].setInputs(fader); I
+					 * don´t now why but thy dont work Correctly
 					 */
-					for (int y = 0; y < 10; y++)
-						parent.deviceHandle[i].setInput(y, server.getFader(y));
+					for (int j = 0; j < Constants.DEVICE_CHANNELS; j++) {
+						parent.deviceHandle[i].setInput(j, server.getFader(j));
 
+					}
+					OldResponse = server.usedRespons;
 				}
-				OldResponse = server.usedRespons;
+
 			}
 
 		}
 
 	}
-
 }
