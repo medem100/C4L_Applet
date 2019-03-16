@@ -3,7 +3,11 @@ package c4l.applet.input;
 import c4l.applet.input.arduino.WingController;
 import c4l.applet.main.C4L_Launcher;
 import c4l.applet.main.Constants;
+
+import java.util.ArrayList;
 import java.util.Properties;
+
+import org.apache.log4j.Logger;
 import org.json.*;
 
 /**
@@ -15,87 +19,97 @@ import org.json.*;
  *
  */
 public class Input {
+	private Logger log = Logger.getLogger(Input.class);
 	private WingController wing;
 	private Boolean ServerAvailable;
 	private DashboardInput server;
-	private JSONObject OldResponse;
+	private JSONObject OldResponse = new JSONObject("{}");
 	C4L_Launcher parent;
-	
+
 	/** last know (and processed) hardware-fader position */
 	private int[] h_faders;
 	/** last know (and processed) hardware-x-fader position */
 	private int[] h_xfaders;
 	/** last know (and processed) hardware-rotary encoder position */
 	private int[] h_rotary;
-	/** Array indicating, which devices are active, that is to say they are  affected by current inputs */
+	/**
+	 * Array indicating, which devices are active, that is to say they are affected
+	 * by current inputs
+	 */
 	private boolean[] active;
-	
-	//Constructors
+
+	// Constructors
 	public Input(C4L_Launcher parent, Properties arduinoProperties) {
-		this(parent, new WingController(arduinoProperties),false);
+		this(parent, new WingController(arduinoProperties), false);
 	}
-	public Input(C4L_Launcher parent, Properties arduinoProperties,Boolean ServerAvailable ) {
-		this(parent, new WingController(arduinoProperties),ServerAvailable);
+
+	public Input(C4L_Launcher parent, Properties arduinoProperties, Boolean ServerAvailable) {
+		this(parent, new WingController(arduinoProperties), ServerAvailable);
 	}
+
 	public Input(C4L_Launcher parent, String arduinoPropertiesPath) {
-		this(parent, new WingController(WingController.openPropertiesFile(arduinoPropertiesPath)),false);
+		this(parent, new WingController(WingController.openPropertiesFile(arduinoPropertiesPath)), false);
 	}
-	public Input(C4L_Launcher parent, String arduinoPropertiesPath,Boolean ServerAvailable ) {
-		this(parent, new WingController(WingController.openPropertiesFile(arduinoPropertiesPath)),ServerAvailable);
+
+	public Input(C4L_Launcher parent, String arduinoPropertiesPath, Boolean ServerAvailable) {
+		this(parent, new WingController(WingController.openPropertiesFile(arduinoPropertiesPath)), ServerAvailable);
 	}
+
 	public Input(C4L_Launcher parent) {
 		this(parent, (WingController) null, false);
 	}
-	public Input(C4L_Launcher parent,Boolean ServerAvailable) {
+
+	public Input(C4L_Launcher parent, Boolean ServerAvailable) {
 		this(parent, (WingController) null, ServerAvailable);
 	}
 
-	
-	public Input(C4L_Launcher parent, WingController wing,Boolean ServerAvailable) {
+	public Input(C4L_Launcher parent, WingController wing, Boolean ServerAvailable) {
 		this.ServerAvailable = ServerAvailable;
 		this.wing = wing;
-		this.server = new DashboardInput(); //TODO modify Constructor if necessary
+		this.server = new DashboardInput(); // TODO modify Constructor if necessary
 		this.parent = parent;
-		
+
 		this.h_faders = new int[16];
 		this.h_xfaders = new int[4];
 		this.h_faders = new int[3];
-		this.active = new boolean[30]; //should be initialized with false
-		
-		wing.setActiveDevices(active, true);
+		this.active = new boolean[30]; // should be initialized with false
+		if (wing != null)
+			wing.setActiveDevices(active, true);
 	}
-	
 
 	public void deleteWing() {
 		this.wing = null;
 	}
+
 	public void setWing(WingController wing) {
 		this.wing = wing;
 	}
-	
+
 	public void tick() {
 		int temp = 0;
-		
-		//Handle the HardwareWing
+
+		// Handle the HardwareWing
 		if (wing != null) {
 			wing.tick();
-			
-			//check Wingcontroller for changes in device activity
+
+			// check Wingcontroller for changes in device activity
 			boolean[] change = wing.checkActivity();
-			for (int i = 0; i < Constants.DYNAMIC_DEVICES; i++) active[i] ^= change[i];
-			wing.setActiveDevices(active); //Tell wing, which devices are active
-			
-			//check wing-faders
+			for (int i = 0; i < Constants.DYNAMIC_DEVICES; i++)
+				active[i] ^= change[i];
+			wing.setActiveDevices(active); // Tell wing, which devices are active
+
+			// check wing-faders
 			for (int i = 0; i < 16; i++) {
 				temp = wing.getFader(i);
 				if (Math.abs(temp - h_faders[i]) > wing.FADER_TOLERANCE) {
 					h_faders[i] = temp;
 					for (int j = 0; j < Constants.DYNAMIC_DEVICES; j++) {
-						if (active[j]) parent.deviceHandle[j].setInput(i, h_faders[i]/Constants.CORRECTIONDIVISOR);
+						if (active[j])
+							parent.deviceHandle[j].setInput(i, h_faders[i] / Constants.CORRECTIONDIVISOR);
 					} /* for */
 				} /* if */
 			} /* for */
-			//check wing-x-faders
+			// check wing-x-faders
 			for (int i = 0; i < 4; i++) {
 				temp = wing.getXFader(i);
 				if (Math.abs(temp - h_xfaders[i]) > wing.FADER_TOLERANCE) {
@@ -103,43 +117,57 @@ public class Input {
 					switch (i) {
 					case 0:
 						for (int j = 0; j < Constants.DYNAMIC_DEVICES; j++) {
-							if (active[j]) parent.deviceHandle[j].setSpeed(h_xfaders[i]/Constants.CORRECTIONDIVISOR);
+							if (active[j])
+								parent.deviceHandle[j].setSpeed(h_xfaders[i] / Constants.CORRECTIONDIVISOR);
 						} /* for */
 					case 1:
 						for (int j = 0; j < Constants.DYNAMIC_DEVICES; j++) {
-							if (active[j]) parent.deviceHandle[j].setSize(h_xfaders[i]/Constants.CORRECTIONDIVISOR);
+							if (active[j])
+								parent.deviceHandle[j].setSize(h_xfaders[i] / Constants.CORRECTIONDIVISOR);
 						} /* for */
-					} /*switch */
-					//TODO Define use of fader 3 and specify 4
+					} /* switch */
+					// TODO Define use of fader 3 and specify 4
 				} /* if */
 			} /* for */
-			//check rotary encoders
+			// check rotary encoders
 			for (int i = 0; i < Constants.ROTARY_COUNT; i++) {
 				temp = wing.getRotary(i) - h_rotary[i];
 				h_rotary[i] += temp;
-				if (temp > wing.ROTARY_RANGE/2) temp -= wing.ROTARY_RANGE;
-				if (temp < -wing.ROTARY_RANGE/2) temp += wing.ROTARY_RANGE;
+				if (temp > wing.ROTARY_RANGE / 2)
+					temp -= wing.ROTARY_RANGE;
+				if (temp < -wing.ROTARY_RANGE / 2)
+					temp += wing.ROTARY_RANGE;
 				for (int j = 0; j < Constants.DYNAMIC_DEVICES; j++) {
-					if (active[j]) parent.deviceHandle[j].applyRotary(i, temp);
+					if (active[j])
+						parent.deviceHandle[j].applyRotary(i, temp);
 				} /* for devices */
 			} /* for rotary encoders */
-			//TODO B-faders
+			// TODO B-faders
 		} /* if wing exists */
-		
-		//TODO check dashboard
-		
+
+		// TODO check dashboard
+
 		if (ServerAvailable) {
-			server.tick();
+			server.tick(parent);
 			// Only when there are new data from the Dashboard
-			if(!(server.usedRespons.equals(OldResponse))) {
-				for(int i : server.getChosenDevices()) {
-					parent.deviceHandle[i].setInputs(server.getFader());
+			JSONObject respons = server.usedRespons;
+			if (!(respons.toString().equals(OldResponse.toString()))) { // TODO
+				log.debug("New Respons");
+				ArrayList<Integer> devices = server.getChosenDevices();
+				for (int i : devices) {
+					log.debug(i);
+					/*
+					 * int[] fader = server.getFader(); parent.deviceHandle[i].setInputs(fader); I don´t now wy but thy dont work Correctly
+					 */
+					for (int y = 0; y < 10; y++)
+						parent.deviceHandle[i].setInput(y, server.getFader(y));
+
 				}
+				OldResponse = server.usedRespons;
 			}
-			
+
 		}
-	
-		
-	} 
+
+	}
 
 }
