@@ -160,7 +160,6 @@ public class Input {
 					 */
 					for (int j = 0; j < Constants.DEVICE_CHANNELS; j++) {
 						parent.deviceHandle[i].setInput(j, server.getFader(j));
-
 					}
 					OldResponse = server.usedRespons;
 				}

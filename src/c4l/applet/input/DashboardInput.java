@@ -156,7 +156,7 @@ public class DashboardInput {
 	public JSONObject getResponse() {
 		String ResponsString;
 		String URL = Constants.SERVER_ADDRESS + Constants.INFORMATIONPFAD;
-		Log.debug("ServerURL :" + URL);
+	//	Log.debug("ServerURL :" + URL);
 		ResponsString = readStringFromUrl(URL);
 		return new JSONObject(ResponsString);
 	}

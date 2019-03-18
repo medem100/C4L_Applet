@@ -66,7 +66,7 @@ public class DmxOut {
 	 * @param devices
 	 */
 	public void setOutput(Device[] devices) {
-		Log.debug(devices.toString());
+//		Log.debug(devices.toString());
 		for (Device device : devices) {
 			int[] Output = device.getOutput_unticked(); // TODO change in the Future
 		//	Log.debug(Output.toString());
