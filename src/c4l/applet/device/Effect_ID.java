@@ -18,6 +18,12 @@ public class Effect_ID {
 	public enum Effect_class {
 		SIMPLE, RANDOM
 	}
+	
+	/**
+	 * Determines the Effect_ID for a given Effect.
+	 * @param e	An Effect-object
+	 * @return	An Effect_ID-object, representing the type of the inputed effect
+	 */
 	public static Effect_ID getEffectID(Effect e) {
 		if (e instanceof Effect_Simple) {
 			Effect_Simple es = (Effect_Simple) e;
@@ -30,9 +36,31 @@ public class Effect_ID {
 		return new Effect_ID(-1, -1); //Invalid input
 	}
 	
+	/**
+	 * Generates an Effect-object from an EffectID
+	 * @param id		type of effect, which shall be generated. id1 will determine general effect class, id2 specific type.
+	 * @param size		passed to super
+	 * @param speed		passed to super
+	 * @param offset	passed to super
+	 * @param channels	Int-Array defining how each channel is modified:
+	 * 					0 or invalid: no change;
+	 * 					1, 2, ... output-values of the effect.
+	 * 
+	 */
 	public static Effect generateEffectFromID(Effect_ID id, int size, int speed, int offset, int[] channels) {
 		return generateEffectFromID(id, size, speed, offset, true, channels);
 	}
+	/**
+	 * Generates an Effect-object from an EffectID
+	 * @param id		type of effect, which shall be generated. id1 will determine general effect class, id2 specific type.
+	 * @param size		passed to super
+	 * @param speed		passed to super
+	 * @param offset	passed to super
+	 * @param acceptInput	whether the effect accepts unforced changes later on (default: True)
+	 * @param channels	Int-Array defining how each channel is modified:
+	 * 					0 or invalid: no change;
+	 * 					1, 2, ... output-values of the effect.
+	 */
 	public static Effect generateEffectFromID(Effect_ID id, int size, int speed, int offset, boolean acceptInput, int[] channels) {
 		switch (id.id1) {
 		case -1:

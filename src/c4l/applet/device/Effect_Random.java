@@ -33,6 +33,7 @@ public class Effect_Random extends Effect {
 	 * @param speed		passed to super
 	 * @param offset	passed to super
 	 * @param type		type of effect (see Effect.Effect1_type)
+	 * @param acceptInput	whether the effect accepts unforced changes later on (default: True)
 	 * @param channels	Int-Array defining how each channel is modified:
 	 * 					0 or invalid: no change;
 	 * 					1, 2, ... output-values of the effect.
@@ -42,6 +43,7 @@ public class Effect_Random extends Effect {
 		if (type == null) throw new NullPointerException("Make sure to define a effect-type.");
 		this.type = type;
 		
+		n_channels = 0;
 		for (int i = 0; i < Constants.DEVICE_CHANNELS; i++) {
 			if (channels[i] > n_channels) n_channels = channels[i];
 		}
@@ -81,10 +83,10 @@ public class Effect_Random extends Effect {
 			switch (type) {
 			//Single-channel-effects
 			case JUMP: //Steadily adding last, then jump, when it changes
-				if (channels[i] > 0) in[i] = cutOff((int) (in[i] + size*(last[i] - 0.5)));
+				if (channels[i] > 0) in[i] = cutOff((int) (in[i] + size*(last[channels[i] - 1] - 0.5)));
 				break;
 			case WILD: //Convex-combination of last and next
-				if (channels[i] > 0) in[i] = cutOff((int) (in[i] + size*(((state - last_state)*last[i] + (Constants.EFFECTSTEP - state + last_state)*next[i]) - 0.5))/Constants.EFFECTSTEP);
+				if (channels[i] > 0) in[i] = cutOff((int) (in[i] + size*(((state - last_state)*last[channels[i] - 1] + (Constants.EFFECTSTEP - state + last_state)*next[channels[i] - 1]) - 0.5))/Constants.EFFECTSTEP);
 				break;
 			} /* switch */
 		} /* for */

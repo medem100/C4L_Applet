@@ -43,6 +43,7 @@ public class Effect_Simple extends Effect {
 	 * @param speed		passed to super
 	 * @param offset	passed to super
 	 * @param type		type of effect (see Effect.Effect1_type)
+	 * @param acceptInput	whether the effect accepts unforced changes later on (default: True)
 	 * @param channels	Int-Array defining how each channel is modified:
 	 * 					0 or invalid: no change;
 	 * 					1, 2, ... output-values of the effect.
