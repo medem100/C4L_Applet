@@ -1,6 +1,5 @@
 package c4l.applet.input;
 
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
@@ -77,7 +76,7 @@ public class DashboardInput {
 	/**
 	 * Return All chosen Values in the Dashboard
 	 * 
-	 * @return
+	 * @return all chosen Devices
 	 */
 	public ArrayList<Integer> getChosenDevices() {
 		ArrayList<Integer> chosenDevices = new ArrayList<>();
@@ -88,6 +87,9 @@ public class DashboardInput {
 		return chosenDevices;
 	}
 
+	/**
+	 * Set new Values to the dasboard
+	 */
 	public void tick() {
 		// TODO senden das die EFFect taste gelesen wurde
 		usedRespons = getResponse();
@@ -145,7 +147,7 @@ public class DashboardInput {
 			while ((inputLine = in.readLine()) != null)
 				response = response + inputLine;
 			in.close();
-			Log.debug(response);
+	//		Log.debug(response);
 			return response;
 		} catch (Exception e) {
 			Log.error("fail to Read Respons ", e);
