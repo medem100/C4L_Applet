@@ -35,7 +35,7 @@ public class Device {
 		
 		this.effects = new LinkedList<Effect>();
 	}
-
+	
 	//Getters and Setters
 	public int[] getInputs() {
 		return inputs;
