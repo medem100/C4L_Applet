@@ -21,6 +21,7 @@ public class Device {
 	private int startAddress;
 	
 	public LinkedList<Effect> effects;
+	public LinkedList<Effect> main_effect;
 	
 	//Constructors
 	public Device(int[] permutation, int startAddress) { //for backwards compatibility with MAin and TestObjeckte
@@ -34,6 +35,7 @@ public class Device {
 		this.rotary_channels = rotarys;
 		
 		this.effects = new LinkedList<Effect>();
+		this.main_effect = new LinkedList<Effect>();
 	}
 	
 	//Getters and Setters
@@ -75,6 +77,32 @@ public class Device {
 	 * to add other getter/setter-functions to provide better access to the list instead off
 	 * taking direct access.
 	 */
+	/*
+	 * There is one main_effect, which may be overwritten without warning or looking back by some clients.
+	 * The list effects is supposed to be more resistant and to be cleared or modified only after a closer look.
+	 */
+	//functions for main_efect
+	public void addMainEffect(Effect e) {
+		main_effect.add(e);
+	}
+	public void addMainEffect(Effect e, int index) {
+		main_effect.add(index, e);
+	}
+	public void deleteMainEffect(int index) {
+		main_effect.remove(index);
+	}
+	public void clearMainEffect() {
+		main_effect.clear();
+	}
+	public void setMainSpeed(int value) {
+		for (ListIterator<Effect> it = main_effect.listIterator(); it.hasNext(); it.next().setSpeed(value));
+	}
+	public void setMainSize(int value) {
+		for (ListIterator<Effect> it = main_effect.listIterator(); it.hasNext(); it.next().setSize(value));
+	}
+	
+	
+	//functions for effects
 	public void addEffect(Effect e) {
 		effects.add(e);
 	}
@@ -127,6 +155,14 @@ public class Device {
 		outputs = inputs.clone();
 		//apply Effects
 		Effect e;
+		//Main Effect
+		for (ListIterator<Effect> it = main_effect.listIterator(); it.hasNext(); ) {
+			e = it.next(); 
+			if(tick_effects)
+				e.tick();
+			outputs = e.apply(outputs);
+		}
+		//Other effects
 		for (ListIterator<Effect> it = effects.listIterator(); it.hasNext(); ) {
 			e = it.next(); 
 			if(tick_effects)
