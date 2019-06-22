@@ -1,5 +1,6 @@
 package c4l.applet.input;
 
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
@@ -50,6 +51,7 @@ public class DashboardInput {
 	}
 
 	public int getEffectID() {
+		setEffectRead();
 		return effect;
 	}
 
@@ -161,6 +163,22 @@ public class DashboardInput {
 	//	Log.debug("ServerURL :" + URL);
 		ResponsString = readStringFromUrl(URL);
 		return new JSONObject(ResponsString);
+	}
+	
+	public void setEffectRead() {
+		try {
+			URL url = new URL(Constants.SERVER_ADDRESS+Constants.EFFECTPATH);
+			HttpURLConnection connection = (HttpURLConnection)url.openConnection();
+			connection.setRequestMethod("GET");
+			connection.connect();
+
+			 if(connection.getResponseCode() != 200 ) {
+				 Log.error("Effect can´t reset");;
+			 }
+			
+			}catch (IOException e) {
+				Log.error("Fail to check Server avalibale -> wrong path", e);
+			}
 	}
 
 }
