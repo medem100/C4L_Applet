@@ -194,16 +194,17 @@ public class WingController {
 	
 	public void tick() {
 		//Read (and save) analog banked faders
-		int aBank = arduino.digitalRead(0);
+//		int aBank = arduino.digitalRead(0);
+		int aBank = 0; //remove this line for normal code, this is tweaked for MVP
 		for (int i = 0; i < NUM_FADERS_PER_BANK; i++) {
 			faders[i+aBank*NUM_FADERS_PER_BANK] = arduino.analogRead(i);
 		}
 		
 		//Read Multiplexed
-		int m0 = arduino.digitalRead(OFFSET_MULTIPLEX_PINS);
-		int m1 = arduino.digitalRead(OFFSET_MULTIPLEX_PINS + 1);
-		int m2 = arduino.digitalRead(OFFSET_MULTIPLEX_PINS + 2);
-		bFaders[m0 + 2*m1 + 4*m2] = arduino.analogRead(OFFSET_MULTIPLEX);
+//		int m0 = arduino.digitalRead(OFFSET_MULTIPLEX_PINS);
+//		int m1 = arduino.digitalRead(OFFSET_MULTIPLEX_PINS + 1);
+//		int m2 = arduino.digitalRead(OFFSET_MULTIPLEX_PINS + 2);
+//		bFaders[m0 + 2*m1 + 4*m2] = arduino.analogRead(OFFSET_MULTIPLEX);
 	}
 	public void setStatusLED(boolean value) {
 		if (value) arduino.digitalWrite(DMX_STATUS_LED, Arduino.HIGH); else arduino.digitalWrite(DMX_STATUS_LED, Arduino.LOW);

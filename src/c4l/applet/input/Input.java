@@ -93,13 +93,14 @@ public class Input {
 			wing.tick();
 
 			// check Wingcontroller for changes in device activity
-			boolean[] change = wing.checkActivity();
-			for (int i = 0; i < Constants.DYNAMIC_DEVICES; i++)
-				active[i] ^= change[i];
-			wing.setActiveDevices(active); // Tell wing, which devices are active
+//			boolean[] change = wing.checkActivity();
+//			for (int i = 0; i < Constants.DYNAMIC_DEVICES; i++)
+//				active[i] ^= change[i];
+//			wing.setActiveDevices(active); // Tell wing, which devices are active
 
 			// check wing-faders
-			for (int i = 0; i < 16; i++) {
+//			for (int i = 0; i < 16; i++) {
+			for (int i = 0; i < 8; i++) { //remove this line for normal code, this is tweaked for MVP
 				temp = wing.getFader(i);
 				if (Math.abs(temp - h_faders[i]) > wing.FADER_TOLERANCE) {
 					h_faders[i] = temp;
@@ -110,38 +111,38 @@ public class Input {
 				} /* if */
 			} /* for */
 			// check wing-x-faders
-			for (int i = 0; i < 4; i++) {
-				temp = wing.getXFader(i);
-				if (Math.abs(temp - h_xfaders[i]) > wing.FADER_TOLERANCE) {
-					h_xfaders[i] = temp;
-					switch (i) {
-					case 0:
-						for (int j = 0; j < Constants.DYNAMIC_DEVICES; j++) {
-							if (active[j])
-								parent.deviceHandle[j].setSpeed(h_xfaders[i] / Constants.CORRECTIONDIVISOR);
-						} /* for */
-					case 1:
-						for (int j = 0; j < Constants.DYNAMIC_DEVICES; j++) {
-							if (active[j])
-								parent.deviceHandle[j].setSize(h_xfaders[i] / Constants.CORRECTIONDIVISOR);
-						} /* for */
-					} /* switch */
-					// TODO Define use of fader 3 and specify 4
-				} /* if */
-			} /* for */
+//			for (int i = 0; i < 4; i++) {
+//				temp = wing.getXFader(i);
+//				if (Math.abs(temp - h_xfaders[i]) > wing.FADER_TOLERANCE) {
+//					h_xfaders[i] = temp;
+//					switch (i) {
+//					case 0:
+//						for (int j = 0; j < Constants.DYNAMIC_DEVICES; j++) {
+//							if (active[j])
+//								parent.deviceHandle[j].setSpeed(h_xfaders[i] / Constants.CORRECTIONDIVISOR);
+//						} /* for */
+//					case 1:
+//						for (int j = 0; j < Constants.DYNAMIC_DEVICES; j++) {
+//							if (active[j])
+//								parent.deviceHandle[j].setSize(h_xfaders[i] / Constants.CORRECTIONDIVISOR);
+//						} /* for */
+//					} /* switch */
+//					// TODO Define use of fader 3 and specify 4
+//				} /* if */
+//			} /* for */
 			// check rotary encoders
-			for (int i = 0; i < Constants.ROTARY_COUNT; i++) {
-				temp = wing.getRotary(i) - h_rotary[i];
-				h_rotary[i] += temp;
-				if (temp > wing.ROTARY_RANGE / 2)
-					temp -= wing.ROTARY_RANGE;
-				if (temp < -wing.ROTARY_RANGE / 2)
-					temp += wing.ROTARY_RANGE;
-				for (int j = 0; j < Constants.DYNAMIC_DEVICES; j++) {
-					if (active[j])
-						parent.deviceHandle[j].applyRotary(i, temp);
-				} /* for devices */
-			} /* for rotary encoders */
+//			for (int i = 0; i < Constants.ROTARY_COUNT; i++) {
+//				temp = wing.getRotary(i) - h_rotary[i];
+//				h_rotary[i] += temp;
+//				if (temp > wing.ROTARY_RANGE / 2)
+//					temp -= wing.ROTARY_RANGE;
+//				if (temp < -wing.ROTARY_RANGE / 2)
+//					temp += wing.ROTARY_RANGE;
+//				for (int j = 0; j < Constants.DYNAMIC_DEVICES; j++) {
+//					if (active[j])
+//						parent.deviceHandle[j].applyRotary(i, temp);
+//				} /* for devices */
+//			} /* for rotary encoders */
 			// TODO B-faders
 		} /* if wing exists */
 
