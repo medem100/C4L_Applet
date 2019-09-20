@@ -1,5 +1,6 @@
 package c4l.applet.input;
 
+import c4l.applet.db.Scene;
 import c4l.applet.device.Effect;
 import c4l.applet.input.arduino.WingController;
 import c4l.applet.main.C4L_Launcher;
@@ -243,10 +244,21 @@ public class Input {
 
 	private void loadScene(int id) {
 		System.out.println("load Scene "+id);
+		
+		String payload = parent.db.Select.scene(id);
+		Scene scene = parent.gson.fromJson(payload, Scene.class);
+		
+		parent.deviceHandle = scene.getDevices();
+		
 
 	}
 	
 	private void saveScene() {
 		System.out.println("save scene");
+		Scene scene = new Scene(parent.deviceHandle);
+		String payload = parent.gson.toJson(scene);
+		int id = server.getScenenID().get(0);
+		parent.db.Insert.scene(id, "s"+id, "Scene "+ id, payload);
+
 	}
 }

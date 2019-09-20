@@ -2,6 +2,9 @@ package c4l.applet.main;
 
 import org.apache.log4j.PropertyConfigurator;
 
+import com.google.gson.Gson;
+
+import c4l.applet.db.DB;
 import c4l.applet.device.Device;
 import c4l.applet.device.Effect;
 import c4l.applet.device.Effect_Generator;
@@ -18,6 +21,8 @@ public class C4L_Launcher {
 	Input inputHandle;
 	public Device[] deviceHandle;
 	String resourcePath;
+	public Gson gson = new Gson();
+	public DB db = c4l.applet.db.DB.getInstance();
 	
 	static boolean quit = false;
 	

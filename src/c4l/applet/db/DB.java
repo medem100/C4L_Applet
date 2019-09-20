@@ -6,23 +6,23 @@ package c4l.applet.db;
 
 import c4l.applet.db.*;
 
-public class db {
+public class DB {
 	
-	private static db OBJ = getInstance(); 
+	private static DB OBJ = getInstance(); 
 	public Select Select = new Select();
 	public Insert Insert = new Insert();
 	//public Update Update = new Update();
 	public Create Create = new Create();
 	
-     private db() { 
+     private DB() { 
         
      } 
      
-     public static synchronized db getInstance() {
-    	 if (db.OBJ == null) {
-    		 db.OBJ = new db();
+     public static synchronized DB getInstance() {
+    	 if (DB.OBJ == null) {
+    		 DB.OBJ = new DB();
     	    }
-    	    return db.OBJ;
+    	    return DB.OBJ;
      };
      
      /*public static db getInstance() { 
