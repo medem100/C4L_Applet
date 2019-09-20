@@ -23,6 +23,8 @@ public class Constants {
     public final static String INFORMATIONPFAD = "/"+WEB_APP+"/rest/get/allValues";
     /** Path for read Effect jsp */
     public final static String EFFECTPATH = "/"+WEB_APP+"/rest/set/readEffect";
+    /** Path for read Effect jsp */
+    public final static String SAVEPATH = "/"+WEB_APP+"/rest/set/setSave";
     /** Path for check is server Available **/
     public final static String INDEXPATH = "/"+WEB_APP+"/index.jsp";
     

@@ -36,7 +36,7 @@ public class C4L_Launcher {
 		//TODO : check for ServerAvalibale
 		dmxHandle = new DmxOut();
 	//	inputHandle = new Input(this, resourcePath + Constants.PROPERTIES_PATH + Constants.ARDUINO_PROPERTIES_PATH,true);
-		inputHandle = new Input(this, false); // Dev Dasboard input
+		inputHandle = new Input(this, Util.getServerAvalibal()); // Dev Dasboard input
 		deviceHandle = new Device[Constants.DYNAMIC_DEVICES];
 		for (int i = 0; i < Constants.DYNAMIC_DEVICES; i++) {
 			deviceHandle[i] = new Device(Constants.STANDART_PERMUTATION, i*Constants.DEVICE_CHANNELS);
@@ -59,6 +59,7 @@ public class C4L_Launcher {
 //		program.deviceHandle[0].addEffect(e,0);
 //		program.deviceHandle[0].deleteEffect(0);
 //		
+//		program.deviceHandle[0].deleteEffect(0);
 		while (!quit) {
 			program.inputHandle.tick();
 			program.dmxHandle.setOutput(program.deviceHandle);

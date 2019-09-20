@@ -21,10 +21,11 @@ public class DashboardInput {
 	private int[] faders = new int[Constants.DEVICE_CHANNELS];
 	private int effectSize;
 	private int effectSpeed;
-	private int effect = 0; // 0 = kein Effect
+	private String effect; // 0 = kein Effect
 	private int caseID;
 	public JSONObject usedRespons = new JSONObject();
 	ArrayList<Integer> scenenID = new ArrayList<>();
+	private static boolean savePresst;
 
 	private Logger Log = Logger.getLogger(DashboardInput.class);
 
@@ -33,6 +34,11 @@ public class DashboardInput {
 	}
 
 	// Getter
+	
+	public boolean isSavePresst() {
+	
+		return savePresst;
+	}
 
 	public Boolean[] getDevices() {
 		return devices;
@@ -43,6 +49,7 @@ public class DashboardInput {
 	}
 
 	public int getEffectSize() {
+		setEffectRead(); //TODO thats Ugly
 		return effectSize;
 	}
 
@@ -50,7 +57,7 @@ public class DashboardInput {
 		return effectSpeed;
 	}
 
-	public int getEffectID() {
+	public String getEffectID() {
 		setEffectRead();
 		return effect;
 	}
@@ -99,10 +106,12 @@ public class DashboardInput {
 		JSONArray jsonDevices = usedRespons.getJSONArray("devices");
 		JSONArray jsonScenenID = usedRespons.getJSONArray("scenenID");
 
-		effect = usedRespons.getInt("effect");
+
+		effect = usedRespons.getString("effect");
 		effectSpeed = usedRespons.getInt("effectSpeed");
 		effectSize = usedRespons.getInt("effectSize");
 		caseID = usedRespons.getInt("caseID");
+		savePresst = usedRespons.getBoolean("save");
 
 		//Log.debug(usedRespons.toString());
 
@@ -136,6 +145,8 @@ public class DashboardInput {
 	}
 
 	// Help Functions
+
+	
 
 	private String readStringFromUrl(String url) {
 		URL readURL;
@@ -174,6 +185,22 @@ public class DashboardInput {
 
 			 if(connection.getResponseCode() != 200 ) {
 				 Log.error("Effect can´t reset");;
+			 }
+			
+			}catch (IOException e) {
+				Log.error("Fail to check Server avalibale -> wrong path", e);
+			}
+	}
+	
+	public void setSaveRead() {
+		try {
+			URL url = new URL(Constants.SERVER_ADDRESS+Constants.SAVEPATH+"?save=false");
+			HttpURLConnection connection = (HttpURLConnection)url.openConnection();
+			connection.setRequestMethod("GET");
+			connection.connect();
+
+			 if(connection.getResponseCode() != 200 ) {
+				 Log.error("save can´t reset");;
 			 }
 			
 			}catch (IOException e) {

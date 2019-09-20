@@ -1,8 +1,10 @@
 package c4l.applet.input;
 
+import c4l.applet.device.Effect;
 import c4l.applet.input.arduino.WingController;
 import c4l.applet.main.C4L_Launcher;
 import c4l.applet.main.Constants;
+import c4l.applet.device.Effect_ID;
 
 import java.util.ArrayList;
 import java.util.Properties;
@@ -25,6 +27,7 @@ public class Input {
 	private DashboardInput server;
 	private JSONObject OldResponse = new JSONObject("{}");
 	C4L_Launcher parent;
+	private int currentSceneId;
 
 	/** last know (and processed) hardware-fader position */
 	private int[] h_faders;
@@ -151,24 +154,98 @@ public class Input {
 			server.tick();
 			// Only when there are new data from the Dashboard
 			if (!(server.usedRespons.toString().equals(OldResponse.toString()))) { // TODO
-				log.debug("New Respons");
-				for (int i : server.getChosenDevices()) {
-					log.debug(i);
-					/*
-					 * int[] fader = server.getFader(); parent.deviceHandle[i].setInputs(fader); I
-					 * don´t now why but thy dont work Correctly
-					 */
-					for (int j = 0; j < Constants.DEVICE_CHANNELS; j++) {
-						parent.deviceHandle[i].setInput(j, server.getFader(j));
-						//parent.deviceHandle[i].addEffect(e);
-						
-					}
-					OldResponse = server.usedRespons;
-				}
+				// log.debug("New Respons");
 
+				if (currentSceneId != server.getScenenID().get(0)) {
+					loadScene(server.getScenenID().get(0));
+					currentSceneId = server.getScenenID().get(0);
+				} else {
+
+					for (int i : server.getChosenDevices()) {
+
+						String effectId = server.getEffectID();
+//						
+//						if(effectId != 0 ) {
+//						String effect = String.valueOf(effectId);
+//						int eId1 = Integer.valueOf(effect.substring(0, 1));
+//						int eid2 = Integer.valueOf(effect.substring(1));
+//						
+						if(!(effectId.equals("99"))) {
+							Effect_ID eid = new Effect_ID(Integer.valueOf(effectId.substring(0, 1)), Integer.valueOf(effectId.substring(1,2)));
+							Effect e = Effect_ID.generateEffectFromID(eid, server.getEffectSize(),
+									server.getEffectSize(), 0,
+									new int[] { 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 });
+//							if (Effect_ID.getEffectID(e)
+//									.equals(Effect_ID.getEffectID(parent.deviceHandle[i].main_effect.get(0)))) {
+//								parent.deviceHandle[i].deleteMainEffect(0);
+//							} else {
+								parent.deviceHandle[i].addMainEffect(e);
+//							}
+						}
+						
+						
+//						if (effectId != 0) {
+//							Effect_ID eid = null;
+//							switch (effectId) {
+//							case 1:
+//								eid = new Effect_ID(0, 0);
+//								break;
+//							case 2:
+//								eid = new Effect_ID(0, 1);
+//								break;
+//							case 3:
+//								eid = new Effect_ID(1, 0);
+//								break;
+//							case 4:
+//								eid = new Effect_ID(1, 1);
+//								break;
+//							} // TODO testen !
+							
+//							if (Effect_ID.getEffectID(e)
+//									.equals(Effect_ID.getEffectID(parent.deviceHandle[i].main_effect.get(0)))) {
+//								parent.deviceHandle[i].deleteMainEffect(0);
+//							} else {
+//								parent.deviceHandle[i].addMainEffect(e);
+//							}
+
+							// parent.deviceHandle[i].effects.
+							// parent.deviceHandle[i]
+
+							// parent.deviceHandle[i].
+
+//						}
+						parent.deviceHandle[i].setSpeed(server.getEffectSpeed());
+						parent.deviceHandle[i].setSize(server.getEffectSize());
+						
+						parent.deviceHandle[i].setMainSpeed(server.getEffectSpeed());
+						parent.deviceHandle[i].setMainSize(server.getEffectSize());
+						
+
+						for (int j = 0; j < Constants.DEVICE_CHANNELS; j++) {
+							parent.deviceHandle[i].setInput(j, server.getFader(j));
+							// parent.deviceHandle[i].addEffect(e);
+
+						}
+						if(server.isSavePresst()) saveScene();
+						
+						OldResponse = server.usedRespons;
+					}
+
+				}
 			}
 
 		}
 
+	}
+
+	// Help Funcktions
+
+	private void loadScene(int id) {
+		System.out.println("load Scene "+id);
+
+	}
+	
+	private void saveScene() {
+		System.out.println("save scene");
 	}
 }
