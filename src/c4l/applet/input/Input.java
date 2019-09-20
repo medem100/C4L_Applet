@@ -109,6 +109,7 @@ public class Input {
 			for (int i = 0; i < 8; i++) { // remove this line for normal code, this is tweaked for MVP
 				temp = wing.getFader(i);
 				if (Math.abs(temp - h_faders[i]) > wing.FADER_TOLERANCE) {
+					if (temp <= wing.FADER_TOLERANCE) temp = 0;
 					h_faders[i] = temp;
 					for (int j = 0; j < Constants.DYNAMIC_DEVICES; j++) { 
 						if (active[j])
