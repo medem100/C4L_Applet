@@ -63,7 +63,7 @@ public class Constants {
 	
 	//Effects constants
 	/** Range of the state of an effect. Loopover-point for it. */
-	public final static int EFFECTRANGE = 65536;
+	public final static int EFFECTRANGE = 65536/16;
 	/** length of one interval for random effects */
 	public final static int EFFECTSTEP = 16384;
 	/** Time in Milliseconds between Effect-Ticks */

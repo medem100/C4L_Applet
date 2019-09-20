@@ -36,7 +36,7 @@ public class DashboardInput {
 	// Getter
 	
 	public boolean isSavePresst() {
-	
+		setSaveRead();
 		return savePresst;
 	}
 
@@ -118,8 +118,12 @@ public class DashboardInput {
 		for (int i = 0; i < jsonFader.length(); i++)
 			faders[i] = jsonFader.getInt(i);
 
+		
+		ArrayList<Integer> temp = new ArrayList<Integer>();
 		for (int i = 0; i < jsonScenenID.length(); i++)
-			scenenID.add(jsonScenenID.getInt(i));
+			temp.add(jsonScenenID.getInt(i));
+		
+		scenenID = temp;
 
 		// a device what wasn´t used is null
 		for (int i = 0; i < jsonDevices.length(); i++) {

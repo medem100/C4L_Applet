@@ -11,7 +11,7 @@ public class DB {
 	private static DB OBJ = getInstance(); 
 	public Select Select = new Select();
 	public Insert Insert = new Insert();
-	//public Update Update = new Update();
+	public Update Update = new Update();
 	public Create Create = new Create();
 	
      private DB() { 

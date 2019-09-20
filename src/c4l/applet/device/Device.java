@@ -3,6 +3,7 @@ package c4l.applet.device;
 import java.util.LinkedList;
 import java.util.ListIterator;
 
+import c4l.applet.db.DB;
 import c4l.applet.main.Constants;
 
 /**
@@ -142,6 +143,7 @@ public class Device {
 	 */
 	public void tick() {
 		for (ListIterator<Effect> it = effects.listIterator(); it.hasNext(); it.next().tick());
+		for (ListIterator<Effect> it = main_effect.listIterator(); it.hasNext(); it.next().tick());
 	}
 	
 	/**

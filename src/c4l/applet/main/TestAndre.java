@@ -10,6 +10,8 @@ import org.json.JSONObject;
 
 import com.google.gson.Gson;
 
+import c4l.applet.db.DB;
+import c4l.applet.db.Scene;
 import c4l.applet.device.Device;
 import c4l.applet.input.DashboardInput;
 import c4l.applet.main.TestObjeckte;
@@ -23,6 +25,7 @@ import c4l.applet.main.TestObjeckte;
 public class TestAndre {
 
 	static DmxOut DMXobjeckt = null;
+	public static DB db = c4l.applet.db.DB.getInstance();
 	
 	private static String effects = "[ "
 			+ "{'name':'WILD', 			'id':'10', 'category':'Random' , 'Description': 'Move to random spots (range size)'}, "
@@ -55,7 +58,7 @@ public class TestAndre {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		System.out.println(getEffects());
+		//System.out.println(getEffects());
 		
 		
 //		 JSONObject jo1 = new JSONObject(); 
@@ -107,15 +110,24 @@ public class TestAndre {
 //		logger.error("test Error");
 		
 		Gson gson = new Gson();
-		
+//		
 		Device obj = new Device(Constants.STANDART_PERMUTATION,1);
+	//	Device obj2 = new Device(Constants.STANDART_PERMUTATION, 1);
+		
 		
 		String dev = gson.toJson(obj);
-		System.out.println(dev);
 		
-		Device dev2 = gson.fromJson(dev,Device.class);
+	//	db.Insert.scene(50, "tt", "kskks",gson.toJson(obj));
+		String outDB = db.Select.scene(50);
 		
-		System.out.println(dev2.getPerm());
+		
+		
+		String test = outDB.replace("\\", "");
+		System.out.println(dev.equals(test));
+		
+	//	Scene dev2 = gson.fromJson("{\"payload\":\"{\"dev\":[{\"inputs\":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],\"outputs\":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],\"p_outputs\":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],\"perm\":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15],\"rotary_channels\":[0,1,2],\"startAddress\":0,\"effects\":[],\"main_effect\":[]},{\"inputs\":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],\"outputs\":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],\"p_outputs\":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],\"perm\":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15],\"rotary_channels\":[0,1,2],\"startAddress\":16,\"effects\":[],\"main_effect\":[]},{\"inputs\":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],\"outputs\":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],\"p_outputs\":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],\"perm\":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15],\"rotary_channels\":[0,1,2],\"startAddress\":32,\"effects\":[],\"main_effect\":[]},{\"inputs\":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],\"outputs\":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],\"p_outputs\":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],\"perm\":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15],\"rotary_channels\":[0,1,2],\"startAddress\":48,\"effects\":[],\"main_effect\":[]},{\"inputs\":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],\"outputs\":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],\"p_outputs\":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],\"perm\":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15],\"rotary_channels\":[0,1,2],\"startAddress\":64,\"effects\":[],\"main_effect\":[]},{\"inputs\":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],\"outputs\":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],\"p_outputs\":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],\"perm\":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15],\"rotary_channels\":[0,1,2],\"startAddress\":80,\"effects\":[],\"main_effect\":[]},{\"inputs\":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],\"outputs\":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],\"p_outputs\":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],\"perm\":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15],\"rotary_channels\":[0,1,2],\"startAddress\":96,\"effects\":[],\"main_effect\":[]},{\"inputs\":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],\"outputs\":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],\"p_outputs\":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],\"perm\":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15],\"rotary_channels\":[0,1,2],\"startAddress\":112,\"effects\":[],\"main_effect\":[]},{\"inputs\":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],\"outputs\":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],\"p_outputs\":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],\"perm\":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15],\"rotary_channels\":[0,1,2],\"startAddress\":128,\"effects\":[],\"main_effect\":[]},{\"inputs\":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],\"outputs\":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],\"p_outputs\":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],\"perm\":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15],\"rotary_channels\":[0,1,2],\"startAddress\":144,\"effects\":[],\"main_effect\":[]},{\"inputs\":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],\"outputs\":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],\"p_outputs\":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],\"perm\":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15],\"rotary_channels\":[0,1,2],\"startAddress\":160,\"effects\":[],\"main_effect\":[]},{\"inputs\":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],\"outputs\":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],\"p_outputs\":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],\"perm\":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15],\"rotary_channels\":[0,1,2],\"startAddress\":176,\"effects\":[],\"main_effect\":[]},{\"inputs\":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],\"outputs\":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],\"p_outputs\":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],\"perm\":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15],\"rotary_channels\":[0,1,2],\"startAddress\":192,\"effects\":[],\"main_effect\":[]},{\"inputs\":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],\"outputs\":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],\"p_outputs\":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],\"perm\":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15],\"rotary_channels\":[0,1,2],\"startAddress\":208,\"effects\":[],\"main_effect\":[]},{\"inputs\":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],\"outputs\":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],\"p_outputs\":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],\"perm\":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15],\"rotary_channels\":[0,1,2],\"startAddress\":224,\"effects\":[],\"main_effect\":[]},{\"inputs\":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],\"outputs\":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],\"p_outputs\":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],\"perm\":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15],\"rotary_channels\":[0,1,2],\"startAddress\":240,\"effects\":[],\"main_effect\":[]},{\"inputs\":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],\"outputs\":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],\"p_outputs\":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],\"perm\":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15],\"rotary_channels\":[0,1,2],\"startAddress\":256,\"effects\":[],\"main_effect\":[]},{\"inputs\":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],\"outputs\":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],\"p_outputs\":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],\"perm\":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15],\"rotary_channels\":[0,1,2],\"startAddress\":272,\"effects\":[],\"main_effect\":[]},{\"inputs\":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],\"outputs\":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],\"p_outputs\":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],\"perm\":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15],\"rotary_channels\":[0,1,2],\"startAddress\":288,\"effects\":[],\"main_effect\":[]},{\"inputs\":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],\"outputs\":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],\"p_outputs\":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],\"perm\":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15],\"rotary_channels\":[0,1,2],\"startAddress\":304,\"effects\":[],\"main_effect\":[]},{\"inputs\":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],\"outputs\":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],\"p_outputs\":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],\"perm\":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15],\"rotary_channels\":[0,1,2],\"startAddress\":320,\"effects\":[],\"main_effect\":[]},{\"inputs\":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],\"outputs\":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],\"p_outputs\":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],\"perm\":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15],\"rotary_channels\":[0,1,2],\"startAddress\":336,\"effects\":[],\"main_effect\":[]},{\"inputs\":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],\"outputs\":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],\"p_outputs\":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],\"perm\":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15],\"rotary_channels\":[0,1,2],\"startAddress\":352,\"effects\":[],\"main_effect\":[]},{\"inputs\":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],\"outputs\":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],\"p_outputs\":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],\"perm\":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15],\"rotary_channels\":[0,1,2],\"startAddress\":368,\"effects\":[],\"main_effect\":[]},{\"inputs\":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],\"outputs\":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],\"p_outputs\":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],\"perm\":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15],\"rotary_channels\":[0,1,2],\"startAddress\":384,\"effects\":[],\"main_effect\":[]},{\"inputs\":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],\"outputs\":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],\"p_outputs\":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],\"perm\":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15],\"rotary_channels\":[0,1,2],\"startAddress\":400,\"effects\":[],\"main_effect\":[]},{\"inputs\":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],\"outputs\":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],\"p_outputs\":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],\"perm\":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15],\"rotary_channels\":[0,1,2],\"startAddress\":416,\"effects\":[],\"main_effect\":[]},{\"inputs\":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],\"outputs\":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],\"p_outputs\":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],\"perm\":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15],\"rotary_channels\":[0,1,2],\"startAddress\":432,\"effects\":[],\"main_effect\":[]},{\"inputs\":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],\"outputs\":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],\"p_outputs\":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],\"perm\":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15],\"rotary_channels\":[0,1,2],\"startAddress\":448,\"effects\":[],\"main_effect\":[]},{\"inputs\":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],\"outputs\":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],\"p_outputs\":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],\"perm\":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15],\"rotary_channels\":[0,1,2],\"startAddress\":464,\"effects\":[],\"main_effect\":[]}]}\"}".replace("\\", ""),Scene.class);
+		
+		//System.out.println(dev2.getDevices());
 		
 		
 		

@@ -91,11 +91,11 @@ public class WingController {
 		DMX_STATUS_LED				= Integer.parseInt(prop.getProperty("DMX_STATUS_LED", "56"));
 		OFFSET_MULTIPLEX_PINS		= Integer.parseInt(prop.getProperty("OFFSET_MULTIPLEX_PINS", "1"));
 		
-		FADER_TOLERANCE				= Integer.parseInt(prop.getProperty("FADER_TOLERANCE", "0"));
+		FADER_TOLERANCE				= Integer.parseInt(prop.getProperty("FADER_TOLERANCE", "2"));
 		ROTARY_RANGE				= Integer.parseInt(prop.getProperty("ROTARY_RANGE", "1024"));
 		
 		
-		ARDUINO_PORT				= prop.getProperty("ARDUINO_PORT");
+		ARDUINO_PORT				= prop.getProperty("ARDUINO_PORT","COM4");
 		
 		
 		this.faders = new int[Constants.DEVICE_CHANNELS];
