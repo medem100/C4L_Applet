@@ -65,7 +65,8 @@ public class C4L_Launcher {
 			program.dmxHandle.setOutput(program.deviceHandle);
 			time = System.currentTimeMillis();
 			if (time-last_time > Constants.EFFECTTICKMILLIS) {
-				last_time += Constants.EFFECTTICKMILLIS;
+				//last_time += Constants.EFFECTTICKMILLIS;
+				last_time =time;
 				for(Device d : program.deviceHandle) d.tick();
 			} 
 		}
