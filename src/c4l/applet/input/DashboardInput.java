@@ -36,7 +36,7 @@ public class DashboardInput {
 	// Getter
 	
 	public boolean isSavePresst() {
-		setSaveRead();
+	//	setSaveRead();
 		return savePresst;
 	}
 

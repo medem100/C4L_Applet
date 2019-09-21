@@ -39,6 +39,8 @@ public class Input {
 	private int[] currentFaderValues = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 	private int currentSize;
 	private int currentSpeed;
+	Effect[] oEffects = new Effect[30]; // test
+	//boolean setOldeffects = false;
 
 	/** last know (and processed) hardware-fader position */
 	private int[] h_faders;
@@ -167,9 +169,25 @@ public class Input {
 
 		if (ServerAvailable) {
 			server.tick();
+			
+			// set old effects 
+			
+			
+			
 			// Only when there are new data from the Dashboard
 			if (!(server.usedRespons.toString().equals(OldResponse.toString()))) { // TODO
 				// log.debug("New Respons");
+				
+//				if(setOldeffects) {
+//					for (int i = 0; i < oEffects.length; i++) {
+//						if (oEffects[i] != null) {
+//							if (!(parent.deviceHandle[i].main_effect.isEmpty()))
+//								parent.deviceHandle[i].deleteMainEffect(0);
+//							parent.deviceHandle[i].addMainEffect(oEffects[i], 0);
+//						}
+//					}
+//					setOldeffects = false;
+//				}
 
 				if (currentSceneId != server.getScenenID().get(0)) {
 					loadScene(server.getScenenID().get(0));
@@ -223,7 +241,9 @@ public class Input {
 							// .equals(Effect_ID.getEffectID(parent.deviceHandle[i].main_effect.get(0)))) {
 							// parent.deviceHandle[i].deleteMainEffect(0);
 							// } else {
-							parent.deviceHandle[i].addMainEffect(e, 0);;
+							if (!(parent.deviceHandle[i].main_effect.isEmpty()))
+								parent.deviceHandle[i].deleteMainEffect(0);
+							parent.deviceHandle[i].addMainEffect(e, 0);
 							// }
 						}
 
@@ -280,8 +300,11 @@ public class Input {
 
 			}
 
-			if (server.isSavePresst())
+			if (server.isSavePresst()) {
 				saveScene();
+				server.setSaveRead();
+			}
+
 			OldResponse = server.usedRespons;
 
 		}
@@ -297,6 +320,28 @@ public class Input {
 			Scene scene = parent.gson.fromJson(payload, Scene.class);
 			// System.out.println(devs[0].getOutput_unticked().toString());
 			parent.deviceHandle = scene.getDevices();
+			
+
+//			for (int i = 0; i < oEffects.length; i++) {
+//				if (oDev[i].main_effect.isEmpty()) {
+//					oEffects[i] = null;
+//				} else {
+//					oEffects[i] = oDev[i].main_effect.get(0);
+//					oDev[i].deleteMainEffect(0);
+//					// oEffects[i].
+//				}
+//			}
+//
+//			parent.deviceHandle = oDev;
+//			setOldeffects = true;
+
+			// set effects new
+
+//			for (int i = 0; i < oEffects.length; i++) {
+//				if (oEffects[i] != null) {
+//					parent.deviceHandle[i].addMainEffect(oEffects[i], 0);
+//				}
+//			}
 		}
 
 	}
