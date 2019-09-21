@@ -88,6 +88,21 @@ public class Effect {
 	public void setAcceptInput(boolean acceptInput) {
 		this.acceptInput = acceptInput;
 	}
+	public int[] getChannels() {
+		return channels;
+	}
+	public int getState() {
+		return state;
+	}
+	public void setState(int state) {
+		this.state = state;
+	}
+	public int getLast_state() {
+		return last_state;
+	}
+	public void setLast_state(int last_state) {
+		this.last_state = last_state;
+	}
 	/**
 	 * Let effect progress further. Should be called on a regular basis if effect is used
 	 */
