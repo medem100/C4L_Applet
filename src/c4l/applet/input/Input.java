@@ -9,10 +9,15 @@ import c4l.applet.main.Constants;
 import c4l.applet.device.Effect_ID;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Properties;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.json.*;
+
+import com.sun.javafx.collections.MappingChange.Map;
 
 /**
  * Manages all inputs to the program (wing, server, MIDI, other APIs) and
@@ -29,7 +34,11 @@ public class Input {
 	private DashboardInput server;
 	private JSONObject OldResponse = new JSONObject("{}");
 	C4L_Launcher parent;
+
 	private int currentSceneId;
+	private int[] currentFaderValues = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+	private int currentSize;
+	private int currentSpeed;
 
 	/** last know (and processed) hardware-fader position */
 	private int[] h_faders;
@@ -64,10 +73,10 @@ public class Input {
 		this(parent, (WingController) null, true);
 	}
 
-//	public Input(C4L_Launcher parent, Boolean ServerAvailable) {
-////		this(parent, new WingController(new Properties()), ServerAvailable);
-//		this(parent,null, ServerAvailable);
-//	}
+	// public Input(C4L_Launcher parent, Boolean ServerAvailable) {
+	//// this(parent, new WingController(new Properties()), ServerAvailable);
+	// this(parent,null, ServerAvailable);
+	// }
 
 	public Input(C4L_Launcher parent, WingController wing, Boolean ServerAvailable) {
 		this.ServerAvailable = ServerAvailable;
@@ -109,11 +118,12 @@ public class Input {
 			for (int i = 0; i < 8; i++) { // remove this line for normal code, this is tweaked for MVP
 				temp = wing.getFader(i);
 				if (Math.abs(temp - h_faders[i]) > wing.FADER_TOLERANCE) {
-					if (temp <= wing.FADER_TOLERANCE) temp = 0;
+					if (temp <= wing.FADER_TOLERANCE)
+						temp = 0;
 					h_faders[i] = temp;
-					for (int j = 0; j < Constants.DYNAMIC_DEVICES; j++) { 
+					for (int j = 0; j < Constants.DYNAMIC_DEVICES; j++) {
 						if (active[j])
-							parent.deviceHandle[j].setInput(i,h_faders[i]/Constants.CORRECTIONDIVISOR);
+							parent.deviceHandle[j].setInput(i, h_faders[i] / Constants.CORRECTIONDIVISOR);
 					} /* for */
 				} /* if */
 			} /* for */
@@ -165,13 +175,35 @@ public class Input {
 					loadScene(server.getScenenID().get(0));
 					currentSceneId = server.getScenenID().get(0);
 				} else {
-					
-					for(int i = 0; i < active.length; i++) {
+
+					for (int i = 0; i < active.length; i++) {
 						active[i] = false;
 					}
-					
+
+					HashMap<Integer, Integer> changFader = new HashMap<>();
+					for (int i = 0; i < currentFaderValues.length; i++) {
+
+						if (currentFaderValues[i] != server.getFader(i)) {
+							changFader.put(i, server.getFader(i));
+							currentFaderValues[i] = server.getFader(i);
+						}
+					}
+
+					boolean changeSize = false;
+					boolean changeSpeed = false;
+
+					if (currentSize != server.getEffectSize()) {
+						changeSize = true;
+						currentSize = server.getEffectSize();
+					}
+
+					if (currentSpeed != server.getEffectSpeed()) {
+						changeSpeed = true;
+						currentSpeed = server.getEffectSpeed();
+					}
+
 					for (int i : server.getChosenDevices()) {
-						
+
 						active[i] = true;
 
 						String effectId = server.getEffectID();
@@ -191,7 +223,7 @@ public class Input {
 							// .equals(Effect_ID.getEffectID(parent.deviceHandle[i].main_effect.get(0)))) {
 							// parent.deviceHandle[i].deleteMainEffect(0);
 							// } else {
-							parent.deviceHandle[i].addMainEffect(e);
+							parent.deviceHandle[i].addMainEffect(e, 0);;
 							// }
 						}
 
@@ -225,29 +257,34 @@ public class Input {
 						// parent.deviceHandle[i].
 
 						// }
-						parent.deviceHandle[i].setSpeed(server.getEffectSpeed());
-						parent.deviceHandle[i].setSize(server.getEffectSize());
+						// parent.deviceHandle[i].setSpeed(server.getEffectSpeed());
+						// parent.deviceHandle[i].setSize(server.getEffectSize());
+						if (changeSpeed)
+							parent.deviceHandle[i].setMainSpeed(server.getEffectSpeed());
+						if (changeSize)
+							parent.deviceHandle[i].setMainSize(server.getEffectSize());
 
-						parent.deviceHandle[i].setMainSpeed(server.getEffectSpeed());
-						parent.deviceHandle[i].setMainSize(server.getEffectSize());
-
-						for (int j = 0; j < Constants.DEVICE_CHANNELS; j++) {
-							parent.deviceHandle[i].setInput(j, server.getFader(j));
-							// parent.deviceHandle[i].addEffect(e);
-
+						for (int key : changFader.keySet()) {
+							parent.deviceHandle[i].setInput(key, changFader.get(key));
 						}
+						;
 
 					}
+					// for (int j = 0; j < Constants.DEVICE_CHANNELS; j++) {
+					// parent.deviceHandle[i].setInput(j, server.getFader(j));
+					// }
 
-					if (server.isSavePresst())
-						saveScene();
-					OldResponse = server.usedRespons;
+					// parent.deviceHandle[i].addEffect(e);
 
 				}
+
 			}
 
-		}
+			if (server.isSavePresst())
+				saveScene();
+			OldResponse = server.usedRespons;
 
+		}
 	}
 
 	// Help Funcktions
@@ -258,7 +295,7 @@ public class Input {
 		if (!(payload.isEmpty())) {
 			payload = payload.replace("\\", "");
 			Scene scene = parent.gson.fromJson(payload, Scene.class);
-		//	System.out.println(devs[0].getOutput_unticked().toString());
+			// System.out.println(devs[0].getOutput_unticked().toString());
 			parent.deviceHandle = scene.getDevices();
 		}
 
@@ -269,7 +306,8 @@ public class Input {
 		Scene scene = new Scene(parent.deviceHandle);
 		String payload = parent.gson.toJson(scene);
 		int id = server.getScenenID().get(0);
-		parent.db.Update.scen(id, payload);;
+		parent.db.Update.scen(id, payload);
+		;
 
 	}
 }

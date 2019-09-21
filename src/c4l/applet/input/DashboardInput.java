@@ -18,7 +18,7 @@ import sun.util.logging.resources.logging;
 public class DashboardInput {
 
 	private Boolean[] devices = new Boolean[Constants.DYNAMIC_DEVICES];
-	private int[] faders = new int[Constants.DEVICE_CHANNELS];
+	public int[] faders = new int[Constants.DEVICE_CHANNELS];
 	private int effectSize;
 	private int effectSpeed;
 	private String effect; // 0 = kein Effect
