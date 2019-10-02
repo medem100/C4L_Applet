@@ -11,6 +11,10 @@
 	<classpathentry kind="lib" path="lib/OpenDmx.jar"/>
 	<classpathentry kind="lib" path="lib/json-20160810.jar"/>
 	<classpathentry kind="lib" path="jars/log4j-1.2.17.jar"/>
+<<<<<<< HEAD
 	<classpathentry kind="lib" path="jars/GSON/gson-2.8.2.jar"/>
+=======
+	<classpathentry kind="lib" path="jars/gson-2.8.2.jar"/>
+>>>>>>> branch 'master' of https://github.com/medem100/C4L_Applet
 	<classpathentry kind="output" path="bin"/>
 </classpath>
