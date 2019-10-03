@@ -121,7 +121,7 @@ public class Input {
 				temp = wing.getFader(i);
 				if (Math.abs(temp - h_faders[i]) > wing.FADER_TOLERANCE) {
 					if (temp <= wing.FADER_TOLERANCE)
-						temp = 0;
+						temp = 0; //for a correction factor larger than the toleranc this should happen implicitly when dividing by the first... TODO: Think wheter to remove this for optimization
 					h_faders[i] = temp;
 					for (int j = 0; j < Constants.DYNAMIC_DEVICES; j++) {
 						if (active[j])
