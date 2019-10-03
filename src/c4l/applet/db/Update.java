@@ -71,9 +71,9 @@ public class Update {
 //		}
 //	}
 
-	public void scen(int scenenID,String payload) {
+	public void scen(int scenenID,String payload, String ef) {
 		String SQL = "UPDATE scenes" +
-				" SET payload = '" + payload + "'" + " WHERE scenenID = " + scenenID;
+				" SET payload = '" + payload + "'"+ ", effects='" + ef +"'" + " WHERE scenenID = " + scenenID;
 		updatDbData(SQL);
 	}
 

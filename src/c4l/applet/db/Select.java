@@ -99,6 +99,12 @@ public class Select {
 		String answer = getOneData(SQL, "payload"); // return an JSON array
 		return answer;
 	}
+	
+	public String effects(int id) {
+		String SQL = "SELECT effects FROM " + "scenes" + " where scenenID =" + id + "";
+		String answer = getOneData(SQL, "effects"); // return an JSON array
+		return answer;
+	}
 
 	/**
 	 * 

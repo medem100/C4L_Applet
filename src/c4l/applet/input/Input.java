@@ -1,5 +1,6 @@
 package c4l.applet.input;
 
+import c4l.applet.db.OldEffects;
 import c4l.applet.db.Scene;
 import c4l.applet.device.Device;
 import c4l.applet.device.Effect;
@@ -7,8 +8,10 @@ import c4l.applet.input.arduino.WingController;
 import c4l.applet.main.C4L_Launcher;
 import c4l.applet.main.Constants;
 import c4l.applet.device.Effect_ID;
+import c4l.applet.device.Effect_Representative;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Properties;
@@ -40,7 +43,7 @@ public class Input {
 	private int currentSize;
 	private int currentSpeed;
 	Effect[] oEffects = new Effect[30]; // test
-	//boolean setOldeffects = false;
+	// boolean setOldeffects = false;
 
 	/** last know (and processed) hardware-fader position */
 	private int[] h_faders;
@@ -169,25 +172,23 @@ public class Input {
 
 		if (ServerAvailable) {
 			server.tick();
-			
-			// set old effects 
-			
-			
-			
+
+			// set old effects
+
 			// Only when there are new data from the Dashboard
 			if (!(server.usedRespons.toString().equals(OldResponse.toString()))) { // TODO
 				// log.debug("New Respons");
-				
-//				if(setOldeffects) {
-//					for (int i = 0; i < oEffects.length; i++) {
-//						if (oEffects[i] != null) {
-//							if (!(parent.deviceHandle[i].main_effect.isEmpty()))
-//								parent.deviceHandle[i].deleteMainEffect(0);
-//							parent.deviceHandle[i].addMainEffect(oEffects[i], 0);
-//						}
-//					}
-//					setOldeffects = false;
-//				}
+
+				// if(setOldeffects) {
+				// for (int i = 0; i < oEffects.length; i++) {
+				// if (oEffects[i] != null) {
+				// if (!(parent.deviceHandle[i].main_effect.isEmpty()))
+				// parent.deviceHandle[i].deleteMainEffect(0);
+				// parent.deviceHandle[i].addMainEffect(oEffects[i], 0);
+				// }
+				// }
+				// setOldeffects = false;
+				// }
 
 				if (currentSceneId != server.getScenenID().get(0)) {
 					loadScene(server.getScenenID().get(0));
@@ -315,44 +316,77 @@ public class Input {
 	private void loadScene(int id) {
 		System.out.println("load Scene " + id);
 		String payload = parent.db.Select.scene(id);
+		String eff = parent.db.Select.effects(id);
 		if (!(payload.isEmpty())) {
 			payload = payload.replace("\\", "");
 			Scene scene = parent.gson.fromJson(payload, Scene.class);
+			OldEffects oEff = parent.gson.fromJson(eff, OldEffects.class);
 			// System.out.println(devs[0].getOutput_unticked().toString());
-			parent.deviceHandle = scene.getDevices();
-			
+			Device[] oDev = scene.getDevices();
+			Effect_Representative[] toSetEff = oEff.getEffects();
 
-//			for (int i = 0; i < oEffects.length; i++) {
-//				if (oDev[i].main_effect.isEmpty()) {
-//					oEffects[i] = null;
-//				} else {
-//					oEffects[i] = oDev[i].main_effect.get(0);
-//					oDev[i].deleteMainEffect(0);
-//					// oEffects[i].
-//				}
-//			}
-//
-//			parent.deviceHandle = oDev;
-//			setOldeffects = true;
+			// Effect_ID.getEffectID(e)
+
+			// for (int i = 0; i < oEffects.length; i++) {
+			// if (oDev[i].main_effect.isEmpty()) {
+			// oEffects[i] = null;
+			// } else {
+			// oEffects[i] = oDev[i].main_effect.get(0);
+			// oDev[i].deleteMainEffect(0);
+			// // oEffects[i].
+			// }
+			// }
+			//
+			parent.deviceHandle = oDev;
+			// setOldeffects = true;
 
 			// set effects new
 
-//			for (int i = 0; i < oEffects.length; i++) {
-//				if (oEffects[i] != null) {
-//					parent.deviceHandle[i].addMainEffect(oEffects[i], 0);
-//				}
-//			}
+			for (int i = 0; i < toSetEff.length; i++) {
+				if (toSetEff[i] != null) {
+					// Effect_ID eid = Effect_ID.getEffectID(toSetEff[i]);
+					// Effect e = Effect_ID.generateEffectFromID(eid, toSetEff[i].getSpeed(),
+					// toSetEff[i].getSize(), 0,
+					// new int[] { 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 });
+
+					parent.deviceHandle[i].addMainEffect(toSetEff[i].generateEffect(), 0);
+				}
+			}
 		}
 
 	}
 
 	private void saveScene() {
 		System.out.println("save scene " + server.getScenenID().get(0));
-		Scene scene = new Scene(parent.deviceHandle);
+		Effect[] Effects = new Effect[30];
+		Device[] oDev = Arrays.copyOf(parent.deviceHandle, 30);
+		
+		for (int i = 0; i < oEffects.length; i++) {
+			if (oDev[i].main_effect.isEmpty()) {
+				Effects[i] = null;
+			} else {
+				Effects[i] = oDev[i].main_effect.get(0);
+				oDev[i].deleteMainEffect(0);
+				// oEffects[i].
+			}
+		}
+
+		Scene scene = new Scene(oDev);
 		String payload = parent.gson.toJson(scene);
+
+		Effect_Representative[] ER = new Effect_Representative[30];
+
+		for (int i = 0; i < Effects.length; i++) {
+			if (Effects[i] != null) {
+				ER[i] = new Effect_Representative(Effects[i]);
+			}
+		}
+
+		OldEffects ef = new OldEffects(ER);
+		String saveEf = parent.gson.toJson(ef);
+
 		int id = server.getScenenID().get(0);
-		parent.db.Update.scen(id, payload);
-		;
+		parent.db.Update.scen(id, payload, saveEf);
 
 	}
 }

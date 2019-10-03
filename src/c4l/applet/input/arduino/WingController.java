@@ -95,7 +95,7 @@ public class WingController {
 		ROTARY_RANGE				= Integer.parseInt(prop.getProperty("ROTARY_RANGE", "1024"));
 		
 		
-		ARDUINO_PORT				= prop.getProperty("ARDUINO_PORT","COM4");
+		ARDUINO_PORT				= prop.getProperty("ARDUINO_PORT","COM5");
 		
 		
 		this.faders = new int[Constants.DEVICE_CHANNELS];

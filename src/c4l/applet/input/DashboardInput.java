@@ -13,7 +13,7 @@ import c4l.applet.main.Constants;
 import sun.util.logging.resources.logging;
 
 /**
- * Get Data from The C4L Server
+ * Get Data from The C4L Server 
  */
 public class DashboardInput {
 
