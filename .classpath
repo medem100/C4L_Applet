@@ -6,6 +6,7 @@
 	<classpathentry kind="lib" path="lib/core.jar"/>
 	<classpathentry kind="lib" path="lib/gson-2.8.2.jar"/>
 	<classpathentry kind="lib" path="lib/json-20160810.jar"/>
+<<<<<<< HEAD
 	<classpathentry kind="lib" path="lib/jssc-2.8.0.jar"/>
 	<classpathentry kind="lib" path="lib/log4j-1.2.17.jar"/>
 	<classpathentry kind="lib" path="lib/mysql-connector-java-5.1.39-bin.jar"/>
@@ -13,5 +14,13 @@
 	<classpathentry kind="lib" path="lib/serial.jar"/>
 	<classpathentry kind="lib" path="lib/slf4j-api-1.7.25.jar"/>
 	<classpathentry kind="lib" path="lib/slf4j-simple-1.7.25.jar"/>
+=======
+	<classpathentry kind="lib" path="jars/log4j-1.2.17.jar"/>
+<<<<<<< HEAD
+	<classpathentry kind="lib" path="jars/GSON/gson-2.8.2.jar"/>
+=======
+	<classpathentry kind="lib" path="jars/gson-2.8.2.jar"/>
+>>>>>>> branch 'master' of https://github.com/medem100/C4L_Applet
+>>>>>>> branch 'master' of https://github.com/medem100/C4L_Applet.git
 	<classpathentry kind="output" path="bin"/>
 </classpath>
