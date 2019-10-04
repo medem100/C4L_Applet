@@ -1,5 +1,7 @@
 package c4l.applet.main;
 
+import java.util.Properties;
+
 import org.apache.log4j.PropertyConfigurator;
 
 import com.google.gson.Gson;
@@ -35,8 +37,6 @@ public class C4L_Launcher {
 		resourcePath = Thread.currentThread().getContextClassLoader().getResource(".").getPath();
 		resourcePath = resourcePath.substring(0, resourcePath.lastIndexOf("/"));
 		resourcePath = resourcePath.substring(0, resourcePath.lastIndexOf("/")) + "/resources/";
-		System.out.println("Resource path:");
-		System.out.println(resourcePath);
 
 		// PropertyConfigurator.configure(resourcePath + Constants.PROPERTIES_PATH +
 		// Constants.LOG4J_PROPERTIES_PATH); // not nice , but the system variable don´t
@@ -47,7 +47,7 @@ public class C4L_Launcher {
 		// inputHandle = new Input(this, resourcePath + Constants.PROPERTIES_PATH +
 		// Constants.ARDUINO_PROPERTIES_PATH,true);
 		//inputHandle = new Input(this, Util.getServerAvalibal()); // Dev Dasboard input
-		inputHandle = new Input(this);
+		inputHandle = new Input(this, new Properties(), true);
 		deviceHandle = new Device[Constants.DYNAMIC_DEVICES];
 		for (int i = 0; i < Constants.DYNAMIC_DEVICES; i++) {
 			deviceHandle[i] = new Device(Constants.STANDART_PERMUTATION, i * Constants.DEVICE_CHANNELS);

@@ -58,31 +58,12 @@ public class Input {
 	private boolean[] active;
 
 	// Constructors
-	public Input(C4L_Launcher parent, Properties arduinoProperties) {
-		this(parent, new WingController(arduinoProperties), false);
-	}
-
 	public Input(C4L_Launcher parent, Properties arduinoProperties, Boolean ServerAvailable) {
 		this(parent, new WingController(arduinoProperties), ServerAvailable);
 	}
-
-	public Input(C4L_Launcher parent, String arduinoPropertiesPath) {
-		this(parent, new WingController(WingController.openPropertiesFile(arduinoPropertiesPath)), false);
-	}
-
 	public Input(C4L_Launcher parent, String arduinoPropertiesPath, Boolean ServerAvailable) {
 		this(parent, new WingController(WingController.openPropertiesFile(arduinoPropertiesPath)), ServerAvailable);
 	}
-
-	public Input(C4L_Launcher parent) {
-		this(parent, (WingController) null, true);
-	}
-
-	// public Input(C4L_Launcher parent, Boolean ServerAvailable) {
-	//// this(parent, new WingController(new Properties()), ServerAvailable);
-	// this(parent,null, ServerAvailable);
-	// }
-
 	public Input(C4L_Launcher parent, WingController wing, Boolean ServerAvailable) {
 		this.ServerAvailable = ServerAvailable;
 		this.wing = wing;
