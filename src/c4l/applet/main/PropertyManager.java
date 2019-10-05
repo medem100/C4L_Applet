@@ -5,6 +5,15 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
 
+/**
+ * Class to manage Properties for the C4L_Applet
+ * 
+ * There only shall be one instance of this class. It is generated with the static function init() and then can be accessed via getInstance().
+ * Check exist(), if you're unsure if it already has been initialized.
+ * 
+ * @author Timon
+ *
+ */
 public class PropertyManager {
 	//Structure similar to Singleton
 	private static PropertyManager INSTANCE = null;
@@ -36,8 +45,11 @@ public class PropertyManager {
 		PropertyManager.resourcePath = resourcePath;
 		INSTANCE = new PropertyManager(openPropertiesFile(resourcePath + mainPropetiesSubpath));
 	}
+	public static boolean exist() {
+		return (INSTANCE != null);
+	}
 	
-	//Property-Managing
+	//Meta-Property-Managing
 	private static String resourcePath;
 	private String propertiesFolder;
 	private String propertiesPath;
@@ -75,7 +87,7 @@ public class PropertyManager {
 		return arduinoPropPath;
 	}
 
-	//Interesting part
+	//Server-Properties
 	public class Server {
 		/** Server-IP **/							public final String IP;//Protokoll muss immer Mitgegeben werde !!!!!
 		/** Server Port for API*/					public final String PORT;
@@ -92,6 +104,8 @@ public class PropertyManager {
 	}
 	public final Server SERVER;
 	
+	
+	//main for test-Purposes
 	public static void main(String[] args) throws Exception {
 		String path; PropertyManager propM;
 		path = Thread.currentThread().getContextClassLoader().getResource(".").getPath();

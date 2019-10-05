@@ -1,7 +1,5 @@
 package c4l.applet.main;
 
-import java.util.Properties;
-
 import org.apache.log4j.PropertyConfigurator;
 
 import com.google.gson.Gson;
@@ -9,6 +7,7 @@ import com.google.gson.Gson;
 import c4l.applet.db.DB;
 import c4l.applet.device.Device;
 import c4l.applet.input.Input;
+import c4l.applet.input.arduino.WingController;
 import c4l.applet.output.DmxOut;
 
 /**
@@ -45,16 +44,23 @@ public class C4L_Launcher {
 			e.printStackTrace();
 		}
 		
-		// PropertyConfigurator.configure(resourcePath + Constants.PROPERTIES_PATH +
-		// Constants.LOG4J_PROPERTIES_PATH); // not nice , but the system variable don´t
-		// work now //TODO: Remove?
-		PropertyConfigurator.configure("resources/properties/log4j.properties"); // Ugly But work Now
-		// TODO : check for ServerAvalibale
+		//Initialize Logging
+		PropertyConfigurator.configure(propM.getLog4jPropPath());
+		
+		//Generate dmxHandle
 		dmxHandle = new DmxOut();
-		// inputHandle = new Input(this, resourcePath + Constants.PROPERTIES_PATH +
-		// Constants.ARDUINO_PROPERTIES_PATH,true);
-		//inputHandle = new Input(this, Util.getServerAvalibal()); // Dev Dasboard input
-		inputHandle = new Input(this, new Properties(), true);
+		
+		// TODO : check for ServerAvalibale //Util.getServerAvalibal() ?
+		boolean serverOnline = true;
+		
+		//Generate inputHandle
+		if (propM.getArduinoPropPath() != null) {
+			inputHandle = new Input(this, propM.getArduinoPropPath(), serverOnline);
+		} else {
+			inputHandle = new Input(this, (WingController) null, serverOnline);
+		}
+		
+		//Generate deviceHandle
 		deviceHandle = new Device[Constants.DYNAMIC_DEVICES];
 		for (int i = 0; i < Constants.DYNAMIC_DEVICES; i++) {
 			deviceHandle[i] = new Device(Constants.STANDART_PERMUTATION, i * Constants.DEVICE_CHANNELS);
