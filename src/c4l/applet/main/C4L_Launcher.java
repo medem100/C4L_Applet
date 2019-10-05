@@ -8,9 +8,6 @@ import com.google.gson.Gson;
 
 import c4l.applet.db.DB;
 import c4l.applet.device.Device;
-import c4l.applet.device.Effect;
-import c4l.applet.device.Effect_Generator;
-import c4l.applet.device.Effect_ID;
 import c4l.applet.input.Input;
 import c4l.applet.output.DmxOut;
 
@@ -26,6 +23,7 @@ public class C4L_Launcher {
 	String resourcePath;
 	public Gson gson = new Gson();
 	public DB db = c4l.applet.db.DB.getInstance();
+	public PropertyManager propM;
 
 	static boolean quit = false;
 
@@ -33,14 +31,23 @@ public class C4L_Launcher {
 	 * Constructor
 	 */
 	C4L_Launcher() {
-		// This is some weird solution: definitely ugly, but may work
+		//Get own path to start reading properties			// This is some weird solution: definitely ugly, but may work
 		resourcePath = Thread.currentThread().getContextClassLoader().getResource(".").getPath();
 		resourcePath = resourcePath.substring(0, resourcePath.lastIndexOf("/"));
 		resourcePath = resourcePath.substring(0, resourcePath.lastIndexOf("/")) + "/resources/";
 
+		//Initialize Property-Manager
+		try {
+			PropertyManager.init(resourcePath, Constants.MAIN_PROPERTIES);
+			propM = PropertyManager.getInstance();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 		// PropertyConfigurator.configure(resourcePath + Constants.PROPERTIES_PATH +
 		// Constants.LOG4J_PROPERTIES_PATH); // not nice , but the system variable don´t
-		// work now
+		// work now //TODO: Remove?
 		PropertyConfigurator.configure("resources/properties/log4j.properties"); // Ugly But work Now
 		// TODO : check for ServerAvalibale
 		dmxHandle = new DmxOut();

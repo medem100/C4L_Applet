@@ -8,11 +8,20 @@ import java.util.Properties;
 public class PropertyManager {
 	//Structure similar to Singleton
 	private static PropertyManager INSTANCE = null;
-	private PropertyManager(Properties main) {
+	private PropertyManager(Properties main) throws Exception {
 		this.mainProp = main;
 		this.propertiesFolder = mainProp.getProperty("PROPERTIESFOLDER", "properties/");
 		this.propertiesPath = resourcePath + propertiesFolder;
+
+		this.log4jPropPath = mainProp.getProperty("LOG4J");
+		if (log4jPropPath != null) {
+			this.log4jPropPath = propertiesPath + log4jPropPath;
+		} else {
+			throw new Exception("Missing filename for Log4j-Properties inside main-properties.");
+		}
 		
+		this.arduinoPropPath = mainProp.getProperty("ARDUINO");
+		if (arduinoPropPath != null) this.arduinoPropPath = propertiesPath + arduinoPropPath;
 		
 		this.serverProp = openPropertiesFile(propertiesPath + mainProp.getProperty("SERVER", "server.properties"));
 		this.SERVER = new Server(serverProp);
@@ -30,6 +39,22 @@ public class PropertyManager {
 	
 	//Property-Managing
 	private static String resourcePath;
+	private String propertiesFolder;
+	private String propertiesPath;
+	
+	private String log4jPropPath;
+	private String arduinoPropPath;
+	
+	private Properties mainProp;
+	private Properties serverProp;
+	
+	/**
+	 * Static function to get Properties-Object from path.
+	 * Esp. needed for constructors, where you need to call super() in first line and therefore can't open the file without this function.
+	 * 
+	 * @param filePath	Full path of property-file to be loaded
+	 * @return			Properties-Object
+	 */
 	private static Properties openPropertiesFile(String filePath) {
 		Properties prop = new Properties();
 		try {
@@ -43,11 +68,13 @@ public class PropertyManager {
 		return prop;
 	}
 	
-	private String propertiesFolder;
-	private String propertiesPath;
-	private Properties mainProp;
-	private Properties serverProp;
-	
+	public String getLog4jPropPath() {
+		return log4jPropPath;
+	}
+	public String getArduinoPropPath() {
+		return arduinoPropPath;
+	}
+
 	//Interesting part
 	public class Server {
 		/** Server-IP **/							public final String IP;//Protokoll muss immer Mitgegeben werde !!!!!

@@ -6,11 +6,7 @@ package c4l.applet.main;
 public class Constants {
 	//Ports and addresses
 	/** Path of property-Folder inside the resource-Folder */
-	public static final String PROPERTIES_PATH = "properties/";
-	/** Path of the Arduino-Properties-file */
-	public static final String ARDUINO_PROPERTIES_PATH = "arduino.properties"; //Move in general property file later
-	/** Path to the Log4J-Properties-file */
-	public static final String LOG4J_PROPERTIES_PATH = "arduino.properties"; //Move in general property file later
+	public static final String MAIN_PROPERTIES = "properties/main.properties";
 	/** Addresses from the server sollte langfristig in die propertis **/
 	public final static String SERVER_IP = "http://localhost"; // Protokol mus immer Mitgegeben werde !!!!!
 	/** Server Port for API*/
