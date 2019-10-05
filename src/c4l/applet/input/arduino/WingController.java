@@ -57,6 +57,7 @@ public class WingController {
 	
 	/** Fader movement, which is interpreted as noise */	public final int FADER_TOLERANCE;
 	/** Range of the rotary value. */						public final int ROTARY_RANGE;
+	/** Divisor to translate from protocol range to DMX */	public final int CORRECTION_DIVISOR;
 	
 	/** Port, where the Arduino is connected */				public final String ARDUINO_PORT;
 	
@@ -93,6 +94,7 @@ public class WingController {
 		
 		FADER_TOLERANCE				= Integer.parseInt(prop.getProperty("FADER_TOLERANCE", "2"));
 		ROTARY_RANGE				= Integer.parseInt(prop.getProperty("ROTARY_RANGE", "1024"));
+		CORRECTION_DIVISOR			= Integer.parseInt(prop.getProperty("CORRECTION_DIVISOR", "4"));
 		
 		
 		ARDUINO_PORT				= prop.getProperty("ARDUINO_PORT","COM5");

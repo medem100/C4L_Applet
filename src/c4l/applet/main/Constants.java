@@ -39,13 +39,6 @@ public class Constants {
 	public final static int[] STANDART_PERMUTATION = {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15};
 	public final static int[] STANDART_ROTARY_CHANNELS = {0,1,2};
 	
-	// Input constants
-	/** Correction factor to change from hardware range (0-1023) to DMX-Range (0-255) */
-	public final static int CORRECTIONDIVISOR = 4;
-	/** Number of rotary encoders */
-	public final static int ROTARY_COUNT = 3;
-	
-	
 	// Output constants
 	/** Last Channel for Enttec-Output **/
 	public final static int  MAXCHANNEL = 511;

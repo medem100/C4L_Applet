@@ -109,7 +109,7 @@ public class Input {
 					h_faders[i] = temp;
 					for (int j = 0; j < Constants.DYNAMIC_DEVICES; j++) {
 						if (active[j])
-							parent.deviceHandle[j].setInput(i, h_faders[i] / Constants.CORRECTIONDIVISOR);
+							parent.deviceHandle[j].setInput(i, h_faders[i] / wing.CORRECTION_DIVISOR);
 					} /* for */
 				} /* if */
 			} /* for */
