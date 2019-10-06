@@ -92,14 +92,23 @@ public class PropertyManager {
 		/** Server-IP **/							public final String IP;//Protokoll muss immer Mitgegeben werde !!!!!
 		/** Server Port for API*/					public final String PORT;
 	    /** Complete server address */				public final String ADDRESS;
-	    /** Path for API-Request */					public final String INFORMATIONPATH;
+	    /** Name of the server web-app */			public final String WEB_APP;
 	    
+	    /** Path for API-Request */					public final String INFORMATIONPATH;
+	    /** Path for read Effect jsp */				public final String EFFECTPATH;
+	    /** Path for read Effect jsp */				public final String SAVEPATH;
+	    /** Path for check is server Available **/	public final String INDEXPATH;	    
 	    
 	    private Server(Properties serverProperties) {
-	    	IP						= serverProperties.getProperty("IP", "http://127.0.0.1");
+	    	IP						= serverProperties.getProperty("IP", "localhost");
 	    	PORT					= serverProperties.getProperty("PORT", "8080");
 	    	ADDRESS					= IP + ":" + PORT;
-	    	INFORMATIONPATH			= serverProperties.getProperty("INFORMATIONPATH", "C4L_Server/helpJSP/info.jsp?info=true");
+	    	WEB_APP					= serverProperties.getProperty("WEB_APP", "c4l_server");
+	    	
+	    	INFORMATIONPATH			= "/" + WEB_APP + serverProperties.getProperty("INFORMATIONPATH");
+	    	EFFECTPATH				= "/" + WEB_APP + serverProperties.getProperty("EFFECTPATH");
+	    	SAVEPATH			= "/" + WEB_APP + serverProperties.getProperty("SAVEPATH");
+	    	INDEXPATH			= "/" + WEB_APP + serverProperties.getProperty("INDEXPATH");
 	    }
 	}
 	public final Server SERVER;
