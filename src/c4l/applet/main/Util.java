@@ -21,9 +21,9 @@ public final class Util {
 
 	}
 	
-	public static Boolean getServerAvalibal() {
+	public static Boolean getServerAvailabel() {
 		try {
-		URL url = new URL(Constants.SERVER_ADDRESS+Constants.INDEXPATH);
+		URL url = new URL(PropertyManager.getInstance().SERVER.ADDRESS + PropertyManager.getInstance().SERVER.INDEXPATH);
 		HttpURLConnection connection = (HttpURLConnection)url.openConnection();
 		connection.setRequestMethod("GET");
 		connection.connect();
@@ -36,6 +36,9 @@ public final class Util {
 		
 		}catch (IOException e) {
 			Log.error("Fail to check Server avalibale -> wrong path", e);
+			return false;
+		} catch (Exception e) {
+			Log.error("An error occured while checking wheter server is available. Probably the PropertyManager wasn't initialized.", e);
 			return false;
 		}
 		

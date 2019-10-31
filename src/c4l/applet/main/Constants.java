@@ -6,29 +6,8 @@ package c4l.applet.main;
 public class Constants {
 	//Ports and addresses
 	/** Path of property-Folder inside the resource-Folder */
-	public static final String PROPERTIES_PATH = "properties/";
-	/** Path of the Arduino-Properties-file */
-	public static final String ARDUINO_PROPERTIES_PATH = "arduino.properties"; //Move in general property file later
-	/** Path to the Log4J-Properties-file */
-	public static final String LOG4J_PROPERTIES_PATH = "arduino.properties"; //Move in general property file later
-	/** Addresses from the server sollte langfristig in die propertis **/
-	public final static String SERVER_IP = "http://localhost"; // Protokol mus immer Mitgegeben werde !!!!!
-	/** Server Port for API*/
-    public final static String SERVER_Port = "8080";
-    /** Complete server address */
-    public final static String SERVER_ADDRESS = SERVER_IP + ":" + SERVER_Port;
-    /** Name of the Server web-app */ 
-    public final static String WEB_APP = "c4l_server";
-    /** Path for API-Request */
-    public final static String INFORMATIONPFAD = "/"+WEB_APP+"/rest/get/allValues";
-    /** Path for read Effect jsp */
-    public final static String EFFECTPATH = "/"+WEB_APP+"/rest/set/readEffect";
-    /** Path for read Effect jsp */
-    public final static String SAVEPATH = "/"+WEB_APP+"/rest/set/setSave";
-    /** Path for check is server Available **/
-    public final static String INDEXPATH = "/"+WEB_APP+"/index.jsp";
-    
-			
+	public static final String MAIN_PROPERTIES = "properties/main.properties";
+		
 	//General
 	/** Number of channels a device has. */
 	public final static int DEVICE_CHANNELS = 16;
@@ -42,13 +21,6 @@ public class Constants {
 	//Device generation
 	public final static int[] STANDART_PERMUTATION = {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15};
 	public final static int[] STANDART_ROTARY_CHANNELS = {0,1,2};
-	
-	// Input constants
-	/** Correction factor to change from hardware range (0-1023) to DMX-Range (0-255) */
-	public final static int CORRECTIONDIVISOR = 4;
-	/** Number of rotary encoders */
-	public final static int ROTARY_COUNT = 3;
-	
 	
 	// Output constants
 	/** Last Channel for Enttec-Output **/

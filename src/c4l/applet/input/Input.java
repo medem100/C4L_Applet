@@ -67,7 +67,14 @@ public class Input {
 	public Input(C4L_Launcher parent, WingController wing, Boolean ServerAvailable) {
 		this.ServerAvailable = ServerAvailable;
 		this.wing = wing;
-		this.server = new DashboardInput(); // TODO modify Constructor if necessary
+		if (ServerAvailable) {
+			try {
+				this.server = new DashboardInput();
+			} catch (Exception e) {
+				e.printStackTrace();
+				this.ServerAvailable = false;
+			} /* try/catch */   // TODO modify Constructor if necessary
+		} /* if */
 		this.parent = parent;
 
 		this.h_faders = new int[16];
@@ -109,7 +116,7 @@ public class Input {
 					h_faders[i] = temp;
 					for (int j = 0; j < Constants.DYNAMIC_DEVICES; j++) {
 						if (active[j])
-							parent.deviceHandle[j].setInput(i, h_faders[i] / Constants.CORRECTIONDIVISOR);
+							parent.deviceHandle[j].setInput(i, h_faders[i] / wing.CORRECTION_DIVISOR);
 					} /* for */
 				} /* if */
 			} /* for */

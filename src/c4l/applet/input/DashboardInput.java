@@ -10,6 +10,7 @@ import org.apache.log4j.Logger;
 import org.json.*;
 
 import c4l.applet.main.Constants;
+import c4l.applet.main.PropertyManager;
 import sun.util.logging.resources.logging;
 
 /**
@@ -28,7 +29,13 @@ public class DashboardInput {
 	private static boolean savePresst;
 
 	private Logger Log = Logger.getLogger(DashboardInput.class);
+	private PropertyManager.Server prop;
 
+	//Constructor
+	public DashboardInput() throws Exception {
+		prop = PropertyManager.getInstance().SERVER;
+	}
+	
 	public int[] getFaders() {
 		return faders;
 	}
@@ -174,7 +181,7 @@ public class DashboardInput {
 
 	public JSONObject getResponse() {
 		String ResponsString;
-		String URL = Constants.SERVER_ADDRESS + Constants.INFORMATIONPFAD;
+		String URL = prop.ADDRESS + prop.INFORMATIONPATH;
 	//	Log.debug("ServerURL :" + URL);
 		ResponsString = readStringFromUrl(URL);
 		return new JSONObject(ResponsString);
@@ -182,7 +189,7 @@ public class DashboardInput {
 	
 	public void setEffectRead() {
 		try {
-			URL url = new URL(Constants.SERVER_ADDRESS+Constants.EFFECTPATH);
+			URL url = new URL(prop.ADDRESS + prop.EFFECTPATH);
 			HttpURLConnection connection = (HttpURLConnection)url.openConnection();
 			connection.setRequestMethod("GET");
 			connection.connect();
@@ -198,7 +205,7 @@ public class DashboardInput {
 	
 	public void setSaveRead() {
 		try {
-			URL url = new URL(Constants.SERVER_ADDRESS+Constants.SAVEPATH+"?save=false");
+			URL url = new URL(prop.ADDRESS + prop.SAVEPATH+"?save=false");
 			HttpURLConnection connection = (HttpURLConnection)url.openConnection();
 			connection.setRequestMethod("GET");
 			connection.connect();
