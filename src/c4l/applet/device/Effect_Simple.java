@@ -77,10 +77,10 @@ public class Effect_Simple extends Effect {
 				if (channels[i] == 1) in[i] = cutOff((int) (in[i] + size/2*Math.sin(state*2*Math.PI/Constants.EFFECTRANGE)));
 				break;
 			case RAMP:
-				if (channels[i] == 1) in[i] = cutOff((int) (in[i] + size*(state/Constants.EFFECTRANGE - 0.5)));
+				if (channels[i] == 1) in[i] = cutOff((int) (in[i] + size*(((double) state)/((double) Constants.EFFECTRANGE) - 0.5)));
 				break;
 			case REVRAMP:
-				if (channels[i] == 1) in[i] = cutOff((int) (in[i] - size*(state/Constants.EFFECTRANGE - 0.5)));
+				if (channels[i] == 1) in[i] = cutOff((int) (in[i] - size*(((double) state)/((double) Constants.EFFECTRANGE) - 0.5)));
 				break;
 			case LINEAR:
 				if (channels[i] == 1) in[i] = cutOff((int) (in[i] + size*(2*Math.abs(state/Constants.EFFECTRANGE - 0.5) - 0.5)));

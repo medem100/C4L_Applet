@@ -25,7 +25,7 @@ public class C4L_Launcher {
 	public PropertyManager propM;
 
 	static boolean quit = false;
-
+ 
 	/**
 	 * Constructor
 	 */
