@@ -179,7 +179,7 @@ public class Input {
 				// }
 
 				if (currentSceneId != server.getScenenID().get(0)) {
-					loadScene(server.getScenenID().get(0));
+				//	loadScene(server.getScenenID().get(0));
 					currentSceneId = server.getScenenID().get(0);
 				} else {
 
