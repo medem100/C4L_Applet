@@ -67,8 +67,8 @@ public class Effect_Simple extends Effect {
 			color = Color.getHSBColor(((float) state)/Constants.EFFECTRANGE, 1, 1);
 		} /* if */
 		if (type == Effecttype_det.STROBO_HOLD) {
-			if (state < last_state) out = in.clone();
-		}
+			if ((2*state) % Constants.EFFECTRANGE < (2*last_state) % Constants.EFFECTRANGE) out = in.clone();
+		} /* if */
 		
 		for (int i = 0; i < Constants.DEVICE_CHANNELS; i++) {
 			switch (type) {
@@ -92,10 +92,10 @@ public class Effect_Simple extends Effect {
 				if (channels[i] == 1) {if (state < Constants.EFFECTRANGE/2) in[i] = cutOff((int) (in[i] + size*(2*Math.abs(2*((float) state)/Constants.EFFECTRANGE - 0.5) - 0.5))); else in[i] = cutOff(in[i] + size/2);}
 				break;
 			case STROBO:
-				if (channels[i] == 1) {if (size*(Constants.EFFECTRANGE/(Constants.MAXVALUE + 1)) <= state) in[i] = in[i]; else in[i] = 0;}
+				if (channels[i] == 1) {if (size*(Constants.EFFECTRANGE/(Constants.MAXVALUE + 1)) <= (2*state) % Constants.EFFECTRANGE) in[i] = in[i]; else in[i] = 0;}
 				break;
 			case STROBO_HOLD:
-				if (channels[i] == 1) {if (size*(Constants.EFFECTRANGE/(Constants.MAXVALUE + 1)) <= state) in[i] = out[i]; else in[i] = 0;}
+				if (channels[i] == 1) {if (size*(Constants.EFFECTRANGE/(Constants.MAXVALUE + 1)) <= (2*state) % Constants.EFFECTRANGE) in[i] = out[i]; else in[i] = 0;}
 				break;
 				
 			//Multi-channel-effect
