@@ -105,6 +105,19 @@ public class Select {
 	// }
 	//
 	//
+	
+	/*TODO Implement
+	 * 
+	 * - Select scenen
+	 * - select all scen ides an descripts 
+	 * - select infos for setup
+	 * - 
+	 * 
+	 * - insert scene / chase / device
+	 * - 
+	 * 
+	 */
+	
 
 	public ArrayList<HashMap<String, String>> scene(int id) {
 		//String SQL = "SELECT payload FROM " + "scenes" + " where scenenID =" + id + "";
