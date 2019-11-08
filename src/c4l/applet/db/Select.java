@@ -16,18 +16,30 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
+import org.apache.log4j.Logger;
 import org.json.JSONArray;
+
 
 public class Select {
 
 	private Create dbCreate = new Create();
 	private Connection conn = null;
-	public static String[] felderSDschueler = { "ID", "Name", "Vorname", "Klasse", "Telephone" };
+	// public static String[] felderSDschueler = { "ID", "Name", "Vorname",
+	// "Klasse", "Telephone" };
 	// private Logger dLogger = dbCreate.initLogger();
+	static Logger logger = Logger.getLogger(Select.class);
+
+	public Select() {
+		try {
+			this.conn = dbCreate.getInstance();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 
 	/**
 	 * giebt den anwesenheits status zurück
@@ -94,12 +106,20 @@ public class Select {
 	//
 	//
 
-	public String scene(int id) {
-		String SQL = "SELECT payload FROM " + "scenes" + " where scenenID =" + id + "";
-		String answer = getOneData(SQL, "payload"); // return an JSON array
+	public ArrayList<HashMap<String, String>> scene(int id) {
+		//String SQL = "SELECT payload FROM " + "scenes" + " where scenenID =" + id + "";
+		String SQL = "select ds.device_status_id, ds.input , d.device_description, es.effect_status_id from device_status ds "+
+				"inner join effect_status es "+
+				"on ds.device_status_id = es.Device_status_id "+
+				"inner join device d "+
+				"on ds.Device_id = d.Device_id "+
+				"inner join scene_has_device_status shds "+
+				"on ds.device_status_id = shds.Device_status_id "+
+				"where shds.Scene_id ="+id+";";
+		ArrayList<HashMap<String, String>> answer = getDbData(SQL, Constants.FIELDS_SCENE); // return an JSON array
 		return answer;
 	}
-	
+
 	public String effects(int id) {
 		String SQL = "SELECT effects FROM " + "scenes" + " where scenenID =" + id + "";
 		String answer = getOneData(SQL, "effects"); // return an JSON array
@@ -114,7 +134,7 @@ public class Select {
 	 */
 	private String getOneData(String SQL, String feld) {
 		try {
-			conn = dbCreate.getInstance();
+			// conn = dbCreate.getInstance();
 
 			if (conn != null) {
 				Statement query = conn.createStatement();
@@ -136,6 +156,7 @@ public class Select {
 		return null;
 
 	}
+
 	// /**
 	// * zum ausführen von SQL auf die Datenbank übergeben würde aus das benötigte
 	// SQL
@@ -144,40 +165,28 @@ public class Select {
 	// * @param felder
 	// * @return
 	// */
-	// private String getDbData(String SQL,String[] felder )
-	// {
-	// try{
-	// conn = dbCreate.getInstance();
-	//
-	//
-	// if( conn != null)
-	// {
-	// Statement query = conn.createStatement();
-	// // dLogger.log(Level.FINE, SQL);
-	// ResultSet result = query.executeQuery(SQL);
-	//
-	// JSONArray allAnswers = new JSONArray();
-	// while (result.next()) {
-	// HashMap<String, String> answer = new HashMap<>();
-	// for( String feld : felder)
-	// {
-	// answer.put(feld, result.getString(feld));
-	// }
-	// allAnswers.put(answer);
-	// }
-	// // dLogger.log(Level.FINER, allAnswers.toString());
-	// return allAnswers.get;
-	// }else{
-	// // dLogger.log(Level.SEVERE, "conn wurde nicht richitg initzalisiert");
-	// }
-	// } catch( SQLException e){
-	// // dLogger.log(Level.SEVERE, "Fehler 1 in getDbData " + e.toString());
-	//
-	// }
-	//// dLogger.log(Level.SEVERE, "Fehler 2 in getDbData");
-	// return null;
-	//
-	//
-	// }
+	@SuppressWarnings("unchecked")
+	private ArrayList<HashMap<String, String>> getDbData(String SQL, String[] felder) {
+		ArrayList<HashMap<String, String>> answers = new ArrayList<>();
+		try {
+
+			Statement query = conn.createStatement();
+			logger.trace(query);
+			ResultSet result = query.executeQuery(SQL);
+			while (result.next()) {
+				HashMap<String, String> answer = new HashMap<>();
+				for (String feld : felder) {
+					answer.put(feld, result.getString(feld));
+				}
+				answers.add(answer);
+			}
+			logger.debug(answers.toString());
+		} catch (SQLException e) {
+			logger.error("Fail to read data from the DB", e);
+
+		}
+		return answers;
+
+	}
 
 }
