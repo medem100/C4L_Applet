@@ -10,17 +10,11 @@ import c4l.applet.main.Constants;
 import c4l.applet.device.Effect_ID;
 import c4l.applet.device.Effect_Representative;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Properties;
-import java.util.Set;
-
 import org.apache.log4j.Logger;
 import org.json.*;
-
-import com.sun.javafx.collections.MappingChange.Map;
 
 /**
  * Manages all inputs to the program (wing, server, MIDI, other APIs) and
@@ -100,11 +94,11 @@ public class Input {
 		if (wing != null) {
 			wing.tick();
 
-			// check Wingcontroller for changes in device activity
-			// boolean[] change = wing.checkActivity();
-			// for (int i = 0; i < Constants.DYNAMIC_DEVICES; i++)
-			// active[i] ^= change[i];
-			// wing.setActiveDevices(active); // Tell wing, which devices are active
+			//check Wingcontroller for changes in device activity
+			boolean[] change = wing.checkActivity();
+			for (int i = 0; i < Constants.DYNAMIC_DEVICES; i++)
+				active[i] ^= change[i];
+			wing.setActiveDevices(active); // Tell wing, which devices are active (for indication-LEDs)
 
 			// check wing-faders
 			// for (int i = 0; i < 16; i++) {
@@ -112,7 +106,7 @@ public class Input {
 				temp = wing.getFader(i);
 				if (Math.abs(temp - h_faders[i]) > wing.FADER_TOLERANCE) {
 					if (temp <= wing.FADER_TOLERANCE)
-						temp = 0; //for a correction factor larger than the toleranc this should happen implicitly when dividing by the first... TODO: Think wheter to remove this for optimization
+						temp = 0; //for a correction factor larger than the tolerance this should happen implicitly when dividing by the first... TODO: Think wheter to remove this for optimization
 					h_faders[i] = temp;
 					for (int j = 0; j < Constants.DYNAMIC_DEVICES; j++) {
 						if (active[j])
@@ -120,39 +114,39 @@ public class Input {
 					} /* for */
 				} /* if */
 			} /* for */
+			
 			// check wing-x-faders
-			// for (int i = 0; i < 4; i++) {
-			// temp = wing.getXFader(i);
-			// if (Math.abs(temp - h_xfaders[i]) > wing.FADER_TOLERANCE) {
-			// h_xfaders[i] = temp;
-			// switch (i) {
-			// case 0:
-			// for (int j = 0; j < Constants.DYNAMIC_DEVICES; j++) {
-			// if (active[j])
-			// parent.deviceHandle[j].setSpeed(h_xfaders[i] / Constants.CORRECTIONDIVISOR);
-			// } /* for */
-			// case 1:
-			// for (int j = 0; j < Constants.DYNAMIC_DEVICES; j++) {
-			// if (active[j])
-			// parent.deviceHandle[j].setSize(h_xfaders[i] / Constants.CORRECTIONDIVISOR);
-			// } /* for */
-			// } /* switch */
-			// // TODO Define use of fader 3 and specify 4
-			// } /* if */
-			// } /* for */
-			// check rotary encoders
-			// for (int i = 0; i < Constants.ROTARY_COUNT; i++) {
-			// temp = wing.getRotary(i) - h_rotary[i];
-			// h_rotary[i] += temp;
-			// if (temp > wing.ROTARY_RANGE / 2)
-			// temp -= wing.ROTARY_RANGE;
-			// if (temp < -wing.ROTARY_RANGE / 2)
-			// temp += wing.ROTARY_RANGE;
-			// for (int j = 0; j < Constants.DYNAMIC_DEVICES; j++) {
-			// if (active[j])
-			// parent.deviceHandle[j].applyRotary(i, temp);
-			// } /* for devices */
-			// } /* for rotary encoders */
+			for (int i = 0; i < 4; i++) {
+				temp = wing.getXFader(i);
+				if (Math.abs(temp - h_xfaders[i]) > wing.FADER_TOLERANCE) {
+					h_xfaders[i] = temp;
+					switch (i) {
+						case 0:
+							for (int j = 0; j < Constants.DYNAMIC_DEVICES; j++) {
+								if (active[j])
+									parent.deviceHandle[j].setSpeed(h_xfaders[i] / wing.CORRECTION_DIVISOR);
+							} /* for */
+						case 1:
+							for (int j = 0; j < Constants.DYNAMIC_DEVICES; j++) {
+								if (active[j])
+									parent.deviceHandle[j].setSize(h_xfaders[i] / wing.CORRECTION_DIVISOR);
+							} /* for */
+					} /* switch */
+			// TODO Define use of fader 3 and specify 4
+				} /* if */
+			} /* for */
+			
+			//check rotary encoders
+			for (int i = 0; i < wing.NUM_ROTARYS; i++) {
+				temp = wing.getRotary(i) - h_rotary[i];
+				h_rotary[i] += temp;
+				if (temp > wing.ROTARY_RANGE/2) temp -= wing.ROTARY_RANGE;
+				if (temp < -wing.ROTARY_RANGE/2) temp += wing.ROTARY_RANGE;
+				for (int j = 0; j < Constants.DYNAMIC_DEVICES; j++) {
+					if (active[j])
+						parent.deviceHandle[j].applyRotary(i, temp);
+				} /* for devices */
+			} /* for rotary encoders */
 			// TODO B-faders
 		} /* if wing exists */
 
