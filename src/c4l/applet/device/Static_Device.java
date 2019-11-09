@@ -8,14 +8,17 @@ public class Static_Device {
 	
 	private float matrix[][];
 
+	private int startAddress;
+	
 	//Constructors
 	/**
 	 * @param matrix
 	 */
-	public Static_Device(float[][] matrix) {
+	public Static_Device(float[][] matrix, int adress) {
 		this.inputs = new int[Constants.STATIC_INPUT];
 		this.outputs = new int[Constants.STATIC_CHANNELS];
 		this.matrix = matrix;
+		this.startAddress = adress;
 	}
 
 	//Getters and Setters
@@ -37,6 +40,10 @@ public class Static_Device {
 		matrix[i][j] = value;
 	}
 	
+	public int getStartAddress() {
+		return startAddress;
+	}
+
 	//Other functions
 	public int[] getOutput() {
 		for (int i = 0; i < Constants.STATIC_CHANNELS; i++) {

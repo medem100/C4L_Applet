@@ -69,7 +69,7 @@ public class C4L_Launcher {
 		float[][] matrix = new float[Constants.STATIC_CHANNELS][Constants.STATIC_INPUT];
 		for (int i = 0; i < Math.min(Constants.STATIC_CHANNELS, Constants.STATIC_INPUT); i++)
 			matrix[i][i] = 1;
-		staticDevice = new Static_Device(matrix);
+		staticDevice = new Static_Device(matrix, Constants.DYNAMIC_DEVICES*Constants.DEVICE_CHANNELS);
 	}
 
 
@@ -80,7 +80,7 @@ public class C4L_Launcher {
 		
 		while (!quit) {
 			program.inputHandle.tick();
-			program.dmxHandle.setOutput(program.deviceHandle);
+			program.dmxHandle.setOutput(program.deviceHandle, program.staticDevice);
 			time = System.currentTimeMillis();
 			if (time - last_time > Constants.EFFECTTICKMILLIS) {
 				last_time += Constants.EFFECTTICKMILLIS;
