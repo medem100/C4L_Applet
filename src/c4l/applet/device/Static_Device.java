@@ -28,6 +28,9 @@ public class Static_Device {
 	public void setInputs(int[] inputs) {
 		this.inputs = inputs;
 	}
+	public void setInput(int value, int index) {
+		this.inputs[index] = value;
+	}
 
 	public float[][] getMatrix() {
 		return matrix;

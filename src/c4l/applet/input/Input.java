@@ -41,6 +41,8 @@ public class Input {
 
 	/** last know (and processed) hardware-fader position */
 	private int[] h_faders;
+	/** last know (and processed) hardware-fader position */
+	private int[] h_bfaders;
 	/** last know (and processed) hardware-x-fader position */
 	private int[] h_xfaders;
 	/** last know (and processed) hardware-rotary encoder position */
@@ -72,6 +74,7 @@ public class Input {
 		this.parent = parent;
 
 		this.h_faders = new int[16];
+		this.h_bfaders = new int[8];
 		this.h_xfaders = new int[4];
 		this.h_rotary = new int[3];
 		this.active = new boolean[30]; // should be initialized with false
@@ -147,7 +150,15 @@ public class Input {
 						parent.deviceHandle[j].applyRotary(i, temp);
 				} /* for devices */
 			} /* for rotary encoders */
+			
 			// TODO B-faders
+			for (int i = 0; i < wing.NUM_BFADERS; i++) {
+				temp = wing.getBFader(i);
+				if (Math.abs(temp - h_bfaders[i]) > wing.FADER_TOLERANCE) {
+					h_bfaders[i] = temp;
+					parent.staticDevice.setInput(temp, i);
+				} /* if */
+			} /* for bfaders */
 		} /* if wing exists */
 
 		// TODO check dashboard
