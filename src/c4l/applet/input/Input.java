@@ -156,7 +156,7 @@ public class Input {
 				temp = wing.getBFader(i);
 				if (Math.abs(temp - h_bfaders[i]) > wing.FADER_TOLERANCE) {
 					h_bfaders[i] = temp;
-					parent.staticDevice.setInput(temp, i);
+					parent.staticDevice.setInput(h_bfaders[i]/wing.CORRECTION_DIVISOR, i);
 				} /* if */
 			} /* for bfaders */
 		} /* if wing exists */
