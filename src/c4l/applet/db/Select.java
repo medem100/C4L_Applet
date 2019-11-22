@@ -129,7 +129,7 @@ public class Select {
 				"inner join scene_has_device_status shds "+
 				"on ds.device_status_id = shds.Device_status_id "+
 				"where shds.Scene_id ="+id+";";
-		ArrayList<HashMap<String, String>> answer = getDbData(SQL, Constants.FIELDS_SCENE); // return an JSON array
+		ArrayList<HashMap<String, String>> answer = getDbData(SQL, Constants.FIELDS_SCENE); // return an JSON array // return first element
 		return answer;
 	}
 
@@ -145,28 +145,20 @@ public class Select {
 	 * @param felde
 	 * @return
 	 */
-	private String getOneData(String SQL, String feld) {
+	public String getOneData(String SQL, String feld) {
 		try {
-			// conn = dbCreate.getInstance();
-
-			if (conn != null) {
+			logger.trace("get on datat: " + SQL);
+				conn = dbCreate.getInstance();
 				Statement query = conn.createStatement();
-				// dLogger.log(Level.FINE, SQL);
 				ResultSet result = query.executeQuery(SQL);
 				result.next();
 				return result.getString(feld);
 
-				// dLogger.log(Level.FINER, allAnswers.toString());
-
-			} else {
-				// dLogger.log(Level.SEVERE, "conn wurde nicht richitg initzalisiert");
-			}
 		} catch (SQLException e) {
-			// dLogger.log(Level.SEVERE, "Fehler 1 in getDbData " + e.toString());
-
+			logger.error(e);
+			return null;
 		}
-		// dLogger.log(Level.SEVERE, "Fehler 2 in getDbData");
-		return null;
+		
 
 	}
 
