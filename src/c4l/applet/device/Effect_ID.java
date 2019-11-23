@@ -75,4 +75,10 @@ public class Effect_ID {
 			return null;
 		}
 	}
+	
+	@Override
+	public String toString() {
+		return String.valueOf(this.id1)+String.valueOf(this.id2);
+		
+	}
 }
