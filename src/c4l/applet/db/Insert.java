@@ -6,8 +6,11 @@ package c4l.applet.db;
 import org.apache.log4j.Logger;
 
 import c4l.applet.device.Device;
+import c4l.applet.device.Effect;
+import c4l.applet.device.Effect_ID;
 
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import c4l.applet.db.Select;
 
@@ -58,7 +61,7 @@ public class Insert {
 	 * @param Devices
 	 * @param setupID
 	 * @return
-	 * @throws Exception 
+	 * @throws Exception
 	 */
 	public Integer scene(Device[] Devices, int setupID, String name, String description) throws Exception {
 		logger.debug("insert new scene");
@@ -68,11 +71,11 @@ public class Insert {
 			String SELECT_DEVICE_ID = "select d.device_id from device d " + "inner join setup_has_device shd "
 					+ "on shd.device_id = d.device_id " + "where shd.setup_id =" + setupID + " and d.start_address =";
 
-			String INSERT_DEVICE_STATUS = "insert into device_status(input, device_id) values(?,?)";
+			String INSERT_DEVICE_STATUS = "insert into device_status(input, device_id, main_effect_id) values(?,?,?)";
 
 			PreparedStatement insertDevceStatusStatment = conn.prepareStatement(INSERT_DEVICE_STATUS,
 					Statement.RETURN_GENERATED_KEYS);
-
+			ArrayList<Integer> deviceStatusIDs = new ArrayList<>();
 			// insert the device statis
 			for (Device device : Devices) {
 
@@ -82,45 +85,90 @@ public class Insert {
 					logger.debug("deviceId: " + deviceID);
 					insertDevceStatusStatment.setString(1, toSaveString(device.getInputs()));
 					insertDevceStatusStatment.setInt(2, deviceID);
-					insertDevceStatusStatment.addBatch();
-				}else {
-					throw new Exception("Device not Found: sid:"+ setupID+ " addres: "+device.getStartAddres());
+					insertDevceStatusStatment.execute();
+
+					ResultSet keys = insertDevceStatusStatment.getGeneratedKeys();
+					keys.next();
+					int deviceSID = keys.getInt(1);
+					deviceStatusIDs.add(deviceSID);
+					// save main effects
+					insertEffectStatis(device.effects, deviceSID, true);
+					// save effects
+					insertEffectStatis(device.effects, deviceSID,false);
+
+				} else {
+					throw new Exception("Device not Found: sid:" + setupID + " addres: " + device.getStartAddres());
 				}
 
 			}
-
-			// Execut the batchs
-			int[] updateCounts = insertDevceStatusStatment.executeBatch();
-			ResultSet deviceStatusIds = insertDevceStatusStatment.getGeneratedKeys();
-
 			// Insert new Scene
 
 			int sceneID = createScene(name, description);
 			addSceneToSetUp(setupID, sceneID);
 
 			// add Device status to scene
-			addDeviceStatusToScene(deviceStatusIds, sceneID);
+			addDeviceStatusToScene(deviceStatusIDs, sceneID);
 
 			return sceneID;
 
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-
+			logger.error(e);
 			return null;
 
 		}
 	}
+	
 
-	public void addDeviceStatusToScene(ResultSet deviceStatusIds, int sceneID) {
+	/**
+	 * insert new effect status
+	 * 
+	 * @param effect
+	 */
+	private ResultSet insertEffectStatis(LinkedList<Effect> effects, int deviceStatusId , boolean isMain) {
+		logger.debug("insert effect status for device statusID: "+deviceStatusId);
+		String INSERT_EFFECT_STATUS = "insert into effect_status(size,speed,channels,accept_input,state,Device_status_id,Effect_id,is_main)"
+				+ "values(?,?,?,?,?,?,?,?);";
+		// PreparedStatement insertNewSceneStatment =
+		// conn.prepareStatement(INSERT_DS_TO_SCENE);
+		try {
+			conn = dbCreate.getInstance();
+			PreparedStatement insertNewEffectStatusStatment = conn.prepareStatement(INSERT_EFFECT_STATUS,Statement.RETURN_GENERATED_KEYS);
+			for (Effect effect : effects) {
+				insertNewEffectStatusStatment.setInt(1, effect.getSize());
+				insertNewEffectStatusStatment.setInt(2, effect.getSpeed());
+				insertNewEffectStatusStatment.setString(3, toSaveString(effect.getChannels()));
+				insertNewEffectStatusStatment.setInt(4, effect.isAcceptInput() ? 1 : 0);
+				insertNewEffectStatusStatment.setInt(5, effect.getState());
+				insertNewEffectStatusStatment.setInt(6, deviceStatusId);
+				insertNewEffectStatusStatment.setString(7, Effect_ID.getEffectID(effect).toString());
+				insertNewEffectStatusStatment.setInt(8, isMain ? 1 : 0);
+				insertNewEffectStatusStatment.addBatch();
+			}
+			insertNewEffectStatusStatment.executeBatch();
+			return insertNewEffectStatusStatment.getGeneratedKeys();
+		} catch (SQLException e) {
+			logger.error(e);
+			return null;
+			
+		}
+
+	}
+
+	/**
+	 * add device statis to an scene
+	 * 
+	 * @param deviceStatusIds
+	 * @param sceneID
+	 */
+	public void addDeviceStatusToScene(ArrayList<Integer> deviceStatusIds, int sceneID) {
 		logger.debug("add device status to scene :" + sceneID);
 		String INSERT_DS_TO_SCENE = "insert into scene_has_device_status(scene_id,device_status_id) values(?,?)";
 		try {
 			conn = dbCreate.getInstance();
 			PreparedStatement insertNewSceneStatment = conn.prepareStatement(INSERT_DS_TO_SCENE);
-			while (deviceStatusIds.next()) {
+			for (int id : deviceStatusIds) {
 				insertNewSceneStatment.setInt(1, sceneID);
-				insertNewSceneStatment.setInt(2, deviceStatusIds.getInt(1));
+				insertNewSceneStatment.setInt(2, id);
 				insertNewSceneStatment.addBatch();
 			}
 			insertNewSceneStatment.executeBatch();
