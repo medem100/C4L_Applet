@@ -18,10 +18,15 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
 
+import c4l.applet.device.Device;
+import c4l.applet.device.Effect;
+import c4l.applet.device.Effect_ID;
+import c4l.applet.main.Constants;
 
 public class Select {
 
@@ -105,39 +110,151 @@ public class Select {
 	// }
 	//
 	//
-	
-	/*TODO Implement
+
+	/*
+	 * TODO Implement
 	 * 
-	 * - Select scenen
-	 * - select all scen ides an descripts 
-	 * - select infos for setup
-	 * - 
+	 * - Select scenen - select all scen ides an descripts - select infos for setup
+	 * -
 	 * 
-	 * - insert scene / chase / device
-	 * - 
+	 * - insert scene / chase / device -
 	 * 
 	 */
+
+	/*
+	 * public ArrayList<HashMap<String, String>> scene(int id) { //String SQL =
+	 * "SELECT payload FROM " + "scenes" + " where scenenID =" + id + ""; String SQL
+	 * =
+	 * "select ds.device_status_id, ds.input , d.device_description, es.effect_status_id from device_status ds "
+	 * + "inner join effect_status es "+
+	 * "on ds.device_status_id = es.Device_status_id "+ "inner join device d "+
+	 * "on ds.Device_id = d.Device_id "+ "inner join scene_has_device_status shds "+
+	 * "on ds.device_status_id = shds.Device_status_id "+
+	 * "where shds.Scene_id ="+id+";"; ArrayList<HashMap<String, String>> answer =
+	 * getDbData(SQL, Constants.FIELDS_SCENE); // return an JSON array // return
+	 * first element return answer; }
+	 * 
+	 * public String effects(int id) { String SQL = "SELECT effects FROM " +
+	 * "scenes" + " where scenenID =" + id + ""; String answer = getOneData(SQL,
+	 * "effects"); // return an JSON array return answer; }
+	 */
+
+	public Device[] scene(int id) {
+		logger.debug("load scene: " + id);
+		String SQL = " select ds.device_id, ds.device_status_id, d.permutation, d.rotary_channels,"
+				+ " d.virtual_dimmer_channel,d.virtual_dimming,d.main_effect_channels, d.start_address,"
+				+ " ds.input ,es.size , es.speed,es.state,es.channels,es.accept_input,es.is_main ,"
+				+ " es.effect_id from device_status ds" 
+				+ " left join effect_status es"
+				+ " on ds.device_status_id = es.Device_status_id" 
+				+ " inner join device d"
+				+ " on d.device_id = ds.device_id" 
+				+ " inner join scene_has_device_status shds"
+				+ " on ds.device_status_id = shds.Device_status_id" 
+				+ " where shds.Scene_id ="+id
+				+ " ORDER BY d.start_address,es.is_main DESC;";
+		Device[] devices = new Device[Constants.DYNAMIC_DEVICES];
+		int lastStartaddres = -1;
+		int iterator = 0;
+		logger.trace(SQL);
+		try {
+			conn = dbCreate.getInstance();
+			Statement query = conn.createStatement();
+			ResultSet res = query.executeQuery(SQL);
+			while (res.next()) {
+				// Check for devices withe mor than 1 effect
+				logger.trace(res.getInt("start_address"));
+				if (lastStartaddres != res.getInt("start_address")) {
+					logger.debug("iterate device : " + iterator + " DS : "+ res.getInt("device_status_id"));
+					Device device = new Device(toIntArray(res.getString("permutation")),
+							res.getInt("virtual_dimmer_channel"), toLinkedList(res.getString("virtual_dimming")),
+							toIntArray(res.getString("rotary_channels")), res.getInt("start_address"),
+							toIntArray(res.getString("main_effect_channels")));
+					
+					device.setInputs(toIntArray(res.getString("input")));
+					if(res.getString("effect_id") != null) {
+						addEffect(device, res);
+					}
+
+					devices[iterator] = device;
+					lastStartaddres = device.getStartAddres();
+					iterator++;
+				} else if(devices[iterator-1] != null){
+					addEffect(devices[iterator-1], res);
+				}
+
+			}
+			
+			// fill the scene up with standart devices TODO for scenen bundels
+			for (; iterator < Constants.DYNAMIC_DEVICES; iterator++) {
+				logger.debug("fill up device : " + iterator);
+				devices[iterator] = new Device(Constants.STANDART_PERMUTATION, iterator * Constants.DEVICE_CHANNELS);
+			}
+
+			return devices;
+		} catch (SQLException e) {
+			logger.debug(e);
+			return null;
+		}
+
+	}
 	
-
-	public ArrayList<HashMap<String, String>> scene(int id) {
-		//String SQL = "SELECT payload FROM " + "scenes" + " where scenenID =" + id + "";
-		String SQL = "select ds.device_status_id, ds.input , d.device_description, es.effect_status_id from device_status ds "+
-				"inner join effect_status es "+
-				"on ds.device_status_id = es.Device_status_id "+
-				"inner join device d "+
-				"on ds.Device_id = d.Device_id "+
-				"inner join scene_has_device_status shds "+
-				"on ds.device_status_id = shds.Device_status_id "+
-				"where shds.Scene_id ="+id+";";
-		ArrayList<HashMap<String, String>> answer = getDbData(SQL, Constants.FIELDS_SCENE); // return an JSON array // return first element
-		return answer;
+	
+	
+	/**
+	 * add Effect do Device
+	 * 
+	 * @param device
+	 * @param rs result set with the fields for an effect
+	 */
+	private void addEffect(Device device , ResultSet rs) {
+		logger.debug("add effect for device "+ device.getStartAddres());
+		try {
+			Effect e = Effect_ID.generateEffectFromID(
+					new Effect_ID(rs.getString("effect_id")), 
+					rs.getInt("size"), 
+					rs.getInt("speed"), 
+					rs.getInt("state"), 
+					rs.getBoolean("accept_input"), 
+					toIntArray(rs.getString("channels")));
+			if(rs.getBoolean("is_main")) {
+				device.addMainEffect(e);;
+			}else {
+				device.addEffect(e);
+			}
+		} catch (SQLException e) {
+			logger.error("can´t add effect for "+device.getStartAddres());
+			logger.error(e);
+		}
 	}
+	
+	
+	protected ArrayList<Integer> getDeviceStatusIdsForScene(int id){
+		String SQL = "select ds.device_status_id , d.start_address from device_status ds"+
+				" inner join device d"
+				+" on d.device_id = ds.device_id"
+				+" inner join scene_has_device_status shds"
+				+" on ds.device_status_id = shds.device_status_id"
+				+" where shds.scene_id =" + id
+				+" ORDER BY d.start_address;";
+		ArrayList<Integer> ids = new ArrayList<>();
+		
+		try {
+			conn = dbCreate.getInstance();
+			Statement query = conn.createStatement();
+			ResultSet result = query.executeQuery(SQL);
+			while(result.next()) {
+				ids.add(result.getInt("device_status_id"));
+			}
+			return ids;
 
-	public String effects(int id) {
-		String SQL = "SELECT effects FROM " + "scenes" + " where scenenID =" + id + "";
-		String answer = getOneData(SQL, "effects"); // return an JSON array
-		return answer;
+		} catch (SQLException e) {
+			logger.error(e);
+			return null;
+		}
+		
 	}
+	
 
 	/**
 	 * 
@@ -148,17 +265,16 @@ public class Select {
 	public String getOneData(String SQL, String feld) {
 		try {
 			logger.trace("get on datat: " + SQL);
-				conn = dbCreate.getInstance();
-				Statement query = conn.createStatement();
-				ResultSet result = query.executeQuery(SQL);
-				result.next();
-				return result.getString(feld);
+			conn = dbCreate.getInstance();
+			Statement query = conn.createStatement();
+			ResultSet result = query.executeQuery(SQL);
+			result.next();
+			return result.getString(feld);
 
 		} catch (SQLException e) {
 			logger.error(e);
 			return null;
 		}
-		
 
 	}
 
@@ -193,5 +309,28 @@ public class Select {
 		return answers;
 
 	}
+
+	private LinkedList<Integer> toLinkedList(String str) {
+		LinkedList<Integer> ll = new LinkedList<>();
+		String[] ary = str.split(c4l.applet.db.Constants.DELIMITER);
+		for (String s : ary) {
+			ll.add(Integer.valueOf(s));
+		}
+		return ll;
+	}
+
+	// TODO verry Bad !!!!
+	private int[] toIntArray(String str) {
+		String[] strArray = str.split(c4l.applet.db.Constants.DELIMITER);
+		int[] res = new int[strArray.length];
+
+		for (int i = 0; i < strArray.length; i++) {
+			res[i] = Integer.valueOf(strArray[i]);
+		}
+		return res;
+
+	}
+	
+	
 
 }

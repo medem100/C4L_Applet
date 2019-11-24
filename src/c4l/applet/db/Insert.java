@@ -92,7 +92,7 @@ public class Insert {
 					int deviceSID = keys.getInt(1);
 					deviceStatusIDs.add(deviceSID);
 					// save main effects
-					insertEffectStatis(device.effects, deviceSID, true);
+					insertEffectStatis(device.main_effect, deviceSID, true);
 					// save effects
 					insertEffectStatis(device.effects, deviceSID,false);
 
@@ -301,7 +301,7 @@ public class Insert {
 	private String toSaveString(int[] array) {
 		String result = "";
 		for (int e : array) {
-			result += e + ";";
+			result += e + Constants.DELIMITER;
 		}
 		return result.substring(0, result.length() - 1);
 	}
@@ -309,7 +309,7 @@ public class Insert {
 	private String toSaveString(LinkedList<Integer> list) {
 		String result = "";
 		for (int e : list) {
-			result += e + ";";
+			result += e + Constants.DELIMITER;
 		}
 		return result.substring(0, result.length() - 1);
 	}

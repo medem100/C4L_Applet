@@ -1,8 +1,10 @@
 package c4l.applet.db;
 
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import c4l.applet.device.Device;
 import sun.util.logging.resources.logging;
 
 import java.sql.*;
@@ -10,6 +12,7 @@ import java.sql.*;
 public class Update {
 	private Create dbCreate = new Create();
 	private Connection conn = null;
+	private Select select = new Select();
 	// private Logger dLogger = dbCreate.initLogger();
 
 //	/**
@@ -70,6 +73,14 @@ public class Update {
 //			dLogger.log(Level.FINER, e.toString());
 //		}
 //	}
+	
+	
+	public void scene(Device[] devices, int id) {
+	ArrayList<Integer> deviceStatusIDs = select.getDeviceStatusIdsForScene(id);
+	
+		
+	}
+	
 
 	public void scen(int scenenID,String payload, String ef) {
 		String SQL = "UPDATE scenes" +
