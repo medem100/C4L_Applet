@@ -35,6 +35,9 @@ public class WingController {
 	/** last transmitted DeviceSelection. Used to prevent sending redundant information */
 	private boolean[] lastSelection;
 	
+	//Multiplexing
+	private int lastFlank;
+	
 	//Properties of the Hardware
 	/** Number of faders in one bank at Controller */		public final int NUM_FADERS_PER_BANK;
 	/** Number of multiplexed faders at Controller */		public final int NUM_BFADERS;
@@ -49,6 +52,7 @@ public class WingController {
 	/** First Channel of DeviceTransmission */				public final int FIRST_DEVICE_TRANSMISSION;
 	/** First Channel of DeviceSelection */					public final int FIRST_DEVICE_SELECTION;
 	/** Channel of DMX-Status-LED */						public final int DMX_STATUS_LED;
+	/** Channel of Multiplexing-feedback-flank */			public final int MULTIPLEX_FEEDBACK_PIN;
 	/** First Channel of multiplex information pins */		public final int OFFSET_MULTIPLEX_PINS;
 	/** Channel of analog-bank-choice-information */		public final int ANALOG_BANKING_PIN;
 	
@@ -86,6 +90,7 @@ public class WingController {
 		FIRST_DEVICE_TRANSMISSION	= Integer.parseInt(prop.getProperty("FIRST_DEVICE_TRANSMISSION", "16"));
 		FIRST_DEVICE_SELECTION		= Integer.parseInt(prop.getProperty("FIRST_DEVICE_SELECTION", "64"));
 		DMX_STATUS_LED				= Integer.parseInt(prop.getProperty("DMX_STATUS_LED", "56"));
+		MULTIPLEX_FEEDBACK_PIN		= Integer.parseInt(prop.getProperty("MULTIPLEX_FEEDBACK_PIN", "57"));
 		OFFSET_MULTIPLEX_PINS		= Integer.parseInt(prop.getProperty("OFFSET_MULTIPLEX_PINS", "1"));
 		ANALOG_BANKING_PIN			= Integer.parseInt(prop.getProperty("ANALOG_BANKING_PIN", "0"));
 		
@@ -101,6 +106,7 @@ public class WingController {
 		this.lastState = new boolean[NUM_DEVICES];
 		this.activityChanged = new boolean[NUM_DEVICES];
 		this.lastSelection = new boolean[NUM_DEVICES];
+		this.lastFlank = Arduino.LOW;
 		
 		this.hardware = new ProFirmata(ARDUINO_PORT);
 		this.arduino = hardware.device;
@@ -181,10 +187,18 @@ public class WingController {
 	
 	public void tick() {
 		//Read Multiplexed
-		int m0 = arduino.digitalRead(OFFSET_MULTIPLEX_PINS);
-		int m1 = arduino.digitalRead(OFFSET_MULTIPLEX_PINS + 1);
-		int m2 = arduino.digitalRead(OFFSET_MULTIPLEX_PINS + 2);
-		bFaders[m0 + 2*m1 + 4*m2] = arduino.analogRead(OFFSET_MULTIPLEX);
+		if (lastFlank == arduino.digitalRead(OFFSET_MULTIPLEX_PINS + 3)) { //if Arduino-flank matches applet flank, you can read
+			lastFlank = (lastFlank == Arduino.LOW) ? Arduino.HIGH : Arduino.LOW; //flip lastFlank
+			
+			//Do actual reading
+			int m0 = arduino.digitalRead(OFFSET_MULTIPLEX_PINS);
+			int m1 = arduino.digitalRead(OFFSET_MULTIPLEX_PINS + 1);
+			int m2 = arduino.digitalRead(OFFSET_MULTIPLEX_PINS + 2);
+			bFaders[m0 + 2*m1 + 4*m2] = arduino.analogRead(OFFSET_MULTIPLEX);
+			
+			//Signalize the arduino it can progress further
+			arduino.digitalWrite(MULTIPLEX_FEEDBACK_PIN, lastFlank);
+		}
 	}
 	public void setStatusLED(boolean value) {
 		if (value) arduino.digitalWrite(DMX_STATUS_LED, Arduino.HIGH); else arduino.digitalWrite(DMX_STATUS_LED, Arduino.LOW);
