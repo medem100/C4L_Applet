@@ -9,7 +9,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
 
-import c4l.applet.main.Constants;
 import cc.arduino.Arduino;
 
 /**
@@ -24,8 +23,6 @@ public class WingController {
 	private Arduino arduino;	
 	
 	//Faders
-	/** Buffer for normal fader bank */
-	private int[] faders;
 	/** Buffer for multiplexed faders */
 	private int[] bFaders;
 	
@@ -39,7 +36,6 @@ public class WingController {
 	private boolean[] lastSelection;
 	
 	//Properties of the Hardware
-	/** Number of normal faders at Controller */			public final int NUM_FADERS;
 	/** Number of faders in one bank at Controller */		public final int NUM_FADERS_PER_BANK;
 	/** Number of multiplexed faders at Controller */		public final int NUM_BFADERS;
 	/** Number of special purpose faders at Controller */	public final int NUM_XFADERS;
@@ -54,6 +50,7 @@ public class WingController {
 	/** First Channel of DeviceSelection */					public final int FIRST_DEVICE_SELECTION;
 	/** Channel of DMX-Status-LED */						public final int DMX_STATUS_LED;
 	/** First Channel of multiplex information pins */		public final int OFFSET_MULTIPLEX_PINS;
+	/** Channel of analog-bank-choice-information */		public final int ANALOG_BANKING_PIN;
 	
 	/** Fader movement, which is interpreted as noise */	public final int FADER_TOLERANCE;
 	/** Range of the rotary value. */						public final int ROTARY_RANGE;
@@ -76,7 +73,6 @@ public class WingController {
 	 */
 	public WingController(Properties prop) {
 		//Read Properties
-		NUM_FADERS					= Integer.parseInt(prop.getProperty("NUM_FADERS", "16"));
 		NUM_FADERS_PER_BANK			= Integer.parseInt(prop.getProperty("NUM_FADERS_PER_BANK", "8"));
 		NUM_BFADERS					= Integer.parseInt(prop.getProperty("NUM_BFADERS", "8"));
 		NUM_XFADERS					= Integer.parseInt(prop.getProperty("NUM_XFADERS", "4"));
@@ -91,6 +87,7 @@ public class WingController {
 		FIRST_DEVICE_SELECTION		= Integer.parseInt(prop.getProperty("FIRST_DEVICE_SELECTION", "64"));
 		DMX_STATUS_LED				= Integer.parseInt(prop.getProperty("DMX_STATUS_LED", "56"));
 		OFFSET_MULTIPLEX_PINS		= Integer.parseInt(prop.getProperty("OFFSET_MULTIPLEX_PINS", "1"));
+		ANALOG_BANKING_PIN			= Integer.parseInt(prop.getProperty("ANALOG_BANKING_PIN", "0"));
 		
 		FADER_TOLERANCE				= Integer.parseInt(prop.getProperty("FADER_TOLERANCE", "2"));
 		ROTARY_RANGE				= Integer.parseInt(prop.getProperty("ROTARY_RANGE", "1024"));
@@ -100,7 +97,6 @@ public class WingController {
 		ARDUINO_PORT				= prop.getProperty("ARDUINO_PORT","COM5");
 		
 		
-		this.faders = new int[Constants.DEVICE_CHANNELS];
 		this.bFaders = new int[NUM_BFADERS];
 		this.lastState = new boolean[NUM_DEVICES];
 		this.activityChanged = new boolean[NUM_DEVICES];
@@ -124,12 +120,12 @@ public class WingController {
 	}
 	
 	//Functions
-	public int[] getFaders() {
-		return faders;
-	}
 	public int getFader(int index) {
-		if ((index < 0) || (index >= NUM_FADERS)) throw new IndexOutOfBoundsException("You can only get a Fader for index 0 to " + NUM_FADERS);
-		return faders[index];
+		if ((index < 0) || (index >= NUM_FADERS_PER_BANK)) throw new IndexOutOfBoundsException("You can only get a Fader for index 0 to " + NUM_FADERS_PER_BANK);
+		return arduino.analogRead(index);
+	}
+	public int getAnalogBank() {
+		return arduino.digitalRead(ANALOG_BANKING_PIN);
 	}
 	public int getXFader(int index) {
 		if ((index < 0) || (index >= NUM_XFADERS)) throw new IndexOutOfBoundsException("You can only get a xFader for index 0 to " + NUM_XFADERS);
@@ -146,17 +142,6 @@ public class WingController {
 		if ((index < 0) || (index > NUM_ROTARYS)) throw new IndexOutOfBoundsException("You can only get a Rotary for index 0 to " + NUM_ROTARYS);
 		return arduino.analogRead(index + OFFSET_ROTARY);
 	}
-//	public boolean[] getActiveDevices() {
-//		boolean[] activeDevices = new boolean[30];
-//		for (int i = 0; i < 30; i++) {
-//			activeDevices[i] = isactive(i);
-//		}	
-//		return activeDevices;
-//	}
-//	public boolean isactive(int index) {
-//		if ((index < 0) || (index > 29)) throw new IndexOutOfBoundsException("You can only get device activity for index 0 to 29");
-//		return (arduino.digitalRead(index + 16) == Arduino.HIGH);
-//	}
 
 	/**
 	 * Check for input on device selection.
@@ -195,12 +180,6 @@ public class WingController {
 	}
 	
 	public void tick() {
-		//Read (and save) analog banked faders
-		int aBank = arduino.digitalRead(0);
-		for (int i = 0; i < NUM_FADERS_PER_BANK; i++) {
-			faders[i+aBank*NUM_FADERS_PER_BANK] = arduino.analogRead(i);
-		}
-		
 		//Read Multiplexed
 		int m0 = arduino.digitalRead(OFFSET_MULTIPLEX_PINS);
 		int m1 = arduino.digitalRead(OFFSET_MULTIPLEX_PINS + 1);

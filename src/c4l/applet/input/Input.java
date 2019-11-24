@@ -73,7 +73,7 @@ public class Input {
 		} /* if */
 		this.parent = parent;
 
-		this.h_faders = new int[16];
+		this.h_faders = new int[8];
 		this.h_bfaders = new int[8];
 		this.h_xfaders = new int[4];
 		this.h_rotary = new int[3];
@@ -104,16 +104,17 @@ public class Input {
 			wing.setActiveDevices(active); // Tell wing, which devices are active (for indication-LEDs)
 
 			// check wing-faders
-			// for (int i = 0; i < 16; i++) {
-			for (int i = 0; i < 8; i++) { // remove this line for normal code, this is tweaked for MVP
+			int offset = 0;
+			if (wing.getAnalogBank() != 0) offset = 8;
+			for (int i = 0; i < 8; i++) {
 				temp = wing.getFader(i);
 				if (Math.abs(temp - h_faders[i]) > wing.FADER_TOLERANCE) {
 					if (temp <= wing.FADER_TOLERANCE)
-						temp = 0; //for a correction factor larger than the tolerance this should happen implicitly when dividing by the first... TODO: Think wheter to remove this for optimization
+						temp = 0; //for a correction factor larger than the tolerance this should happen implicitly when dividing by the first... TODO: Think whether to remove this for optimization
 					h_faders[i] = temp;
 					for (int j = 0; j < Constants.DYNAMIC_DEVICES; j++) {
 						if (active[j])
-							parent.deviceHandle[j].setInput(i, h_faders[i] / wing.CORRECTION_DIVISOR);
+							parent.deviceHandle[j].setInput(i + offset, h_faders[i] / wing.CORRECTION_DIVISOR);
 					} /* for */
 				} /* if */
 			} /* for */
