@@ -37,11 +37,12 @@ public class Input {
 	private DashboardInput server;
 	private JSONObject OldResponse = new JSONObject("{}");
 	C4L_Launcher parent;
+	static Logger logger = Logger.getLogger(Input.class);
 
-	private int currentSceneId;
-	private int[] currentFaderValues = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-	private int currentSize;
-	private int currentSpeed;
+	private int currentSceneId; // web
+	private int[] currentFaderValues = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }; // web
+	private int currentSize; // web
+	private int currentSpeed; // web
 	Effect[] oEffects = new Effect[30]; // test
 	// boolean setOldeffects = false;
 
@@ -179,7 +180,7 @@ public class Input {
 				// }
 
 				if (currentSceneId != server.getScenenID().get(0)) {
-				//	loadScene(server.getScenenID().get(0));
+					loadScene(server.getScenenID().get(0));
 					currentSceneId = server.getScenenID().get(0);
 				} else {
 
@@ -293,6 +294,11 @@ public class Input {
 				saveScene();
 				server.setSaveRead();
 			}
+			
+			if(server.isCrateNewScenePresst()) {
+				crateNewScene();
+				server.setCreateNewSceneRead();
+			}
 
 			OldResponse = server.usedRespons;
 
@@ -302,7 +308,11 @@ public class Input {
 	// Help Funcktions
 
 	private void loadScene(int id) {
-		System.out.println("load Scene " + id);
+		logger.debug("load scene: "+id + " in setup: "+server.getsetupID() );
+		parent.deviceHandle = parent.db.Select.scene(id);
+		currentSceneId = id;
+		// TODO check scenen exist
+	/*	System.out.println("load Scene " + id);
 		String payload = parent.db.Select.scene(id);
 		String eff = parent.db.Select.effects(id);
 		if (!(payload.isEmpty())) {
@@ -340,13 +350,25 @@ public class Input {
 					parent.deviceHandle[i].addMainEffect(toSetEff[i].generateEffect(), 0);
 				}
 			}
-		}
+		}*/
 
+	}
+	
+	private void crateNewScene() {
+		logger.debug("crate new scene");
+		try {
+			parent.db.Insert.scene(parent.deviceHandle.clone(),server.getsetupID());
+			//server.set
+		} catch (Exception e) {
+			logger.error(e);
+		}
 	}
 
 	private void saveScene() {
-		System.out.println("save scene " + server.getScenenID().get(0));
-		Effect[] Effects = new Effect[30];
+		logger.debug("save scene: "+currentSceneId + " in setup: "+server.getsetupID() );
+		parent.db.Update.scene(parent.deviceHandle.clone(), currentSceneId);
+		
+		/*Effect[] Effects = new Effect[30];
 		Device[] oDev = Arrays.copyOf(parent.deviceHandle, 30);
 		
 		for (int i = 0; i < oEffects.length; i++) {
@@ -375,6 +397,6 @@ public class Input {
 
 		int id = server.getScenenID().get(0);
 		parent.db.Update.scen(id, payload, saveEf);
-
+*/
 	}
 }

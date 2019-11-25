@@ -54,6 +54,10 @@ public class Insert {
 	// }
 	//
 	// }
+	
+	public Integer scene(Device[] Devices, int setupID) throws Exception {
+		return scene(Devices, setupID, Constants.DEFAULT_NEW_SCENE_NAME, Constants.DEFAULT_NEW_DESCRIPTIOM);
+	}
 
 	/**
 	 * scene Scene to setup
@@ -71,7 +75,7 @@ public class Insert {
 			String SELECT_DEVICE_ID = "select d.device_id from device d " + "inner join setup_has_device shd "
 					+ "on shd.device_id = d.device_id " + "where shd.setup_id =" + setupID + " and d.start_address =";
 
-			String INSERT_DEVICE_STATUS = "insert into device_status(input, device_id, main_effect_id) values(?,?,?)";
+			String INSERT_DEVICE_STATUS = "insert into device_status(input, device_id) values(?,?)";
 
 			PreparedStatement insertDevceStatusStatment = conn.prepareStatement(INSERT_DEVICE_STATUS,
 					Statement.RETURN_GENERATED_KEYS);
@@ -124,7 +128,7 @@ public class Insert {
 	 * 
 	 * @param effect
 	 */
-	private ResultSet insertEffectStatis(LinkedList<Effect> effects, int deviceStatusId , boolean isMain) {
+	protected ResultSet insertEffectStatis(LinkedList<Effect> effects, int deviceStatusId , boolean isMain) {
 		logger.debug("insert effect status for device statusID: "+deviceStatusId);
 		String INSERT_EFFECT_STATUS = "insert into effect_status(size,speed,channels,accept_input,state,Device_status_id,Effect_id,is_main)"
 				+ "values(?,?,?,?,?,?,?,?);";
@@ -275,6 +279,7 @@ public class Insert {
 
 	}
 
+	@Deprecated
 	public boolean scene(int scenenID, String scenenName, String info, String payload) {
 
 		try {

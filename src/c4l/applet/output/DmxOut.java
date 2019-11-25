@@ -77,7 +77,7 @@ public class DmxOut {
 					if (!(Util.getTestRun())) {
 						// no test Run
 						setValue(addres + i, Output[i]);
-						//System.out.println(addres + i +" : " + Output[i]);
+					//	System.out.println(addres + i +" : " + Output[i]);
 					} else {
 						// test Run
 						Log.info("addresse :" + addres + i + " " + Output[i]);

@@ -17,6 +17,7 @@ public class Constants {
     public static final int DEFAULT_SETUP = 1;
     /** default name for new scene*/
     public static final String DEFAULT_NEW_SCENE_NAME ="New Scene";
+    public static final String DEFAULT_NEW_DESCRIPTIOM ="New Scene -- descritpion";
     
     public static final String DELIMITER = ";";
 
