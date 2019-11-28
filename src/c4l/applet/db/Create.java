@@ -16,14 +16,16 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Properties;
-import java.util.logging.Level;
-import java.util.logging.LogManager;
-import java.util.logging.Logger;
+
+import c4l.applet.db.Constants;
+
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 
 
 public class Create {
 	
-	
+	private static Logger logger = Logger.getLogger(Create.class);
 	
 	private  Connection conn = null;
 	//private static File dLoggerFile = new File(fullPath);
@@ -37,24 +39,24 @@ public class Create {
     private static final Create dbCreate = new Create();
    // private static final Singleton OBJ = new Singleton(); 
     
-    private String dbHost = "127.0.0.1";
-    private String dbPort = "3306";
-    private String database ="c4l";
-    private String dbUser ="root";
-    private String dbPassword ="A125";
-    
+//    private String dbHost = "127.0.0.1";
+//    private String dbPort = "3306";
+//    private String database ="c4l";
+//    private String dbUser ="root";
+//    private String dbPassword ="A125";
+//    
   
 	
 	public Create()  {
 	    try {
-//	      dLogger.log(Level.FINER, "crate database... ");
+	    	logger.log(Level.TRACE, "crate database... ");
 	      Class.forName("com.mysql.jdbc.Driver");
-	       conn = DriverManager.getConnection("jdbc:mysql://" + dbHost + ":"
-	          + dbPort + "/" + database + "?" + "user=" + dbUser + "&"
-	          + "password=" + dbPassword);
-//	       dLogger.log(Level.INFO, "conn wurde erstellt");
+	       conn = DriverManager.getConnection("jdbc:mysql://" + Constants.dbHost + ":"
+	          + Constants.dbPort + "/" + Constants.database + "?" + "user=" + Constants.dbUser + "&"
+	          + "password=" + Constants.dbPassword);
+	       logger.log(Level.INFO, "conn was created");
 	    } catch (Exception e) {
-//	      dLogger.log(Level.SEVERE, "Treiber nicht gefunden");
+	      logger.log(Level.FATAL, "Treiber nicht gefunden");
 	    } 
 	    
 	  }
@@ -67,49 +69,18 @@ public class Create {
 	 */
 	 public Connection getInstance() throws SQLException
 	  {
-//		dLogger.log(Level.FINER, "holt conn instans");
+
 	    if(conn == null)
 			try {
 				new Create();
 			} catch (Exception e) {
-//				dLogger.log(Level.SEVERE, "fehler beim Conn holen", e);
+				logger.log(Level.FATAL, "connection was not found", e);
 			}
 	    return conn;
 	  }
 	 
 	 
-	 /**
-	  * initalsiert den Logger 
-	  * @return DATALOGGER
-	  */
-	public Logger initLogger() throws IOException{
-		 LogManager logManager = LogManager.getLogManager();
-	     Logger DATALOGGER = Logger.getLogger("DataLog");
 	
-	         DATALOGGER.log(Level.INFO, "Logging Objeckt wurde erstellt");
-	         return DATALOGGER;
-	     }
-	/**
-	 * Initialisiert das Properties Objekt mit der entsprechenden Zeile
-	 * @return properties
-	 * @throws IOException 
-	 */
-//	public Properties initProperties() {
-////		dLogger.log(Level.FINER, "Initzalisiere props");
-//		Properties Props = new Properties();
-//		try{
-//
-//		  BufferedInputStream bis = new BufferedInputStream(Create.class.getClassLoader().getResourceAsStream(propetiesPath));
-//		  
-//		  Props.load(bis);
-////		  dLogger.log(Level.FINER, "props sind geladen");
-//		  bis.close();  
-//
-//		}catch (IOException e){
-////			dLogger.log(Level.SEVERE, "props sind nicht geladen ", e);
-//		}
-//		 
-//		return Props;
-//	}
+
 
 }

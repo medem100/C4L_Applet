@@ -23,6 +23,10 @@ public class Device {
 	private int[] rotary_channels; //which channels shall be affected by the rotary encoders
 	private int startAddress;
 	
+//	private int device_id;// only interesting for the store
+	
+	private int[] main_effect_channels;
+	
 	public LinkedList<Effect> effects;
 	public LinkedList<Effect> main_effect;
 	
@@ -39,7 +43,13 @@ public class Device {
 	 * @param rotarys			Channels, which shall be effected by rotary encoders
 	 * @param startAddress		DMX-adress of the first channel
 	 */
-	public Device(int[] permutation, int v_dim_channel, LinkedList<Integer> virtual_dimmer, int[] rotarys, int startAddress) {
+	public Device(int[] permutation, int v_dim_channel, LinkedList<Integer> virtual_dimmer, int[] rotarys, int startAddress) { //for backwards compatibility with Main and TestObjeckte
+		
+		this(permutation,v_dim_channel,virtual_dimmer,rotarys,startAddress,new int[] {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0});
+	}
+	
+	public Device(int[] permutation, int v_dim_channel, LinkedList<Integer> virtual_dimmer, int[] rotarys, int startAddress , int[] main_effect_channels) {
+		
 		this.startAddress = startAddress;
 		this.inputs = new int[Constants.DEVICE_CHANNELS];
 		this.p_outputs = new int[Constants.DEVICE_CHANNELS];
@@ -51,6 +61,11 @@ public class Device {
 		
 		this.effects = new LinkedList<Effect>();
 		this.main_effect = new LinkedList<Effect>();
+		
+		//this.device_id = device_id;
+		this.main_effect_channels = main_effect_channels;
+		
+		
 	}
 	
 	//Getters and Setters
@@ -84,6 +99,10 @@ public class Device {
 	
 	public void applyRotary(int index, int value) {
 		inputs[rotary_channels[index]] = Effect.cutOff(inputs[rotary_channels[index]] + value);
+	}
+	
+	public int[] getMaineffetChannels() {
+		return main_effect_channels;
 	}
 
 	/*

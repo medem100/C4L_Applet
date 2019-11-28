@@ -3,6 +3,8 @@ package c4l.applet.main;
 import org.apache.log4j.PropertyConfigurator;
 
 import com.google.gson.Gson;
+import org.apache.log4j.Logger;
+
 
 import c4l.applet.db.DB;
 import c4l.applet.device.Device;
@@ -24,6 +26,8 @@ public class C4L_Launcher {
 	public Gson gson = new Gson();
 	public DB db = c4l.applet.db.DB.getInstance();
 	public PropertyManager propM;
+	
+	static Logger logger = Logger.getLogger(C4L_Launcher.class);
 
 	static boolean quit = false;
  
@@ -35,6 +39,7 @@ public class C4L_Launcher {
 		resourcePath = Thread.currentThread().getContextClassLoader().getResource(".").getPath();
 		resourcePath = resourcePath.substring(0, resourcePath.lastIndexOf("/"));
 		resourcePath = resourcePath.substring(0, resourcePath.lastIndexOf("/")) + "/resources/";
+
 
 		//Initialize Property-Manager
 		try {
@@ -66,10 +71,13 @@ public class C4L_Launcher {
 		for (int i = 0; i < Constants.DYNAMIC_DEVICES; i++) {
 			deviceHandle[i] = new Device(Constants.STANDART_PERMUTATION, i * Constants.DEVICE_CHANNELS);
 		}
+
+		logger.debug("Test Debug");
 		float[][] matrix = new float[Constants.STATIC_CHANNELS][Constants.STATIC_INPUT];
 		for (int i = 0; i < Math.min(Constants.STATIC_CHANNELS, Constants.STATIC_INPUT); i++)
 			matrix[i][i] = 1;
 		staticDevice = new Static_Device(matrix, Constants.DYNAMIC_DEVICES*Constants.DEVICE_CHANNELS);
+
 	}
 
 

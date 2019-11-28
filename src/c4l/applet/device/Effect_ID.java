@@ -14,6 +14,9 @@ public class Effect_ID {
 		this.id2 = id2;
 	}
 	
+	public Effect_ID(String str) {
+		this(Integer.valueOf(str.substring(0, 1)),Integer.valueOf(str.substring(1, 2)));
+	}
 	
 	public enum Effect_class {
 		SIMPLE, RANDOM
@@ -74,5 +77,11 @@ public class Effect_ID {
 			//INVALID ID
 			return null;
 		}
+	}
+	
+	@Override
+	public String toString() {
+		return String.valueOf(this.id1)+String.valueOf(this.id2);
+		
 	}
 }
