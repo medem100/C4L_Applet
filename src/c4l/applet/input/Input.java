@@ -57,9 +57,11 @@ public class Input {
 	public Input(C4L_Launcher parent, Properties arduinoProperties, Boolean ServerAvailable) {
 		this(parent, new WingController(arduinoProperties), ServerAvailable);
 	}
+
 	public Input(C4L_Launcher parent, String arduinoPropertiesPath, Boolean ServerAvailable) {
 		this(parent, new WingController(WingController.openPropertiesFile(arduinoPropertiesPath)), ServerAvailable);
 	}
+
 	public Input(C4L_Launcher parent, WingController wing, Boolean ServerAvailable) {
 		this.ServerAvailable = ServerAvailable;
 		this.wing = wing;
@@ -69,7 +71,7 @@ public class Input {
 			} catch (Exception e) {
 				e.printStackTrace();
 				this.ServerAvailable = false;
-			} /* try/catch */   // TODO modify Constructor if necessary
+			} /* try/catch */ // TODO modify Constructor if necessary
 		} /* if */
 		this.parent = parent;
 
@@ -95,9 +97,10 @@ public class Input {
 
 		// Handle the HardwareWing
 		if (wing != null) {
+			active[0] = true;
 			wing.tick();
 
-			//check Wingcontroller for changes in device activity
+			// check Wingcontroller for changes in device activity
 			boolean[] change = wing.checkActivity();
 			for (int i = 0; i < Constants.DYNAMIC_DEVICES; i++)
 				active[i] ^= change[i];
@@ -105,12 +108,15 @@ public class Input {
 
 			// check wing-faders
 			int offset = 0;
-			if (wing.getAnalogBank() != 0) offset = 8;
+			if (wing.getAnalogBank() != 0)
+				offset = 8;
 			for (int i = 0; i < 8; i++) {
 				temp = wing.getFader(i);
 				if (Math.abs(temp - h_faders[i]) > wing.FADER_TOLERANCE) {
 					if (temp <= wing.FADER_TOLERANCE)
-						temp = 0; //for a correction factor larger than the tolerance this should happen implicitly when dividing by the first... TODO: Think whether to remove this for optimization
+						temp = 0; // for a correction factor larger than the tolerance this should happen
+									// implicitly when dividing by the first... TODO: Think whether to remove this
+									// for optimization
 					h_faders[i] = temp;
 					for (int j = 0; j < Constants.DYNAMIC_DEVICES; j++) {
 						if (active[j])
@@ -118,46 +124,52 @@ public class Input {
 					} /* for */
 				} /* if */
 			} /* for */
-			
+
 			// check wing-x-faders
 			for (int i = 0; i < 4; i++) {
 				temp = wing.getXFader(i);
 				if (Math.abs(temp - h_xfaders[i]) > wing.FADER_TOLERANCE) {
 					h_xfaders[i] = temp;
 					switch (i) {
-						case 0:
-							for (int j = 0; j < Constants.DYNAMIC_DEVICES; j++) {
-								if (active[j])
-									parent.deviceHandle[j].setSpeed(h_xfaders[i] / wing.CORRECTION_DIVISOR);
-							} /* for */
-						case 1:
-							for (int j = 0; j < Constants.DYNAMIC_DEVICES; j++) {
-								if (active[j])
-									parent.deviceHandle[j].setSize(h_xfaders[i] / wing.CORRECTION_DIVISOR);
-							} /* for */
+					case 0:
+						for (int j = 0; j < Constants.DYNAMIC_DEVICES; j++) {
+							if (active[j])
+								parent.deviceHandle[j].setMainSpeed(h_xfaders[i] / wing.CORRECTION_DIVISOR);
+						} /* for */
+						currentSpeed = h_xfaders[i] / wing.CORRECTION_DIVISOR;
+						break;
+					case 1:
+						for (int j = 0; j < Constants.DYNAMIC_DEVICES; j++) {
+							if (active[j])
+								parent.deviceHandle[j].setMainSpeed(h_xfaders[i] / wing.CORRECTION_DIVISOR);
+						} /* for */
+						currentSize = h_xfaders[i] / wing.CORRECTION_DIVISOR;
+						break;
 					} /* switch */
-			// TODO Define use of fader 3 and specify 4
+					// TODO Define use of fader 3 and specify 4
 				} /* if */
 			} /* for */
-			
-			//check rotary encoders
+
+			// check rotary encoders
 			for (int i = 0; i < wing.NUM_ROTARYS; i++) {
 				temp = wing.getRotary(i) - h_rotary[i];
 				h_rotary[i] += temp;
-				if (temp > wing.ROTARY_RANGE/2) temp -= wing.ROTARY_RANGE;
-				if (temp < -wing.ROTARY_RANGE/2) temp += wing.ROTARY_RANGE;
+				if (temp > wing.ROTARY_RANGE / 2)
+					temp -= wing.ROTARY_RANGE;
+				if (temp < -wing.ROTARY_RANGE / 2)
+					temp += wing.ROTARY_RANGE;
 				for (int j = 0; j < Constants.DYNAMIC_DEVICES; j++) {
 					if (active[j])
 						parent.deviceHandle[j].applyRotary(i, temp);
 				} /* for devices */
 			} /* for rotary encoders */
-			
+
 			// TODO B-faders
 			for (int i = 0; i < wing.NUM_BFADERS; i++) {
 				temp = wing.getBFader(i);
 				if (Math.abs(temp - h_bfaders[i]) > wing.FADER_TOLERANCE) {
 					h_bfaders[i] = temp;
-					parent.staticDevice.setInput(h_bfaders[i]/wing.CORRECTION_DIVISOR, i);
+					parent.staticDevice.setInput(h_bfaders[i] / wing.CORRECTION_DIVISOR, i);
 				} /* if */
 			} /* for bfaders */
 		} /* if wing exists */
@@ -165,9 +177,8 @@ public class Input {
 		// TODO check dashboard
 
 		if (ServerAvailable) {
-     
-      
-      			server.tick();
+
+			server.tick();
 
 			// set old effects
 
@@ -185,8 +196,8 @@ public class Input {
 				// }
 				// setOldeffects = false;
 				// }
-      
-      				// }
+
+				// }
 				// setOldeffects = false;
 				// }
 
@@ -221,25 +232,51 @@ public class Input {
 						currentSpeed = server.getEffectSpeed();
 					}
 
+					String effectId = server.getEffectID();
+
+					for (int i = 0; i < active.length; i++) {
+						if (active[i]) {
+
+							if (!(effectId.equals("99"))) {
+								Effect_ID eid = new Effect_ID(Integer.valueOf(effectId.substring(0, 1)),
+										Integer.valueOf(effectId.substring(1, 2)));
+								Effect e = Effect_ID.generateEffectFromID(eid, currentSpeed,
+										currentSize, 0,
+										parent.deviceHandle[i].getMaineffetChannels());
+
+								// if (Effect_ID.getEffectID(e)
+								// .equals(Effect_ID.getEffectID(parent.deviceHandle[i].main_effect.get(0)))) {
+								// parent.deviceHandle[i].deleteMainEffect(0);
+								// } else {
+								if (!(parent.deviceHandle[i].main_effect.isEmpty()))
+									parent.deviceHandle[i].deleteMainEffect(0);
+								parent.deviceHandle[i].addMainEffect(e, 0);
+
+							}
+						}
+					}
+
 					for (int i : server.getChosenDevices()) {
 
 						active[i] = true;
 
-						String effectId = server.getEffectID();
+						// String effectId = server.getEffectID();
 						//
 						// if(effectId != 0 ) {
 						// String effect = String.valueOf(effectId);
 						// int eId1 = Integer.valueOf(effect.substring(0, 1));
 						// int eid2 = Integer.valueOf(effect.substring(1));
 						//
-    
-    						//
+
+						//
 						if (!(effectId.equals("99"))) {
 							Effect_ID eid = new Effect_ID(Integer.valueOf(effectId.substring(0, 1)),
 									Integer.valueOf(effectId.substring(1, 2)));
-							Effect e = Effect_ID.generateEffectFromID(eid, server.getEffectSize(),
-									server.getEffectSize(), 0,
-									new int[] { 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 });
+							Effect e = Effect_ID.generateEffectFromID(eid, currentSpeed,
+									currentSize, 0,
+									parent.deviceHandle[i].getMaineffetChannels()); // TODO get info from
+																									// device
+
 							// if (Effect_ID.getEffectID(e)
 							// .equals(Effect_ID.getEffectID(parent.deviceHandle[i].main_effect.get(0)))) {
 							// parent.deviceHandle[i].deleteMainEffect(0);
@@ -273,11 +310,8 @@ public class Input {
 						// } else {
 						// parent.deviceHandle[i].addMainEffect(e);
 						// }
-  
-      
-      
-      
-  						// }
+
+						// }
 						// parent.deviceHandle[i].setSpeed(server.getEffectSpeed());
 						// parent.deviceHandle[i].setSize(server.getEffectSize());
 						if (changeSpeed)
@@ -305,8 +339,8 @@ public class Input {
 				saveScene();
 				server.setSaveRead();
 			}
-			
-			if(server.isCrateNewScenePresst()) {
+
+			if (server.isCrateNewScenePresst()) {
 				crateNewScene();
 				server.setCreateNewSceneRead();
 			}
@@ -317,97 +351,75 @@ public class Input {
 	}
 
 	// Help Funcktions
-      
+
 	private void loadScene(int id) {
-		logger.debug("load scene: "+id + " in setup: "+server.getsetupID() );
+		log.debug("load scene: " + id + " in setup: " + server.getsetupID());
 		parent.deviceHandle = parent.db.Select.scene(id);
 		currentSceneId = id;
 		// TODO check scenen exist
-	/*	System.out.println("load Scene " + id);
-		String payload = parent.db.Select.scene(id);
-		String eff = parent.db.Select.effects(id);
-		if (!(payload.isEmpty())) {
-			payload = payload.replace("\\", "");
-			Scene scene = parent.gson.fromJson(payload, Scene.class);
-			OldEffects oEff = parent.gson.fromJson(eff, OldEffects.class);
-			// System.out.println(devs[0].getOutput_unticked().toString());
-			Device[] oDev = scene.getDevices();
-			Effect_Representative[] toSetEff = oEff.getEffects();
-
-			// Effect_ID.getEffectID(e)
-
-			// for (int i = 0; i < oEffects.length; i++) {
-			// if (oDev[i].main_effect.isEmpty()) {
-			// oEffects[i] = null;
-			// } else {
-			// oEffects[i] = oDev[i].main_effect.get(0);
-			// oDev[i].deleteMainEffect(0);
-			// // oEffects[i].
-			// }
-			// }
-			//
-			parent.deviceHandle = oDev;
-			// setOldeffects = true;
-
-			// set effects new
-
-			for (int i = 0; i < toSetEff.length; i++) {
-				if (toSetEff[i] != null) {
-					// Effect_ID eid = Effect_ID.getEffectID(toSetEff[i]);
-					// Effect e = Effect_ID.generateEffectFromID(eid, toSetEff[i].getSpeed(),
-					// toSetEff[i].getSize(), 0,
-					// new int[] { 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 });
-
-					parent.deviceHandle[i].addMainEffect(toSetEff[i].generateEffect(), 0);
-				}
-			}
-		}*/
+		/*
+		 * System.out.println("load Scene " + id); String payload =
+		 * parent.db.Select.scene(id); String eff = parent.db.Select.effects(id); if
+		 * (!(payload.isEmpty())) { payload = payload.replace("\\", ""); Scene scene =
+		 * parent.gson.fromJson(payload, Scene.class); OldEffects oEff =
+		 * parent.gson.fromJson(eff, OldEffects.class); //
+		 * System.out.println(devs[0].getOutput_unticked().toString()); Device[] oDev =
+		 * scene.getDevices(); Effect_Representative[] toSetEff = oEff.getEffects();
+		 * 
+		 * // Effect_ID.getEffectID(e)
+		 * 
+		 * // for (int i = 0; i < oEffects.length; i++) { // if
+		 * (oDev[i].main_effect.isEmpty()) { // oEffects[i] = null; // } else { //
+		 * oEffects[i] = oDev[i].main_effect.get(0); // oDev[i].deleteMainEffect(0); //
+		 * // oEffects[i]. // } // } // parent.deviceHandle = oDev; // setOldeffects =
+		 * true;
+		 * 
+		 * // set effects new
+		 * 
+		 * for (int i = 0; i < toSetEff.length; i++) { if (toSetEff[i] != null) { //
+		 * Effect_ID eid = Effect_ID.getEffectID(toSetEff[i]); // Effect e =
+		 * Effect_ID.generateEffectFromID(eid, toSetEff[i].getSpeed(), //
+		 * toSetEff[i].getSize(), 0, // new int[] { 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+		 * 0, 0, 0, 0 });
+		 * 
+		 * parent.deviceHandle[i].addMainEffect(toSetEff[i].generateEffect(), 0); } } }
+		 */
 
 	}
-	
+
 	private void crateNewScene() {
-		logger.debug("crate new scene");
+		// logger.debug("crate new scene");
 		try {
-			parent.db.Insert.scene(parent.deviceHandle.clone(),server.getsetupID());
-			//server.set
+			parent.db.Insert.scene(parent.deviceHandle.clone(), server.getsetupID());
+			// server.set
 		} catch (Exception e) {
-			logger.error(e);
+			log.error(e);
 		}
 	}
 
 	private void saveScene() {
-		logger.debug("save scene: "+currentSceneId + " in setup: "+server.getsetupID() );
+		log.debug("save scene: " + currentSceneId + " in setup: " + server.getsetupID());
 		parent.db.Update.scene(parent.deviceHandle.clone(), currentSceneId);
-		
-		/*Effect[] Effects = new Effect[30];
-		Device[] oDev = Arrays.copyOf(parent.deviceHandle, 30);
-		
-		for (int i = 0; i < oEffects.length; i++) {
-			if (oDev[i].main_effect.isEmpty()) {
-				Effects[i] = null;
-			} else {
-				Effects[i] = oDev[i].main_effect.get(0);
-				oDev[i].deleteMainEffect(0);
-				// oEffects[i].
-			}
-		}
 
-		Scene scene = new Scene(oDev);
-		String payload = parent.gson.toJson(scene);
-
-		Effect_Representative[] ER = new Effect_Representative[30];
-
-		for (int i = 0; i < Effects.length; i++) {
-			if (Effects[i] != null) {
-				ER[i] = new Effect_Representative(Effects[i]);
-			}
-		}
-
-		OldEffects ef = new OldEffects(ER);
-		String saveEf = parent.gson.toJson(ef);
-
-		int id = server.getScenenID().get(0);
-		parent.db.Update.scen(id, payload, saveEf);
-*/
+		/*
+		 * Effect[] Effects = new Effect[30]; Device[] oDev =
+		 * Arrays.copyOf(parent.deviceHandle, 30);
+		 * 
+		 * for (int i = 0; i < oEffects.length; i++) { if
+		 * (oDev[i].main_effect.isEmpty()) { Effects[i] = null; } else { Effects[i] =
+		 * oDev[i].main_effect.get(0); oDev[i].deleteMainEffect(0); // oEffects[i]. } }
+		 * 
+		 * Scene scene = new Scene(oDev); String payload = parent.gson.toJson(scene);
+		 * 
+		 * Effect_Representative[] ER = new Effect_Representative[30];
+		 * 
+		 * for (int i = 0; i < Effects.length; i++) { if (Effects[i] != null) { ER[i] =
+		 * new Effect_Representative(Effects[i]); } }
+		 * 
+		 * OldEffects ef = new OldEffects(ER); String saveEf = parent.gson.toJson(ef);
+		 * 
+		 * int id = server.getScenenID().get(0); parent.db.Update.scen(id, payload,
+		 * saveEf);
+		 */
 	}
 }
