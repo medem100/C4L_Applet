@@ -10,17 +10,11 @@ import c4l.applet.main.Constants;
 import c4l.applet.device.Effect_ID;
 import c4l.applet.device.Effect_Representative;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Properties;
-import java.util.Set;
-
 import org.apache.log4j.Logger;
 import org.json.*;
-
-import com.sun.javafx.collections.MappingChange.Map;
 
 /**
  * Manages all inputs to the program (wing, server, MIDI, other APIs) and
@@ -37,17 +31,18 @@ public class Input {
 	private DashboardInput server;
 	private JSONObject OldResponse = new JSONObject("{}");
 	C4L_Launcher parent;
-	static Logger logger = Logger.getLogger(Input.class);
 
-	private int currentSceneId; // web
-	private int[] currentFaderValues = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }; // web
-	private int currentSize; // web
-	private int currentSpeed; // web
+	private int currentSceneId;
+	private int[] currentFaderValues = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+	private int currentSize;
+	private int currentSpeed;
 	Effect[] oEffects = new Effect[30]; // test
 	// boolean setOldeffects = false;
 
 	/** last know (and processed) hardware-fader position */
 	private int[] h_faders;
+	/** last know (and processed) hardware-fader position */
+	private int[] h_bfaders;
 	/** last know (and processed) hardware-x-fader position */
 	private int[] h_xfaders;
 	/** last know (and processed) hardware-rotary encoder position */
@@ -78,7 +73,8 @@ public class Input {
 		} /* if */
 		this.parent = parent;
 
-		this.h_faders = new int[16];
+		this.h_faders = new int[8];
+		this.h_bfaders = new int[8];
 		this.h_xfaders = new int[4];
 		this.h_rotary = new int[3];
 		this.active = new boolean[30]; // should be initialized with false
@@ -101,66 +97,77 @@ public class Input {
 		if (wing != null) {
 			wing.tick();
 
-			// check Wingcontroller for changes in device activity
-			// boolean[] change = wing.checkActivity();
-			// for (int i = 0; i < Constants.DYNAMIC_DEVICES; i++)
-			// active[i] ^= change[i];
-			// wing.setActiveDevices(active); // Tell wing, which devices are active
+			//check Wingcontroller for changes in device activity
+			boolean[] change = wing.checkActivity();
+			for (int i = 0; i < Constants.DYNAMIC_DEVICES; i++)
+				active[i] ^= change[i];
+			wing.setActiveDevices(active); // Tell wing, which devices are active (for indication-LEDs)
 
 			// check wing-faders
-			// for (int i = 0; i < 16; i++) {
-			for (int i = 0; i < 8; i++) { // remove this line for normal code, this is tweaked for MVP
+			int offset = 0;
+			if (wing.getAnalogBank() != 0) offset = 8;
+			for (int i = 0; i < 8; i++) {
 				temp = wing.getFader(i);
 				if (Math.abs(temp - h_faders[i]) > wing.FADER_TOLERANCE) {
 					if (temp <= wing.FADER_TOLERANCE)
-						temp = 0; //for a correction factor larger than the toleranc this should happen implicitly when dividing by the first... TODO: Think wheter to remove this for optimization
+						temp = 0; //for a correction factor larger than the tolerance this should happen implicitly when dividing by the first... TODO: Think whether to remove this for optimization
 					h_faders[i] = temp;
 					for (int j = 0; j < Constants.DYNAMIC_DEVICES; j++) {
 						if (active[j])
-							parent.deviceHandle[j].setInput(i, h_faders[i] / wing.CORRECTION_DIVISOR);
+							parent.deviceHandle[j].setInput(i + offset, h_faders[i] / wing.CORRECTION_DIVISOR);
 					} /* for */
 				} /* if */
 			} /* for */
+			
 			// check wing-x-faders
-			// for (int i = 0; i < 4; i++) {
-			// temp = wing.getXFader(i);
-			// if (Math.abs(temp - h_xfaders[i]) > wing.FADER_TOLERANCE) {
-			// h_xfaders[i] = temp;
-			// switch (i) {
-			// case 0:
-			// for (int j = 0; j < Constants.DYNAMIC_DEVICES; j++) {
-			// if (active[j])
-			// parent.deviceHandle[j].setSpeed(h_xfaders[i] / Constants.CORRECTIONDIVISOR);
-			// } /* for */
-			// case 1:
-			// for (int j = 0; j < Constants.DYNAMIC_DEVICES; j++) {
-			// if (active[j])
-			// parent.deviceHandle[j].setSize(h_xfaders[i] / Constants.CORRECTIONDIVISOR);
-			// } /* for */
-			// } /* switch */
-			// // TODO Define use of fader 3 and specify 4
-			// } /* if */
-			// } /* for */
-			// check rotary encoders
-			// for (int i = 0; i < Constants.ROTARY_COUNT; i++) {
-			// temp = wing.getRotary(i) - h_rotary[i];
-			// h_rotary[i] += temp;
-			// if (temp > wing.ROTARY_RANGE / 2)
-			// temp -= wing.ROTARY_RANGE;
-			// if (temp < -wing.ROTARY_RANGE / 2)
-			// temp += wing.ROTARY_RANGE;
-			// for (int j = 0; j < Constants.DYNAMIC_DEVICES; j++) {
-			// if (active[j])
-			// parent.deviceHandle[j].applyRotary(i, temp);
-			// } /* for devices */
-			// } /* for rotary encoders */
+			for (int i = 0; i < 4; i++) {
+				temp = wing.getXFader(i);
+				if (Math.abs(temp - h_xfaders[i]) > wing.FADER_TOLERANCE) {
+					h_xfaders[i] = temp;
+					switch (i) {
+						case 0:
+							for (int j = 0; j < Constants.DYNAMIC_DEVICES; j++) {
+								if (active[j])
+									parent.deviceHandle[j].setSpeed(h_xfaders[i] / wing.CORRECTION_DIVISOR);
+							} /* for */
+						case 1:
+							for (int j = 0; j < Constants.DYNAMIC_DEVICES; j++) {
+								if (active[j])
+									parent.deviceHandle[j].setSize(h_xfaders[i] / wing.CORRECTION_DIVISOR);
+							} /* for */
+					} /* switch */
+			// TODO Define use of fader 3 and specify 4
+				} /* if */
+			} /* for */
+			
+			//check rotary encoders
+			for (int i = 0; i < wing.NUM_ROTARYS; i++) {
+				temp = wing.getRotary(i) - h_rotary[i];
+				h_rotary[i] += temp;
+				if (temp > wing.ROTARY_RANGE/2) temp -= wing.ROTARY_RANGE;
+				if (temp < -wing.ROTARY_RANGE/2) temp += wing.ROTARY_RANGE;
+				for (int j = 0; j < Constants.DYNAMIC_DEVICES; j++) {
+					if (active[j])
+						parent.deviceHandle[j].applyRotary(i, temp);
+				} /* for devices */
+			} /* for rotary encoders */
+			
 			// TODO B-faders
+			for (int i = 0; i < wing.NUM_BFADERS; i++) {
+				temp = wing.getBFader(i);
+				if (Math.abs(temp - h_bfaders[i]) > wing.FADER_TOLERANCE) {
+					h_bfaders[i] = temp;
+					parent.staticDevice.setInput(h_bfaders[i]/wing.CORRECTION_DIVISOR, i);
+				} /* if */
+			} /* for bfaders */
 		} /* if wing exists */
 
 		// TODO check dashboard
 
 		if (ServerAvailable) {
-			server.tick();
+     
+      
+      			server.tick();
 
 			// set old effects
 
@@ -176,6 +183,10 @@ public class Input {
 				// parent.deviceHandle[i].addMainEffect(oEffects[i], 0);
 				// }
 				// }
+				// setOldeffects = false;
+				// }
+      
+      				// }
 				// setOldeffects = false;
 				// }
 
@@ -221,6 +232,8 @@ public class Input {
 						// int eId1 = Integer.valueOf(effect.substring(0, 1));
 						// int eid2 = Integer.valueOf(effect.substring(1));
 						//
+    
+    						//
 						if (!(effectId.equals("99"))) {
 							Effect_ID eid = new Effect_ID(Integer.valueOf(effectId.substring(0, 1)),
 									Integer.valueOf(effectId.substring(1, 2)));
@@ -260,13 +273,11 @@ public class Input {
 						// } else {
 						// parent.deviceHandle[i].addMainEffect(e);
 						// }
-
-						// parent.deviceHandle[i].effects.
-						// parent.deviceHandle[i]
-
-						// parent.deviceHandle[i].
-
-						// }
+  
+      
+      
+      
+  						// }
 						// parent.deviceHandle[i].setSpeed(server.getEffectSpeed());
 						// parent.deviceHandle[i].setSize(server.getEffectSize());
 						if (changeSpeed)
@@ -306,7 +317,7 @@ public class Input {
 	}
 
 	// Help Funcktions
-
+      
 	private void loadScene(int id) {
 		logger.debug("load scene: "+id + " in setup: "+server.getsetupID() );
 		parent.deviceHandle = parent.db.Select.scene(id);
