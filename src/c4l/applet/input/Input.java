@@ -97,7 +97,6 @@ public class Input {
 
 		// Handle the HardwareWing
 		if (wing != null) {
-			active[0] = true;
 			wing.tick();
 
 			// check Wingcontroller for changes in device activity
@@ -207,7 +206,7 @@ public class Input {
 				} else {
 
 					for (int i = 0; i < active.length; i++) {
-						active[i] = false;
+						//active[i] = false;
 					}
 
 					HashMap<Integer, Integer> changFader = new HashMap<>();
@@ -221,7 +220,7 @@ public class Input {
 
 					boolean changeSize = false;
 					boolean changeSpeed = false;
-
+					/*
 					if (currentSize != server.getEffectSize()) {
 						changeSize = true;
 						currentSize = server.getEffectSize();
@@ -231,7 +230,7 @@ public class Input {
 						changeSpeed = true;
 						currentSpeed = server.getEffectSpeed();
 					}
-
+*/
 					String effectId = server.getEffectID();
 
 					for (int i = 0; i < active.length; i++) {
@@ -258,7 +257,7 @@ public class Input {
 
 					for (int i : server.getChosenDevices()) {
 
-						active[i] = true;
+						//active[i] = true;
 
 						// String effectId = server.getEffectID();
 						//
