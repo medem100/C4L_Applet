@@ -26,16 +26,20 @@ import org.json.*;
  */
 public class Input {
 	private Logger log = Logger.getLogger(Input.class);
+	/** object holding and managing the hardware-wing-pult */
 	private WingController wing;
 	private Boolean ServerAvailable;
 	private DashboardInput server;
 	private JSONObject OldResponse = new JSONObject("{}");
+	/** reference to the main-object, used to access stuff beyond input */
 	C4L_Launcher parent;
 
 	private int currentSceneId;
 	private int[] currentFaderValues = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-	private int currentSize;
-	private int currentSpeed;
+	/** values to init new effects with, written by all inputs, but only on change (so last wins) */
+	private int currentSize, currentSpeed;
+	/** last known (and processed) position of server-effect-faders */
+	private int serverSize, serverSpeed;
 	Effect[] oEffects = new Effect[30]; // test
 	// boolean setOldeffects = false;
 
@@ -220,17 +224,19 @@ public class Input {
 
 					boolean changeSize = false;
 					boolean changeSpeed = false;
-					/*
-					if (currentSize != server.getEffectSize()) {
+					
+					if (serverSize != server.getEffectSize()) {
 						changeSize = true;
-						currentSize = server.getEffectSize();
+						serverSize = server.getEffectSize();
+						currentSize = serverSize;
 					}
 
-					if (currentSpeed != server.getEffectSpeed()) {
+					if (serverSpeed != server.getEffectSpeed()) {
 						changeSpeed = true;
-						currentSpeed = server.getEffectSpeed();
+						serverSpeed = server.getEffectSpeed();
+						currentSpeed = serverSpeed;
 					}
-*/
+
 					String effectId = server.getEffectID();
 
 					for (int i = 0; i < active.length; i++) {
