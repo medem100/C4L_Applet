@@ -72,7 +72,7 @@ public class C4L_Launcher {
 			deviceHandle[i] = new Device(Constants.STANDART_PERMUTATION, i * Constants.DEVICE_CHANNELS);
 		}
 
-		logger.debug("Test Debug");
+
 		float[][] matrix = new float[Constants.STATIC_CHANNELS][Constants.STATIC_INPUT];
 		for (int i = 0; i < Math.min(Constants.STATIC_CHANNELS, Constants.STATIC_INPUT); i++)
 			matrix[i][i] = 1;

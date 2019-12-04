@@ -67,7 +67,6 @@ public class Effect_Random extends Effect {
 				last_state = (last_state + Constants.EFFECTSTEP) % Constants.EFFECTRANGE;
 				for (int j = 0; j < n_channels; j++) {
 					last[j] = Math.random();
-					System.out.println(last[j]);
 				}
 				break;
 			case WILD:
