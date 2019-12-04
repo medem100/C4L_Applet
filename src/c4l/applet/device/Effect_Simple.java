@@ -67,50 +67,50 @@ public class Effect_Simple extends Effect {
 			color = Color.getHSBColor(((float) state)/Constants.EFFECTRANGE, 1, 1);
 		} /* if */
 		if (type == Effecttype_det.STROBO_HOLD) {
-			if (state < last_state) out = in.clone();
-		}
+			if ((2*state) % Constants.EFFECTRANGE < (2*last_state) % Constants.EFFECTRANGE) out = in.clone();
+		} /* if */
 		
 		for (int i = 0; i < Constants.DEVICE_CHANNELS; i++) {
 			switch (type) {
 			//Single-channel-effects
 			case SINUS:
-				if (channels[i] == 1) in[i] = cutOff((int) (in[i] + size/2*Math.sin(state*2*Math.PI/Constants.EFFECTRANGE)));
+				if (channels[i] == 1) in[i] = cutOff((int) (in[i] + size/2*Math.sin(((float) state)*2*Math.PI/Constants.EFFECTRANGE)));
 				break;
 			case RAMP:
-				if (channels[i] == 1) in[i] = cutOff((int) (in[i] + size*(state/Constants.EFFECTRANGE - 0.5)));
+				if (channels[i] == 1) in[i] = cutOff((int) (in[i] + size*(((float) state)/Constants.EFFECTRANGE - 0.5)));
 				break;
 			case REVRAMP:
-				if (channels[i] == 1) in[i] = cutOff((int) (in[i] - size*(state/Constants.EFFECTRANGE - 0.5)));
+				if (channels[i] == 1) in[i] = cutOff((int) (in[i] - size*(((float) state)/Constants.EFFECTRANGE - 0.5)));
 				break;
 			case LINEAR:
-				if (channels[i] == 1) in[i] = cutOff((int) (in[i] + size*(2*Math.abs(state/Constants.EFFECTRANGE - 0.5) - 0.5)));
+				if (channels[i] == 1) in[i] = cutOff((int) (in[i] + size*(2*Math.abs(((float) state)/Constants.EFFECTRANGE - 0.5) - 0.5)));
 				break;
 			case LINEAR_HOLDL:
-				if (channels[i] == 1) {if (state < Constants.EFFECTRANGE/4 || state >= Constants.EFFECTRANGE*3/4) in[i] = cutOff((int) (in[i] + size*(4*Math.abs(state/Constants.EFFECTRANGE - 0.5) - 1.5))); else in[i] = cutOff(in[i] - size/2);}
+				if (channels[i] == 1) {if (state < Constants.EFFECTRANGE/4 || state >= Constants.EFFECTRANGE*3/4) in[i] = cutOff((int) (in[i] + size*(4*Math.abs(((float) state)/Constants.EFFECTRANGE - 0.5) - 1.5))); else in[i] = cutOff(in[i] - size/2);}
 				break;
 			case LINEAR_HOLDH:
-				if (channels[i] == 1) {if (state < Constants.EFFECTRANGE/2) in[i] = cutOff((int) (in[i] + size*(2*Math.abs(2*state/Constants.EFFECTRANGE - 0.5) - 0.5))); else in[i] = cutOff(in[i] + size/2);}
+				if (channels[i] == 1) {if (state < Constants.EFFECTRANGE/2) in[i] = cutOff((int) (in[i] + size*(2*Math.abs(2*((float) state)/Constants.EFFECTRANGE - 0.5) - 0.5))); else in[i] = cutOff(in[i] + size/2);}
 				break;
 			case STROBO:
-				if (channels[i] == 1) {if (size*(Constants.EFFECTRANGE/(Constants.MAXVALUE + 1)) <= state) in[i] = in[i]; else in[i] = 0;}
+				if (channels[i] == 1) {if (size*(Constants.EFFECTRANGE/(Constants.MAXVALUE + 1)) <= (2*state) % Constants.EFFECTRANGE) in[i] = in[i]; else in[i] = 0;}
 				break;
 			case STROBO_HOLD:
-				if (channels[i] == 1) {if (size*(Constants.EFFECTRANGE/(Constants.MAXVALUE + 1)) <= state) in[i] = out[i]; else in[i] = 0;}
+				if (channels[i] == 1) {if (size*(Constants.EFFECTRANGE/(Constants.MAXVALUE + 1)) <= (2*state) % Constants.EFFECTRANGE) in[i] = out[i]; else in[i] = 0;}
 				break;
 				
 			//Multi-channel-effect
 			case CIRCLE:
-				if (channels[i] == 1) in[i] = cutOff((int) (in[i] + size/2*Math.sin(state*2*Math.PI/Constants.EFFECTRANGE)));
-				if (channels[i] == 2) in[i] = cutOff((int) (in[i] + size/2*Math.cos(state*2*Math.PI/Constants.EFFECTRANGE)));
+				if (channels[i] == 1) in[i] = cutOff((int) (in[i] + size/2*Math.sin(((float) state)*2*Math.PI/Constants.EFFECTRANGE)));
+				if (channels[i] == 2) in[i] = cutOff((int) (in[i] + size/2*Math.cos(((float) state)*2*Math.PI/Constants.EFFECTRANGE)));
 				break;
 			case TRIANGLE:
-				if (channels[i] == 1) {if (state < Constants.EFFECTRANGE*2/3) in[i] = cutOff((int) (in[i] + size*(3/2*state/Constants.EFFECTRANGE - 0.5))); else in[i] = cutOff((int) (in[i] - size*(3*state/Constants.EFFECTRANGE - 2.5)));}
-				if (channels[i] == 2) {if (state < Constants.EFFECTRANGE*2/3) in[i] = cutOff((int) (in[i] + size*(2*Math.abs(3/2*state/Constants.EFFECTRANGE - 0.5) - 0.5))); else in[i] = cutOff(in[i] + size/2);}
+				if (channels[i] == 1) {if (state < Constants.EFFECTRANGE*2/3) in[i] = cutOff((int) (in[i] + size*(3.0/2*((float) state)/Constants.EFFECTRANGE - 0.5))); else in[i] = cutOff((int) (in[i] - size*(3*((float) state)/Constants.EFFECTRANGE - 2.5)));}
+				if (channels[i] == 2) {if (state < Constants.EFFECTRANGE*2/3) in[i] = cutOff((int) (in[i] + size*(2*Math.abs(3.0/2*((float) state)/Constants.EFFECTRANGE - 0.5) - 0.5))); else in[i] = cutOff(in[i] + size/2);}
 				break;
 			case RAINBOW:
-				if (channels[i] == 1) in[i] = cutOff((int) (in[i] + (size*(color.getRed() - 0.5*Constants.MAXVALUE))/Constants.MAXVALUE));
-				if (channels[i] == 2) in[i] = cutOff((int) (in[i] + (size*(color.getGreen() - 0.5*Constants.MAXVALUE))/Constants.MAXVALUE));
-				if (channels[i] == 3) in[i] = cutOff((int) (in[i] + (size*(color.getBlue() - 0.5*Constants.MAXVALUE))/Constants.MAXVALUE));
+				if (channels[i] == 1) in[i] = cutOff((int) (in[i] + (size*(((float) color.getRed()) - 0.5*Constants.MAXVALUE))/Constants.MAXVALUE));
+				if (channels[i] == 2) in[i] = cutOff((int) (in[i] + (size*(((float) color.getGreen()) - 0.5*Constants.MAXVALUE))/Constants.MAXVALUE));
+				if (channels[i] == 3) in[i] = cutOff((int) (in[i] + (size*(((float) color.getBlue()) - 0.5*Constants.MAXVALUE))/Constants.MAXVALUE));
 				break;
 			} /* switch */
 		}/* for*/

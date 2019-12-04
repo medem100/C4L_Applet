@@ -27,9 +27,11 @@ public class DashboardInput {
 	public JSONObject usedRespons = new JSONObject();
 	ArrayList<Integer> scenenID = new ArrayList<>();
 	private static boolean savePresst;
+	private static boolean crateNewScenePresst;
 
 	private Logger Log = Logger.getLogger(DashboardInput.class);
 	private PropertyManager.Server prop;
+	private int setupid = 1;
 
 	//Constructor
 	public DashboardInput() throws Exception {
@@ -42,9 +44,17 @@ public class DashboardInput {
 
 	// Getter
 	
+	public int getsetupID() {
+		return setupid;
+	}
+	
 	public boolean isSavePresst() {
 	//	setSaveRead();
 		return savePresst;
+	}
+	
+	public boolean isCrateNewScenePresst() {
+		return crateNewScenePresst;
 	}
 
 	public Boolean[] getDevices() {
@@ -88,6 +98,8 @@ public class DashboardInput {
 			throw new IndexOutOfBoundsException("You can only get a device for index 0 to 29");
 		return faders[index];
 	}
+	
+//	public int setCurrentScene()
 
 	/**
 	 * Return All chosen Values in the Dashboard
@@ -119,6 +131,7 @@ public class DashboardInput {
 		effectSize = usedRespons.getInt("effectSize");
 		caseID = usedRespons.getInt("caseID");
 		savePresst = usedRespons.getBoolean("save");
+		crateNewScenePresst = usedRespons.getBoolean("crateNewScene");
 
 		//Log.debug(usedRespons.toString());
 
@@ -212,6 +225,22 @@ public class DashboardInput {
 
 			 if(connection.getResponseCode() != 200 ) {
 				 Log.error("save can´t reset");;
+			 }
+			
+			}catch (IOException e) {
+				Log.error("Fail to check Server avalibale -> wrong path", e);
+			}
+	}
+	
+	public void setCreateNewSceneRead() {
+		try {
+			URL url = new URL(prop.ADDRESS+"/"+ prop.WEB_APP + "/rest/set/setCrateNewScene" +"?save=false");
+			HttpURLConnection connection = (HttpURLConnection)url.openConnection();
+			connection.setRequestMethod("GET");
+			connection.connect();
+
+			 if(connection.getResponseCode() != 200 ) {
+				 Log.error("CrateNewScene can´t reset");;
 			 }
 			
 			}catch (IOException e) {

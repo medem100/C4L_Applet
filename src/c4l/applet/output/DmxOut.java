@@ -65,7 +65,7 @@ public class DmxOut {
 	 * 
 	 * @param devices
 	 */
-	public void setOutput(Device[] devices) {
+	public void setOutput(Device[] devices, Static_Device staticDevice) {
 //		Log.debug(devices.toString());
 		for (Device device : devices) {
 			int[] Output = device.getOutput_unticked(); // TODO change in the Future
@@ -77,7 +77,7 @@ public class DmxOut {
 					if (!(Util.getTestRun())) {
 						// no test Run
 						setValue(addres + i, Output[i]);
-						//System.out.println(addres + i +" : " + Output[i]);
+					//	System.out.println(addres + i +" : " + Output[i]);
 					} else {
 						// test Run
 						Log.info("addresse :" + addres + i + " " + Output[i]);
@@ -86,6 +86,25 @@ public class DmxOut {
 			} catch (Exception e) {
 				Log.error("Fail to interpret the Output of all devices, faild by output : " + Output, e);
 			}
+		}
+		
+		//Output for static channels
+		int[] Output = staticDevice.getOutput();
+		int addres = staticDevice.getStartAddress();
+		try {
+			for (int i = 0; i < Constants.STATIC_CHANNELS; i++) {
+				// for Debug runs Without Entec dongel
+				if (!(Util.getTestRun())) {
+					// no test Run
+					setValue(addres + i, Output[i]);
+					//System.out.println(addres + i +" : " + Output[i]);
+				} else {
+					// test Run
+					Log.info("addresse :" + addres + i + " " + Output[i]);
+				}
+			}
+		} catch (Exception e) {
+			Log.error("Failed to interpret the Output for static device, faild by output : " + Output, e);
 		}
 	}
 

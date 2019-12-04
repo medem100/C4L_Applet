@@ -86,7 +86,7 @@ public class Effect_Random extends Effect {
 				if (channels[i] > 0) in[i] = cutOff((int) (in[i] + size*(last[channels[i] - 1] - 0.5)));
 				break;
 			case WILD: //Convex-combination of last and next
-				if (channels[i] > 0) in[i] = cutOff((int) (in[i] + size*(((state - last_state)*last[channels[i] - 1] + (Constants.EFFECTSTEP - state + last_state)*next[channels[i] - 1]) - 0.5))/Constants.EFFECTSTEP);
+				if (channels[i] > 0) in[i] = cutOff((int) (in[i] + size*(((state - last_state)*next[channels[i] - 1] + (Constants.EFFECTSTEP - state + last_state)*last[channels[i] - 1]) - 0.5))/Constants.EFFECTSTEP);
 				break;
 			} /* switch */
 		} /* for */
