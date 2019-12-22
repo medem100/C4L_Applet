@@ -68,7 +68,7 @@ public class DmxOut {
 	public void setOutput(Device[] devices, Static_Device staticDevice) {
 //		Log.debug(devices.toString());
 		for (Device device : devices) {
-			int[] Output = device.getOutput_unticked(); // TODO change in the Future
+			int[] Output = device.generateOutput_unticked(); // TODO change in the Future
 			//Log.debug(Output[0] + " " + Output[1] + " " + Output[2]);
 			try {
 				int addres = device.getStartAddres();

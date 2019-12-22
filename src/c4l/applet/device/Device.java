@@ -155,20 +155,20 @@ public class Device {
 	
 	/**
 	 * Compute output-values of the device. This includes Effects and Output-Patch.
-	 * The Effects are ticked here. To avoid this use {@link #getOutput_unticked() getOutput_unticked}.
+	 * The Effects are ticked here. To avoid this use {@link #generateOutput_unticked() getOutput_unticked}.
 	 * @return Array of integers with output values
 	 */
-	public int[] getOutput() {
-		return getOutput(true);
+	public int[] generateOutput() {
+		return generateOutput(true);
 	}
 	
 	/**
 	 * Compute output-values of the device. This includes Effects and Output-Patch.
-	 * The Effects aren't ticked here. To do this use {@link #getOutput() getOutput}.
+	 * The Effects aren't ticked here. To do this use {@link #generateOutput() getOutput}.
 	 * @return Array of integers with output values
 	 */
-	public int[] getOutput_unticked() {
-		return getOutput(false);
+	public int[] generateOutput_unticked() {
+		return generateOutput(false);
 	}
 	
 	/**
@@ -186,7 +186,7 @@ public class Device {
 	 * @param tick_effects 	whether Effects should be ticked
 	 * @return 				Array of integers with output values
 	 */
-	public int[] getOutput(Boolean tick_effects) {
+	public int[] generateOutput(Boolean tick_effects) {
 		outputs = inputs.clone();
 		//apply Effects
 		Effect e;

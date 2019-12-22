@@ -27,7 +27,7 @@ public class Scene {
 	 */
 	public int[] generateOutput() {
 		for (int i = 0; i < Constants.DYNAMIC_DEVICES; i++) {
-			int[] device_out = devices[i].getOutput(false);
+			int[] device_out = devices[i].generateOutput(false);
 			System.arraycopy(device_out, 0, output, i*Constants.DEVICE_CHANNELS, Constants.DEVICE_CHANNELS);
 		}
 		int[] static_device_out = static_device.getOutput();
