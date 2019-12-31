@@ -1,5 +1,7 @@
 package c4l.applet.scenes;
 
+import c4l.applet.device.Device;
+import c4l.applet.device.Static_Device;
 import c4l.applet.main.Constants;
 
 public class State {
@@ -41,6 +43,23 @@ public class State {
 		this.fade_state = fade_state;
 	}
 
+	//Device-Getter
+	/**
+	 * Gives reference to a device object so that Input can manipulate it.
+	 * @param index	of the requested device (0 <= index < Contants.DYNAMIC_DEVICES (THIS IS NOT CHECKED HERE AND MY CAUSE UNEXPECTED BEHAVIOUR IF VIOLATED))
+	 * @return reference to new_scene.devices[index]
+	 */
+	public Device getDevice(int index) {
+		return new_scene.devices[index];
+	}
+	/**
+	 * Gives reference to the static_device object so that Input can manipulate it.
+	 * @return reference to new_scene.static_device
+	 */
+	public Static_Device getStaticDevice() {
+		return new_scene.static_device;
+	}
+	
 	//other functions
 	/**
 	 * Initiate a new scene fade
