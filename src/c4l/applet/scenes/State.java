@@ -9,8 +9,10 @@ public class State {
 	
 	/** determines how fast a fade goes: every tick adds this to fade_state */
 	private int fade_speed;
-	/** 0 corresponds to old_scene, COnstants.SCENE_FADE_LENGTH to new_scene, is incremented when ticking */
+	/** 0 corresponds to old_scene, Constants.SCENE_FADE_LENGTH to new_scene, is incremented when ticking */
 	private int fade_state;
+	/** declares channels (on pre-permutation-level) that shouldn't be faded and are static on the new scene (e.g. cause they don't change in the scene) */
+	private boolean noFade[];
 	
 	private int[] output;
 	
@@ -20,6 +22,7 @@ public class State {
 		
 		fade_state = Constants.SCENE_FADE_LENGTH;
 		fade_speed = 0;
+		noFade = new boolean[512];
 		
 		output = new int[Constants.OUTPUT_LENGTH];
 	}
@@ -73,10 +76,8 @@ public class State {
 		 * Such changes should then also made to newFade() and newScene() and the function calls to this function that happen there.
 		 * 
 		 * Loading from DB should probably happen here, as Scene-Class does not support missing objects and here you can just copy/keep the old ones.
-		 * For those "copied" object it actually might be best not to copy them, but reference the same object,
-		 * such that even though changes should only be mapped to the new_scene,
-		 * the same (!) objects in old_scene are also modified and you don't get weird side-effects from fading
-		 * and inputting on unfaded devices at the same time.
+		 * When such copying occurs one shall make sure to copy the objects (not just referencing them) to avoid double-ticking.
+		 * In order to avoid weird side-effects than noFade can be set to true for such channels that aren't affected by the fade.
 		 */
 	}
 	
@@ -119,6 +120,9 @@ public class State {
 		for (int i = 0; i < Constants.DYNAMIC_DEVICES; i++) {
 			if (setup.fadeable[i]) {
 				output[i] = (int) Math.round(lambda*new_scene_out[i] + (1 - lambda)*old_scene_out[i]);
+			}
+			if (noFade[i]) {
+				output[i] = new_scene_out[i];
 			}
 		}
 		
