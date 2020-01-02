@@ -5,8 +5,16 @@ public class Setup {
 	
 	/** 512-array saying, if a value can be faded in a sensible way (example for true: red; for false: effect-preset) */
 	public final boolean[] fadeable;
+	/** array containing the output-permutation (saying for each output-channel, which pre-perm-channel he is) */
+	public final int[] perm;
 	
-	public Setup(boolean[] fadeability) {
+	/**
+	 * 
+	 * @param fadeability
+	 * @param permutation	output-permutation. CHannel 512 sends constant-0;
+	 */
+	public Setup(boolean[] fadeability, int[] permutation) {
 		this.fadeable = fadeability;
+		this.perm = permutation;
 	}
 }
