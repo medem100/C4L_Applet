@@ -27,6 +27,9 @@ public class State {
 		noFade = new boolean[512];
 		
 		output = new int[Constants.OUTPUT_LENGTH];
+		
+		this.new_scene = new Scene(setup);
+		this.old_scene = new Scene(setup);
 	}
 	
 	//Getters and Setters

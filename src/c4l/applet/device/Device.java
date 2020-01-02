@@ -31,7 +31,7 @@ public class Device {
 	 * @param virtual_dimmer	Linked List of channels to be dimmed virtually (may be empty if not needed)
 	 * @param setup				Device_Setup-reference for this device
 	 */
-	public Device(int v_dim_channel, LinkedList<Integer> virtual_dimmer, Device_Setup setup) {
+	public Device(Device_Setup setup) {
 		this.inputs = new int[Constants.DEVICE_CHANNELS];
 		this.p_outputs = new int[Constants.DEVICE_CHANNELS];
 		

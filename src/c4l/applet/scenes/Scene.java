@@ -24,6 +24,21 @@ public class Scene {
 		output = new int[513]; //Hold a zero in output[512] to be able to map constant off in the permutation
 		output_permutated = new int[512];
 	}
+	public Scene(Setup setup) {
+		this.setup = setup;
+		this.devices = new Device[Constants.DYNAMIC_DEVICES];
+		for (int i = 0; i < Constants.DYNAMIC_DEVICES; i++) {
+			this.devices[i] = new Device(setup.d_setup[i]);
+		}
+		
+		float[][] matrix = new float[Constants.STATIC_CHANNELS][Constants.STATIC_INPUT];
+		for (int i = 0; i < Math.min(Constants.STATIC_CHANNELS, Constants.STATIC_INPUT); i++)
+			matrix[i][i] = 1;
+		this.static_device = new Static_Device(matrix);
+		
+		output = new int[513]; //Hold a zero in output[512] to be able to map constant off in the permutation
+		output_permutated = new int[512];
+	}
 	
 	/** Tick everything in the scene */
 	public void tick() {

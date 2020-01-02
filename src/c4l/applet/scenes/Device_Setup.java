@@ -2,6 +2,8 @@ package c4l.applet.scenes;
 
 import java.util.LinkedList;
 
+import c4l.applet.main.Constants;
+
 public class Device_Setup {
 	private int[] main_effect_channels;
 	private int[] rotary_channels;
@@ -23,6 +25,9 @@ public class Device_Setup {
 	}
 	public Device_Setup(int[] main_effect_channels, int[] rotary_channels) {
 		this(main_effect_channels, rotary_channels, 3, new LinkedList<Integer>());
+	}
+	public Device_Setup() {
+		this(Constants.STANDART_ROTARY_CHANNELS,Constants.STANDART_ROTARY_CHANNELS);
 	}
 	
 	//Getters and Setters
