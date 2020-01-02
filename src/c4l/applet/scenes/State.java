@@ -143,7 +143,7 @@ public class State {
 			if (noFade[i]) {
 				output[i] = new_scene_out[i];
 			}
-		}
+		}		
 		
 		return output;
 	}

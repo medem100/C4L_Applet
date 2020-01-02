@@ -247,7 +247,7 @@ public class Input {
 										Integer.valueOf(effectId.substring(1, 2)));
 								Effect e = Effect_ID.generateEffectFromID(eid, currentSpeed,
 										currentSize, 0,
-										parent.deviceHandle[i].getMaineffetChannels());
+										parent.deviceHandle[i].getMainEffetChannels());
 
 								// if (Effect_ID.getEffectID(e)
 								// .equals(Effect_ID.getEffectID(parent.deviceHandle[i].main_effect.get(0)))) {
@@ -279,7 +279,7 @@ public class Input {
 									Integer.valueOf(effectId.substring(1, 2)));
 							Effect e = Effect_ID.generateEffectFromID(eid, currentSpeed,
 									currentSize, 0,
-									parent.deviceHandle[i].getMaineffetChannels()); // TODO get info from
+									parent.deviceHandle[i].getMainEffetChannels()); // TODO get info from
 																									// device
 
 							// if (Effect_ID.getEffectID(e)
