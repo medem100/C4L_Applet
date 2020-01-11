@@ -359,7 +359,8 @@ public class Input {
 
 	private void loadScene(int id) {
 		log.debug("load scene: " + id + " in setup: " + server.getsetupID());
-		parent.deviceHandle = parent.db.Select.scene(id);
+		//parent.deviceHandle = parent.db.Select.scene(id);
+		parent.state.newScene(id);
 		currentSceneId = id;
 		// TODO check scenen exist
 		/*
@@ -395,7 +396,7 @@ public class Input {
 	private void crateNewScene() {
 		// logger.debug("crate new scene");
 		try {
-			parent.db.Insert.scene(parent.deviceHandle.clone(), server.getsetupID());
+			parent.db.Insert.scene(parent.state.getDevices().clone(), server.getsetupID());
 			// server.set
 		} catch (Exception e) {
 			log.error(e);
@@ -404,7 +405,7 @@ public class Input {
 
 	private void saveScene() {
 		log.debug("save scene: " + currentSceneId + " in setup: " + server.getsetupID());
-		parent.db.Update.scene(parent.deviceHandle.clone(), currentSceneId);
+		parent.db.Update.scene(parent.state.getDevices().clone(), currentSceneId);
 
 		/*
 		 * Effect[] Effects = new Effect[30]; Device[] oDev =
