@@ -16,7 +16,6 @@ import c4l.applet.scenes.Device_Setup;
 public class Device {
 	private int[] inputs;
 	private int[] outputs;
-	private int[] p_outputs;
 		
 	private Device_Setup my_setup;
 	
@@ -33,7 +32,6 @@ public class Device {
 	 */
 	public Device(Device_Setup setup) {
 		this.inputs = new int[Constants.DEVICE_CHANNELS];
-		this.p_outputs = new int[Constants.DEVICE_CHANNELS];
 		
 		this.effects = new LinkedList<Effect>();
 		this.main_effect = new LinkedList<Effect>();
@@ -164,8 +162,8 @@ public class Device {
 		//Virtual dimmer
 		for (ListIterator<Integer> it = my_setup.getVirtual_dimming().listIterator(); it.hasNext(); ) {
 			int helper = it.next();
-			p_outputs[helper] = (p_outputs[helper]*outputs[my_setup.getVirtual_dimmer_channel()])/Constants.MAXVALUE;
+			outputs[helper] = (outputs[helper]*outputs[my_setup.getVirtual_dimmer_channel()])/Constants.MAXVALUE;
 		}
-		return p_outputs;
+		return outputs;
 	}
 }

@@ -360,7 +360,8 @@ public class Input {
 	private void loadScene(int id) {
 		log.debug("load scene: " + id + " in setup: " + server.getsetupID());
 		//parent.deviceHandle = parent.db.Select.scene(id);
-		parent.state.newScene(id);
+		//parent.state.newScene(id);
+		parent.state.newFade(id,200);
 		currentSceneId = id;
 		// TODO check scenen exist
 		/*
