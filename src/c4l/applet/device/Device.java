@@ -4,6 +4,7 @@ import java.util.LinkedList;
 import java.util.ListIterator;
 
 import c4l.applet.main.Constants;
+import c4l.applet.scenes.Device_Setup;
 
 /**
  * Definition of a single Device, consisting of Input values, a list of Effects and an Output permutation
@@ -15,57 +16,27 @@ import c4l.applet.main.Constants;
 public class Device {
 	private int[] inputs;
 	private int[] outputs;
-	private int[] p_outputs;
-	
-	private int[] perm; //Input -> Output mapping (applied after effects)
-	private int virtual_dimmer_channel; //Channel for the virtual dimmer (pre permutation)
-	private LinkedList<Integer> virtual_dimming; //channels to be affected by a virtual dimmer (post permutation)
-	private int[] rotary_channels; //which channels shall be affected by the rotary encoders
-	private int startAddress;
-	
-//	private int device_id;// only interesting for the store
-	
-	private int[] main_effect_channels;
+		
+	private Device_Setup my_setup;
 	
 	public LinkedList<Effect> effects;
 	public LinkedList<Effect> main_effect;
 	
 	//Constructors
-	public Device(int[] permutation, int startAddress) { //for backwards compatibility with Main and TestObjeckte
-		this(permutation, 3, new LinkedList<Integer>(), Constants.STANDART_ROTARY_CHANNELS, startAddress);
-	}
 	/**
 	 * Main constructor to construct a new Device from scratch
 	 * 
-	 * @param permutation		Output-Patching of channels (if unsure you Constants.STANDART_PERMUTATION)
 	 * @param v_dim_channel		Dimmer-Channel (if you don't use the virtual dimmer, you can give any int here)
 	 * @param virtual_dimmer	Linked List of channels to be dimmed virtually (may be empty if not needed)
-	 * @param rotarys			Channels, which shall be effected by rotary encoders
-	 * @param startAddress		DMX-adress of the first channel
+	 * @param setup				Device_Setup-reference for this device
 	 */
-	public Device(int[] permutation, int v_dim_channel, LinkedList<Integer> virtual_dimmer, int[] rotarys, int startAddress) { //for backwards compatibility with Main and TestObjeckte
-		
-		this(permutation,v_dim_channel,virtual_dimmer,rotarys,startAddress,new int[] {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0});
-	}
-	
-	public Device(int[] permutation, int v_dim_channel, LinkedList<Integer> virtual_dimmer, int[] rotarys, int startAddress , int[] main_effect_channels) {
-		
-		this.startAddress = startAddress;
+	public Device(Device_Setup setup) {
 		this.inputs = new int[Constants.DEVICE_CHANNELS];
-		this.p_outputs = new int[Constants.DEVICE_CHANNELS];
-		
-		this.perm = permutation;
-		this.virtual_dimmer_channel = v_dim_channel;
-		this.virtual_dimming = virtual_dimmer;
-		this.rotary_channels = rotarys;
 		
 		this.effects = new LinkedList<Effect>();
 		this.main_effect = new LinkedList<Effect>();
 		
-		//this.device_id = device_id;
-		this.main_effect_channels = main_effect_channels;
-		
-		
+		this.my_setup = setup;
 	}
 	
 	//Getters and Setters
@@ -78,32 +49,15 @@ public class Device {
 	public void setInput(int index, int value) {
 		this.inputs[index] = value;
 	}
-	public int[] getPerm() {
-		return perm;
-	}
-	public void setPerm(int[] perm) {
-		this.perm = perm;
-	}
-	public int[] getRotary_channels() {
-		return rotary_channels;
-	}
-	public void setRotary_channels(int[] rotary_channels) {
-		this.rotary_channels = rotary_channels;
-	}
-	public int getStartAddres() {
-		return this.startAddress;
-	}
-	public void setStartAddress(Integer address) {
-		this.startAddress = address;
+	public int[] getMainEffetChannels() {
+		return my_setup.getMain_effect_channels();
 	}
 	
 	public void applyRotary(int index, int value) {
-		inputs[rotary_channels[index]] = Effect.cutOff(inputs[rotary_channels[index]] + value);
+		inputs[my_setup.getRotary_channels()[index]] = Effect.cutOff(inputs[my_setup.getRotary_channels()[index]] + value);
 	}
 	
-	public int[] getMaineffetChannels() {
-		return main_effect_channels;
-	}
+
 
 	/*
 	 * Manage Effects. This does not offer anything you need, therefore effects is public,
@@ -155,20 +109,20 @@ public class Device {
 	
 	/**
 	 * Compute output-values of the device. This includes Effects and Output-Patch.
-	 * The Effects are ticked here. To avoid this use {@link #getOutput_unticked() getOutput_unticked}.
+	 * The Effects are ticked here. To avoid this use {@link #generateOutput_unticked() getOutput_unticked}.
 	 * @return Array of integers with output values
 	 */
-	public int[] getOutput() {
-		return getOutput(true);
+	public int[] generateOutput() {
+		return generateOutput(true);
 	}
 	
 	/**
 	 * Compute output-values of the device. This includes Effects and Output-Patch.
-	 * The Effects aren't ticked here. To do this use {@link #getOutput() getOutput}.
+	 * The Effects aren't ticked here. To do this use {@link #generateOutput() getOutput}.
 	 * @return Array of integers with output values
 	 */
-	public int[] getOutput_unticked() {
-		return getOutput(false);
+	public int[] generateOutput_unticked() {
+		return generateOutput(false);
 	}
 	
 	/**
@@ -186,7 +140,7 @@ public class Device {
 	 * @param tick_effects 	whether Effects should be ticked
 	 * @return 				Array of integers with output values
 	 */
-	public int[] getOutput(Boolean tick_effects) {
+	public int[] generateOutput(Boolean tick_effects) {
 		outputs = inputs.clone();
 		//apply Effects
 		Effect e;
@@ -205,15 +159,11 @@ public class Device {
 			outputs = e.apply(outputs);
 		}
 		
-		//Apply output-patch
-		for (int i = 0; i < Constants.DEVICE_CHANNELS; i++) {
-			p_outputs[i] = outputs[perm[i]];
-		}
 		//Virtual dimmer
-		for (ListIterator<Integer> it = virtual_dimming.listIterator(); it.hasNext(); ) {
+		for (ListIterator<Integer> it = my_setup.getVirtual_dimming().listIterator(); it.hasNext(); ) {
 			int helper = it.next();
-			p_outputs[helper] = (p_outputs[helper]*outputs[virtual_dimmer_channel])/Constants.MAXVALUE;
+			outputs[helper] = (outputs[helper]*outputs[my_setup.getVirtual_dimmer_channel()])/Constants.MAXVALUE;
 		}
-		return p_outputs;
+		return outputs;
 	}
 }

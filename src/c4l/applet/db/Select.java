@@ -27,6 +27,7 @@ import c4l.applet.device.Device;
 import c4l.applet.device.Effect;
 import c4l.applet.device.Effect_ID;
 import c4l.applet.main.Constants;
+import c4l.applet.scenes.Device_Setup;
 
 public class Select {
 
@@ -46,13 +47,7 @@ public class Select {
 		}
 	}
 
-	/**
-	 * giebt den anwesenheits status zurück
-	 * 
-	 * @param Name
-	 * @param Vorname
-	 * @return anwesend oder nicht vorallem ob er anwesend ist
-	 */
+	
 	// public String getSchuelerAnwesend(String Name ,String Vorname){
 	// dLogger.log(Level.INFO, "getSchuelerAnwesend");
 	// String[] felder = {"Vorname","Name","Anwesend"}; // mus warscheinlich noch
@@ -138,7 +133,13 @@ public class Select {
 	 * "scenes" + " where scenenID =" + id + ""; String answer = getOneData(SQL,
 	 * "effects"); // return an JSON array return answer; }
 	 */
+	// TODO refactor without Start Addres use a.s IDX
 
+	/**
+	 * load scene
+	 * @param id
+	 * @return
+	 */
 	public Device[] scene(int id) {
 		logger.debug("load scene: " + id);
 		String SQL = " select ds.device_id, ds.device_status_id, d.permutation, d.rotary_channels,"
@@ -162,18 +163,23 @@ public class Select {
 				logger.trace(res.getInt("start_address"));
 				if (lastStartaddres != res.getInt("start_address")) {
 					logger.debug("iterate device : " + iterator + " DS : " + res.getInt("device_status_id"));
-					Device device = new Device(toIntArray(res.getString("permutation")),
-							res.getInt("virtual_dimmer_channel"), toLinkedList(res.getString("virtual_dimming")),
-							toIntArray(res.getString("rotary_channels")), res.getInt("start_address"),
-							toIntArray(res.getString("main_effect_channels")));
+					
+					Device_Setup DS  = new Device_Setup(toIntArray(res.getString("main_effect_channels")), toIntArray(res.getString("rotary_channels")), res.getInt("virtual_dimmer_channel"), toLinkedList(res.getString("virtual_dimming")));
+					
+//					Device device = new Device(toIntArray(res.getString("permutation")),
+//							res.getInt("virtual_dimmer_channel"), toLinkedList(res.getString("virtual_dimming")),
+//							toIntArray(res.getString("rotary_channels")), res.getInt("start_address"),
+//							toIntArray(res.getString("main_effect_channels")));
 
+					Device device = new Device(DS);
+					
 					device.setInputs(toIntArray(res.getString("input")));
 					if (res.getString("effect_id") != null) {
 						addEffect(device, res);
 					}
 
 					devices[iterator] = device;
-					lastStartaddres = device.getStartAddres();
+					lastStartaddres = res.getInt("start_address");
 					iterator++;
 				} else if (devices[iterator - 1] != null) {
 					addEffect(devices[iterator - 1], res);
@@ -184,7 +190,7 @@ public class Select {
 			// fill the scene up with standart devices TODO for scenen bundels
 			for (; iterator < Constants.DYNAMIC_DEVICES; iterator++) {
 				logger.debug("fill up device : " + iterator);
-				devices[iterator] = new Device(Constants.STANDART_PERMUTATION, iterator * Constants.DEVICE_CHANNELS);
+				devices[iterator] = new Device(new Device_Setup());
 			}
 
 			return devices;
@@ -203,7 +209,7 @@ public class Select {
 	 *            result set with the fields for an effect
 	 */
 	private void addEffect(Device device, ResultSet rs) {
-		logger.debug("add effect for device " + device.getStartAddres());
+//		logger.debug("add effect for device " + device.getStartAddres());
 		try {
 			Effect e = Effect_ID.generateEffectFromID(new Effect_ID(rs.getString("effect_id")), rs.getInt("size"),
 					rs.getInt("speed"), rs.getInt("state"), rs.getBoolean("accept_input"),
@@ -215,7 +221,7 @@ public class Select {
 				device.addEffect(e);
 			}
 		} catch (SQLException e) {
-			logger.error("can´t add effect for " + device.getStartAddres());
+	//		logger.error("can´t add effect for " + device.getStartAddres());
 			logger.error(e);
 		}
 	}

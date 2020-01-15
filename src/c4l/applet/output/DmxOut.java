@@ -6,7 +6,6 @@ import org.apache.log4j.PropertyConfigurator;
 import com.juanjo.openDmx.OpenDmx;
 import c4l.applet.main.Constants;
 import c4l.applet.main.Util;
-import c4l.applet.device.*;
 
 /**
  * @author Andre for the output whit the ENTEC USB DMX plug.
@@ -60,51 +59,24 @@ public class DmxOut {
 
 	}
 
-	/**
-	 * Send the Output values From the Devices Objects to The entec Dongel
+	/**of a full universe to The entec Dongel
 	 * 
-	 * @param devices
+	 * @param out 512-int-array of DMX-values.
 	 */
-	public void setOutput(Device[] devices, Static_Device staticDevice) {
-//		Log.debug(devices.toString());
-		for (Device device : devices) {
-			int[] Output = device.getOutput_unticked(); // TODO change in the Future
-			//Log.debug(Output[0] + " " + Output[1] + " " + Output[2]);
-			try {
-				int addres = device.getStartAddres();
-				for (int i = 0; i < Constants.DEVICE_CHANNELS; i++) {
-					// for Debug runs Without Entec dongel
-					if (!(Util.getTestRun())) {
-						// no test Run
-						setValue(addres + i, Output[i]);
-					//	System.out.println(addres + i +" : " + Output[i]);
-					} else {
-						// test Run
-						Log.info("addresse :" + addres + i + " " + Output[i]);
-					}
-				}
-			} catch (Exception e) {
-				Log.error("Fail to interpret the Output of all devices, faild by output : " + Output, e);
-			}
-		}
-		
-		//Output for static channels
-		int[] Output = staticDevice.getOutput();
-		int addres = staticDevice.getStartAddress();
+	public void setOutput(int[] out) {	
 		try {
-			for (int i = 0; i < Constants.STATIC_CHANNELS; i++) {
+			for (int i = 0; i < Constants.OUTPUT_LENGTH; i++) {
 				// for Debug runs Without Entec dongel
 				if (!(Util.getTestRun())) {
 					// no test Run
-					setValue(addres + i, Output[i]);
-					//System.out.println(addres + i +" : " + Output[i]);
+					setValue(i, out[i]);
 				} else {
 					// test Run
-					Log.info("addresse :" + addres + i + " " + Output[i]);
+					Log.info("addresse :" + i + " " + out[i]);
 				}
 			}
 		} catch (Exception e) {
-			Log.error("Failed to interpret the Output for static device, faild by output : " + Output, e);
+			Log.error("Failed to output array: " + out, e); //TODO: Andre: Is there anything inside try{} that could throw an exception?
 		}
 	}
 
