@@ -18,10 +18,14 @@ public class State {
 	 */
 	private int fade_state;
 	/**
-	 * declares channels (on pre-permutation-level) that shouldn't be faded and are
+	 * declares channels (on post-permutation-level) that shouldn't be faded and are
 	 * static on the new scene (e.g. cause they don't change in the scene)
 	 */
 	private boolean noFade[];
+	/** specifies if an output channel is flashed - ergo set to 255 */
+	private boolean flashed[];
+	/** if true ticking is ignored. Other classes may also decide to hold back inputs then */
+	public boolean freezed;
 
 	private int[] output;
 
@@ -32,6 +36,8 @@ public class State {
 		fade_state = Constants.SCENE_FADE_LENGTH;
 		fade_speed = 0;
 		noFade = new boolean[512];
+		flashed = new boolean[512];
+		freezed = false;
 
 		output = new int[Constants.OUTPUT_LENGTH];
 
@@ -90,6 +96,17 @@ public class State {
 	 */
 	public Static_Device getStaticDevice() {
 		return new_scene.static_device;
+	}
+	
+	public boolean isFreezed() {
+		return freezed;
+	}
+	public void setFreezed(boolean x) {
+		freezed = x;
+	}
+	public void flash(boolean[] x) throws Exception {
+		if (x.length != 512) throw new Exception("Illegal array length for flashing outputs.");
+			else flashed = x;
 	}
 
 	// other functions
@@ -150,13 +167,15 @@ public class State {
 	 * ticks everything inside and advances fading
 	 */
 	public void tick() {
-		old_scene.tick();
-		new_scene.tick();
-
-		fade_state += fade_speed;
-		if (fade_state > Constants.SCENE_FADE_LENGTH) {
-			fade_state = Constants.SCENE_FADE_LENGTH;
-			fade_speed = 0;
+		if (!freezed) {
+			old_scene.tick();
+			new_scene.tick();
+	
+			fade_state += fade_speed;
+			if (fade_state > Constants.SCENE_FADE_LENGTH) {
+				fade_state = Constants.SCENE_FADE_LENGTH;
+				fade_speed = 0;
+			}
 		}
 	}
 
@@ -189,6 +208,9 @@ public class State {
 			}
 			if (noFade[i]) {
 				output[i] = new_scene_out[i];
+			}
+			if (flashed[i]) {
+				output[i] = Constants.MAXVALUE;
 			}
 		}
 

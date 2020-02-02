@@ -83,7 +83,7 @@ public class Input {
 		this.h_bfaders = new int[8];
 		this.h_xfaders = new int[4];
 		this.h_rotary = new int[3];
-		this.active = new boolean[30]; // should be initialized with false
+		this.active = new boolean[Constants.DYNAMIC_DEVICES]; // should be initialized with false
 		if (wing != null)
 			wing.setActiveDevices(active, true);
 	}
@@ -91,9 +91,15 @@ public class Input {
 	public void deleteWing() {
 		this.wing = null;
 	}
-
 	public void setWing(WingController wing) {
 		this.wing = wing;
+	}
+	public void clearActive() {
+		for (int i = 0; i < Constants.DYNAMIC_DEVICES; i++)
+			active[i] = false;
+	}
+	public boolean[] getActive() {
+		return active;
 	}
 
 	public void tick() {

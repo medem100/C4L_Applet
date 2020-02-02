@@ -100,6 +100,9 @@ public class Device {
 	public void deleteEffect(int index) {
 		effects.remove(index);
 	}
+	public void clearEffect() {
+		effects.clear();
+	}
 	public void setSpeed(int value) {
 		for (ListIterator<Effect> it = effects.listIterator(); it.hasNext(); it.next().setSpeed(value));
 	}
