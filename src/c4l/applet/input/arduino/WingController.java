@@ -44,6 +44,7 @@ public class WingController {
 	/** Number of special purpose faders at Controller */	public final int NUM_XFADERS;
 	/** Number of rotary encoders at Controller */			public final int NUM_ROTARYS;
 	/** Number of selectable devices at Controller */		public final int NUM_DEVICES;
+	/** Number of direct buttons at Controller */			public final int NUM_DIRECTS;
 	
 	/** First analog channel used for normal faders */		public final int OFFSET_FADERS;
 	/** First analog channel used for rotary encoders */	public final int OFFSET_ROTARY;
@@ -55,6 +56,7 @@ public class WingController {
 	/** Channel of Multiplexing-feedback-flank */			public final int MULTIPLEX_FEEDBACK_PIN;
 	/** First Channel of multiplex information pins */		public final int OFFSET_MULTIPLEX_PINS;
 	/** Channel of analog-bank-choice-information */		public final int ANALOG_BANKING_PIN;
+	/** Channel of analog-bank-choice-information */		public final int OFFSET_DIRECT_BUTTONS;
 	
 	/** Fader movement, which is interpreted as noise */	public final int FADER_TOLERANCE;
 	/** Range of the rotary value. */						public final int ROTARY_RANGE;
@@ -82,6 +84,7 @@ public class WingController {
 		NUM_XFADERS					= Integer.parseInt(prop.getProperty("NUM_XFADERS", "4"));
 		NUM_ROTARYS					= Integer.parseInt(prop.getProperty("NUM_ROTARYS", "3"));
 		NUM_DEVICES					= Integer.parseInt(prop.getProperty("NUM_DEVICES", "30"));
+		NUM_DIRECTS					= Integer.parseInt(prop.getProperty("NUM_DIRECTS", "8"));
 
 		OFFSET_FADERS				= Integer.parseInt(prop.getProperty("OFFSET_FADERS", "0"));
 		OFFSET_ROTARY				= Integer.parseInt(prop.getProperty("OFFSET_ROTARY", "13"));
@@ -93,6 +96,7 @@ public class WingController {
 		MULTIPLEX_FEEDBACK_PIN		= Integer.parseInt(prop.getProperty("MULTIPLEX_FEEDBACK_PIN", "57"));
 		OFFSET_MULTIPLEX_PINS		= Integer.parseInt(prop.getProperty("OFFSET_MULTIPLEX_PINS", "1"));
 		ANALOG_BANKING_PIN			= Integer.parseInt(prop.getProperty("ANALOG_BANKING_PIN", "0"));
+		OFFSET_DIRECT_BUTTONS		= Integer.parseInt(prop.getProperty("OFFSET_DIRECT_BUTTONS", "8"));
 		
 		FADER_TOLERANCE				= Integer.parseInt(prop.getProperty("FADER_TOLERANCE", "2"));
 		ROTARY_RANGE				= Integer.parseInt(prop.getProperty("ROTARY_RANGE", "1024"));
@@ -183,6 +187,14 @@ public class WingController {
 	}
 	public void setActiveDevices(boolean[] isActive) {
 		setActiveDevices(isActive, false);
+	}
+	
+	public boolean[] checkDirects() {
+		boolean[] out = new boolean[NUM_DIRECTS];
+		for (int i = 0; i < NUM_DIRECTS; i++) {
+			out[i] = (arduino.digitalRead(OFFSET_DIRECT_BUTTONS + i) == Arduino.HIGH);
+		}
+		return out;
 	}
 	
 	public void tick() {

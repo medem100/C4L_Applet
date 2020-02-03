@@ -28,6 +28,8 @@ public class Input {
 	private Logger log = Logger.getLogger(Input.class);
 	/** object holding and managing the hardware-wing-pult */
 	private WingController wing;
+	/** Direct Button handler */
+	private Direct_Buttons directs;
 	private Boolean ServerAvailable;
 	private DashboardInput server;
 	private JSONObject OldResponse = new JSONObject("{}");
@@ -181,6 +183,9 @@ public class Input {
 					parent.state.getStaticDevice().setInput(h_bfaders[i] / wing.CORRECTION_DIVISOR, i);
 				} /* if */
 			} /* for bfaders */
+			
+			//check direct buttons
+			directs.update(wing.checkDirects());
 		} /* if wing exists */
 
 		// TODO check dashboard

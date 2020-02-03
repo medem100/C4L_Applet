@@ -61,7 +61,7 @@ public class Direct_Buttons {
 	}
 	
 	//Other functions
-	public void tick(boolean[] pushed) {
+	public void update(boolean[] pushed) {
 		boolean[] flash = new boolean[512]; //flashing is accumulated for (possibly multiple) flash-buttons and then send to state after the for-loop
 		
 		for (int i = 0; i < Math.max(size, pushed.length); i++) {
