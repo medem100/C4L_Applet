@@ -1,10 +1,12 @@
 package c4l.applet.input;
 
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.ListIterator;
+import java.util.Properties;
+import java.util.stream.Collectors;
 
 import c4l.applet.device.Device;
-import c4l.applet.device.Effect;
 import c4l.applet.main.Constants;
 import c4l.applet.scenes.State;
 
@@ -44,8 +46,8 @@ public class Direct_Buttons {
 	//Constructor
 	/**
 	 * Main constructor for Direct-Buttons-Class
-	 * @param state		State, which shall be manipulated bay this buttons
-	 * @param input		Input, which shall be manipulated bay this buttons
+	 * @param state		State, which shall be manipulated by this buttons
+	 * @param input		Input, which shall be manipulated by this buttons
 	 * @param count		Number of direct buttons
 	 * @param types		What these buttons do (array of length count)
 	 * @param info		possibly further specifications (array of length count, empty lists for easy functionalities)
@@ -58,6 +60,30 @@ public class Direct_Buttons {
 		this.info = info;
 		
 		old_pushed = new boolean[size];
+	}
+	/**
+	 * Constructs object from a property-file instead of arrays
+	 * @param state		State, which shall be manipulated by this buttons
+	 * @param input		Input, which shall be manipulated by this buttons
+	 * @param prop		Property-object holding all the other information
+	 * @return			new Direct_Button-object (the constructor is called internally after properties are parsed
+	 */
+	public static Direct_Buttons Direct_Buttons_fromProp(State state, Input input, Properties prop) {
+		int count = Integer.parseInt(prop.getProperty("NUM", "8"));
+		Direct_Button_Action types[] = new Direct_Button_Action[count];
+		@SuppressWarnings("unchecked")
+		LinkedList<Integer>[] info = new LinkedList[count]; 
+		for (int i = 0; i < count; i++) {
+			types[i] = Direct_Button_Action.valueOf(prop.getProperty(("BUTTON"+i)));
+			String s = prop.getProperty("INFO"+i);
+			if ((s != "") && (s != null)) {
+				//Convert String (like "1,23,4") to LinkedList<Integer>
+				info[i] = (LinkedList<Integer>) Arrays.asList(s.split(",")).stream().map(String::trim).mapToInt(Integer::parseInt).mapToObj(Integer::valueOf).collect(Collectors.toCollection(LinkedList::new));
+			} else {
+				info[i] = new LinkedList<Integer>();
+			}
+		}
+		return new Direct_Buttons(state, input, count, types, info);
 	}
 	
 	//Other functions
@@ -108,5 +134,5 @@ public class Direct_Buttons {
 		}
 		
 		old_pushed = pushed.clone();
-	} /* tick() */
+	} /* update() */
 }

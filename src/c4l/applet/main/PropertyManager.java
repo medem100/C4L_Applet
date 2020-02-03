@@ -34,6 +34,8 @@ public class PropertyManager {
 		
 		this.serverProp = openPropertiesFile(propertiesPath + mainProp.getProperty("SERVER", "server.properties"));
 		this.SERVER = new Server(serverProp);
+		
+		this.directButtonsProp = openPropertiesFile(propertiesPath + mainProp.getProperty("DIRECT_BUTTONS","directButtons.properties"));
 	}
 	public static PropertyManager getInstance() throws Exception {
 		if (INSTANCE == null) throw new Exception("PropertyManger wasn't initialized.");
@@ -59,6 +61,7 @@ public class PropertyManager {
 	
 	private Properties mainProp;
 	private Properties serverProp;
+	private Properties directButtonsProp;
 	
 	/**
 	 * Static function to get Properties-Object from path.
@@ -85,6 +88,9 @@ public class PropertyManager {
 	}
 	public String getArduinoPropPath() {
 		return arduinoPropPath;
+	}
+	public Properties getDirectButtonsProp() {
+		return directButtonsProp;
 	}
 
 	//Server-Properties

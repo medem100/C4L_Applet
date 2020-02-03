@@ -4,6 +4,7 @@ import c4l.applet.db.OldEffects;
 import c4l.applet.db.Scene;
 import c4l.applet.device.Device;
 import c4l.applet.device.Effect;
+import c4l.applet.input.Direct_Buttons.Direct_Button_Action;
 import c4l.applet.input.arduino.WingController;
 import c4l.applet.main.C4L_Launcher;
 import c4l.applet.main.Constants;
@@ -12,6 +13,7 @@ import c4l.applet.device.Effect_Representative;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Properties;
 import org.apache.log4j.Logger;
 import org.json.*;
@@ -81,6 +83,8 @@ public class Input {
 		} /* if */
 		this.parent = parent;
 
+		directs = Direct_Buttons.Direct_Buttons_fromProp(parent.state, this, parent.propM.getDirectButtonsProp());
+		
 		this.h_faders = new int[8];
 		this.h_bfaders = new int[8];
 		this.h_xfaders = new int[4];
