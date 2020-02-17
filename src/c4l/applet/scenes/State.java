@@ -167,7 +167,7 @@ public class State {
 	 */
 	public int[] generateOutput() {
 		if (this.fade_state >= Constants.SCENE_FADE_LENGTH) { // if you're done with fading take this shortcut
-			output = new_scene.generateOutput();
+			output = new_scene.generateOutput();	
 			return output;
 		}
 
@@ -191,7 +191,7 @@ public class State {
 				output[i] = new_scene_out[i];
 			}
 		}
-
 		return output;
+		
 	}
 }

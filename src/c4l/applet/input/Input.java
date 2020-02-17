@@ -192,10 +192,11 @@ public class Input {
 					loadScene(server.getScenenID().get(0));
 					currentSceneId = server.getScenenID().get(0);
 				} else {
-					
+
 					active = server.getChosenDevices();
-					wing.setActiveDevices(active, true);
-					
+					if (wing != null) {
+						wing.setActiveDevices(active, true);
+					}
 
 					HashMap<Integer, Integer> changFader = new HashMap<>();
 					for (int i = 0; i < oldFaderValues.length; i++) {
@@ -245,79 +246,80 @@ public class Input {
 
 							for (int key : changFader.keySet()) {
 								parent.state.getDevice(i).setInput(key, changFader.get(key));
-							};
+							}
+							;
 
 						}
 					}
-//
-//					for (int i : server.getChosenDevices()) {
+					//
+					// for (int i : server.getChosenDevices()) {
 
-						// active[i] = true;
+					// active[i] = true;
 
-						// String effectId = server.getEffectID();
-						//
-						// if(effectId != 0 ) {
-						// String effect = String.valueOf(effectId);
-						// int eId1 = Integer.valueOf(effect.substring(0, 1));
-						// int eid2 = Integer.valueOf(effect.substring(1));
-						//
+					// String effectId = server.getEffectID();
+					//
+					// if(effectId != 0 ) {
+					// String effect = String.valueOf(effectId);
+					// int eId1 = Integer.valueOf(effect.substring(0, 1));
+					// int eid2 = Integer.valueOf(effect.substring(1));
+					//
 
-//						//
-//						if (!(effectId.equals("99"))) {
-//							Effect_ID eid = new Effect_ID(Integer.valueOf(effectId.substring(0, 1)),
-//									Integer.valueOf(effectId.substring(1, 2)));
-//							Effect e = Effect_ID.generateEffectFromID(eid, currentSpeed, currentSize, 0,
-//									parent.state.getDevice(i).getMainEffetChannels()); // TODO get info from
-//																						// device
+					// //
+					// if (!(effectId.equals("99"))) {
+					// Effect_ID eid = new Effect_ID(Integer.valueOf(effectId.substring(0, 1)),
+					// Integer.valueOf(effectId.substring(1, 2)));
+					// Effect e = Effect_ID.generateEffectFromID(eid, currentSpeed, currentSize, 0,
+					// parent.state.getDevice(i).getMainEffetChannels()); // TODO get info from
+					// // device
 
-							// if (Effect_ID.getEffectID(e)
-							// .equals(Effect_ID.getEffectID(parent.deviceHandle[i].main_effect.get(0)))) {
-							// parent.deviceHandle[i].deleteMainEffect(0);
-							// } else {
-//							if (!(parent.state.getDevice(i).main_effect.isEmpty()))
-//								parent.state.getDevice(i).deleteMainEffect(0);
-//							parent.state.getDevice(i).addMainEffect(e, 0);
-//							// }
-//						}
+					// if (Effect_ID.getEffectID(e)
+					// .equals(Effect_ID.getEffectID(parent.deviceHandle[i].main_effect.get(0)))) {
+					// parent.deviceHandle[i].deleteMainEffect(0);
+					// } else {
+					// if (!(parent.state.getDevice(i).main_effect.isEmpty()))
+					// parent.state.getDevice(i).deleteMainEffect(0);
+					// parent.state.getDevice(i).addMainEffect(e, 0);
+					// // }
+					// }
 
-						// if (effectId != 0) {
-						// Effect_ID eid = null;
-						// switch (effectId) {
-						// case 1:
-						// eid = new Effect_ID(0, 0);
-						// break;
-						// case 2:
-						// eid = new Effect_ID(0, 1);
-						// break;
-						// case 3:
-						// eid = new Effect_ID(1, 0);
-						// break;
-						// case 4:
-						// eid = new Effect_ID(1, 1);
-						// break;
-						// } // TODO testen !
+					// if (effectId != 0) {
+					// Effect_ID eid = null;
+					// switch (effectId) {
+					// case 1:
+					// eid = new Effect_ID(0, 0);
+					// break;
+					// case 2:
+					// eid = new Effect_ID(0, 1);
+					// break;
+					// case 3:
+					// eid = new Effect_ID(1, 0);
+					// break;
+					// case 4:
+					// eid = new Effect_ID(1, 1);
+					// break;
+					// } // TODO testen !
 
-						// if (Effect_ID.getEffectID(e)
-						// .equals(Effect_ID.getEffectID(parent.deviceHandle[i].main_effect.get(0)))) {
-						// parent.deviceHandle[i].deleteMainEffect(0);
-						// } else {
-						// parent.deviceHandle[i].addMainEffect(e);
-						// }
+					// if (Effect_ID.getEffectID(e)
+					// .equals(Effect_ID.getEffectID(parent.deviceHandle[i].main_effect.get(0)))) {
+					// parent.deviceHandle[i].deleteMainEffect(0);
+					// } else {
+					// parent.deviceHandle[i].addMainEffect(e);
+					// }
 
-						// }
-						// parent.deviceHandle[i].setSpeed(server.getEffectSpeed());
-						// parent.deviceHandle[i].setSize(server.getEffectSize());
-//						if (changeSpeed)
-//							parent.state.getDevice(i).setMainSpeed(server.getEffectSpeed());
-//						if (changeSize)
-//							parent.state.getDevice(i).setMainSize(server.getEffectSize());
-//
-//						for (int key : changFader.keySet()) {
-//							parent.state.getDevice(i).setInput(key, changFader.get(key));
-//						}
-//						;
+					// }
+					// parent.deviceHandle[i].setSpeed(server.getEffectSpeed());
+					// parent.deviceHandle[i].setSize(server.getEffectSize());
+					// if (changeSpeed)
+					// parent.state.getDevice(i).setMainSpeed(server.getEffectSpeed());
+					// if (changeSize)
+					// parent.state.getDevice(i).setMainSize(server.getEffectSize());
+					//
+					// for (int key : changFader.keySet()) {
+					// parent.state.getDevice(i).setInput(key, changFader.get(key));
+					// }
+					// ;
 
-//					}
+					// }
 					// for (int j = 0; j < Constants.DEVICE_CHANNELS; j++) {
 					// parent.deviceHandle[i].setInput(j, server.getFader(j));
 					// }
@@ -327,7 +329,7 @@ public class Input {
 				}
 
 			}
-//
+			//
 			if (server.isSavePresst()) {
 				saveScene();
 			}
@@ -335,7 +337,7 @@ public class Input {
 			if (server.isCrateNewScenePresst()) {
 				crateNewScene();
 			}
-			
+
 			server.resetValues();
 			OldResponse = server.usedRespons;
 

@@ -16,7 +16,7 @@ import c4l.applet.main.PropertyManager;
 import sun.util.logging.resources.logging;
 
 /**
- * Get Data from The C4L Server 
+ * Get Data from The C4L Server
  */
 public class DashboardInput {
 
@@ -34,37 +34,36 @@ public class DashboardInput {
 	private Logger Log = Logger.getLogger(DashboardInput.class);
 	private PropertyManager.Server prop;
 	private int setupid = 1;
-	
-	
+
 	// all addresse wherer the API must be reset
+
 	
-	@SuppressWarnings("serial")
-	private HashMap<String, ResetValue[]> resetValues = new HashMap<String, ResetValue[]>(){{
-	    put(prop.SAVEPATH, new ResetValue[] {new ResetValue("save", "false")});
-	    put(prop.EFFECTPATH, new ResetValue[] {new ResetValue("effect", "99")});
-	    put(prop.CREATENEWSCENE, new ResetValue[] {new ResetValue("save", "false")});
-	}};
- 
-	//Constructor
+	private HashMap<String, ResetValue[]> resetValues = new HashMap<>();
+
+	// Constructor
 	public DashboardInput() throws Exception {
 		prop = PropertyManager.getInstance().SERVER;
+		// TODO refactor
+		resetValues.put(prop.SAVEPATH, new ResetValue[] { new ResetValue("save", "false") });
+		resetValues.put(prop.EFFECTPATH, new ResetValue[] { new ResetValue("effect", "99") });
+		resetValues.put(prop.CREATENEWSCENE, new ResetValue[] { new ResetValue("save", "false") });
 	}
-	
+
 	public int[] getFaders() {
 		return faders;
 	}
 
 	// Getter
-	
+
 	public int getsetupID() {
 		return setupid;
 	}
-	
+
 	public boolean isSavePresst() {
-	//	setSaveRead();
+		// setSaveRead();
 		return savePresst;
 	}
-	
+
 	public boolean isCrateNewScenePresst() {
 		return crateNewScenePresst;
 	}
@@ -78,7 +77,7 @@ public class DashboardInput {
 	}
 
 	public int getEffectSize() {
-		setEffectRead(); //TODO thats Ugly
+		setEffectRead(); // TODO thats Ugly
 		return effectSize;
 	}
 
@@ -110,30 +109,32 @@ public class DashboardInput {
 			throw new IndexOutOfBoundsException("You can only get a device for index 0 to 29");
 		return faders[index];
 	}
-	
-//	public int setCurrentScene()
-	
+
+	// public int setCurrentScene()
+
 	/**
 	 * only use for single values
-	 * @param param name
+	 * 
+	 * @param param
+	 *            name
 	 * @return String value of the parameter
 	 * @throws JSONException
 	 */
 	public String getStringValue(String param) throws JSONException {
 		return usedRespons.getString(param);
 	}
-	
+
 	/**
 	 * only use for single values
-	 * @param param name
+	 * 
+	 * @param param
+	 *            name
 	 * @return Int Value of the paramter
 	 * @throws JSONException
 	 */
 	public int getIntValue(String param) throws JSONException {
 		return usedRespons.getInt(param);
 	}
-	
-	
 
 	/**
 	 * Return All chosen Values in the Dashboard
@@ -153,7 +154,6 @@ public class DashboardInput {
 		JSONArray jsonDevices = usedRespons.getJSONArray("devices");
 		JSONArray jsonScenenID = usedRespons.getJSONArray("scenenID");
 
-
 		effect = usedRespons.getString("effect");
 		effectSpeed = usedRespons.getInt("effectSpeed");
 		effectSize = usedRespons.getInt("effectSize");
@@ -161,16 +161,15 @@ public class DashboardInput {
 		savePresst = usedRespons.getBoolean("save");
 		crateNewScenePresst = usedRespons.getBoolean("crateNewScene");
 
-		//Log.debug(usedRespons.toString());
+		// Log.debug(usedRespons.toString());
 
 		for (int i = 0; i < jsonFader.length(); i++)
 			faders[i] = jsonFader.getInt(i);
 
-		
 		ArrayList<Integer> temp = new ArrayList<Integer>();
 		for (int i = 0; i < jsonScenenID.length(); i++)
 			temp.add(jsonScenenID.getInt(i));
-		
+
 		scenenID = temp;
 
 		// a device what wasn´t used is null
@@ -198,8 +197,6 @@ public class DashboardInput {
 
 	// Help Functions
 
-	
-
 	private String readStringFromUrl(String url) {
 		URL readURL;
 		String response = "";
@@ -212,7 +209,7 @@ public class DashboardInput {
 			while ((inputLine = in.readLine()) != null)
 				response = response + inputLine;
 			in.close();
-	//		Log.debug(response);
+			// Log.debug(response);
 			return response;
 		} catch (Exception e) {
 			Log.error("fail to Read Respons ", e);
@@ -223,84 +220,87 @@ public class DashboardInput {
 	public JSONObject getResponse() {
 		String ResponsString;
 		String URL = prop.ADDRESS + prop.INFORMATIONPATH;
-	//	Log.debug("ServerURL :" + URL);
+		// Log.debug("ServerURL :" + URL);
 		ResponsString = readStringFromUrl(URL);
 		return new JSONObject(ResponsString);
 	}
-	
+
 	@Deprecated
 	public void setEffectRead() {
 		try {
 			URL url = new URL(prop.ADDRESS + prop.EFFECTPATH);
-			HttpURLConnection connection = (HttpURLConnection)url.openConnection();
+			HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 			connection.setRequestMethod("GET");
 			connection.connect();
 
-			 if(connection.getResponseCode() != 200 ) {
-				 Log.error("Effect can´t reset");;
-			 }
-			
-			}catch (IOException e) {
-				Log.error("Fail to check Server avalibale -> wrong path", e);
+			if (connection.getResponseCode() != 200) {
+				Log.error("Effect can´t reset");
+				;
 			}
+
+		} catch (IOException e) {
+			Log.error("Fail to check Server avalibale -> wrong path", e);
+		}
 	}
-	
+
 	@Deprecated
 	public void setSaveRead() {
 		try {
-			URL url = new URL(prop.ADDRESS + prop.SAVEPATH+"?save=false");
-			HttpURLConnection connection = (HttpURLConnection)url.openConnection();
+			URL url = new URL(prop.ADDRESS + prop.SAVEPATH + "?save=false");
+			HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 			connection.setRequestMethod("GET");
 			connection.connect();
 
-			 if(connection.getResponseCode() != 200 ) {
-				 Log.error("save can´t reset");;
-			 }
-			
-			}catch (IOException e) {
-				Log.error("Fail to check Server avalibale -> wrong path", e);
+			if (connection.getResponseCode() != 200) {
+				Log.error("save can´t reset");
+				;
 			}
+
+		} catch (IOException e) {
+			Log.error("Fail to check Server avalibale -> wrong path", e);
+		}
 	}
-	
+
 	@Deprecated
 	public void setCreateNewSceneRead() {
 		try {
-			URL url = new URL(prop.ADDRESS+"/"+ prop.WEB_APP + "/rest/set/setCrateNewScene" +"?save=false");
-			HttpURLConnection connection = (HttpURLConnection)url.openConnection();
+			URL url = new URL(prop.ADDRESS + "/" + prop.WEB_APP + "/rest/set/setCrateNewScene" + "?save=false");
+			HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 			connection.setRequestMethod("GET");
 			connection.connect();
 
-			 if(connection.getResponseCode() != 200 ) {
-				 Log.error("CrateNewScene can´t reset");;
-			 }
-			
-			}catch (IOException e) {
-				Log.error("Fail to check Server avalibale -> wrong path", e);
+			if (connection.getResponseCode() != 200) {
+				Log.error("CrateNewScene can´t reset");
+				;
 			}
+
+		} catch (IOException e) {
+			Log.error("Fail to check Server avalibale -> wrong path", e);
+		}
 	}
-	
+
 	/**
 	 * Reset All Fields at the API
 	 */
 	public void resetValues() {
 		try {
-		for(Entry<String, ResetValue[]> e : resetValues.entrySet()) {
-			String values = "?";
-			for(ResetValue rv : e.getValue()) {
-				values+=rv.getPARAMETER()+"="+rv.getVALUE() +"&";
-			}
-			values = values.substring(0, values.length() -1); // cut of the last &
-			URL url = new URL(prop.ADDRESS+"/" + e.getKey() +values);
-			
-			HttpURLConnection connection = (HttpURLConnection)url.openConnection();
-			connection.setRequestMethod("GET");
-			connection.connect();
+			for (Entry<String, ResetValue[]> e : resetValues.entrySet()) {
+				String values = "?";
+				for (ResetValue rv : e.getValue()) {
+					values += rv.getPARAMETER() + "=" + rv.getVALUE() + "&";
+				}
+				values = values.substring(0, values.length() - 1); // cut of the last &
+				URL url = new URL(prop.ADDRESS + e.getKey() + values);
 
-			 if(connection.getResponseCode() != 200 ) {
-				 Log.error(prop.ADDRESS +" can´t reset");
-			 }
-		}
-		}catch (IOException e) {
+				HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+				connection.setRequestMethod("GET");
+				connection.connect();
+
+				if (connection.getResponseCode() != 200) {
+					Log.error(prop.ADDRESS + " can´t reset");
+				}
+			}
+		} catch (IOException e) {
 			Log.error("Fail to check Server avalibale -> wrong path", e);
 		}
 	}
