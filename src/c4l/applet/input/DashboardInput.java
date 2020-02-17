@@ -4,6 +4,8 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map.Entry;
 import java.io.*;
 
 import org.apache.log4j.Logger;
@@ -18,11 +20,11 @@ import sun.util.logging.resources.logging;
  */
 public class DashboardInput {
 
-	private Boolean[] devices = new Boolean[Constants.DYNAMIC_DEVICES];
+	private boolean[] devices = new boolean[Constants.DYNAMIC_DEVICES];
 	public int[] faders = new int[Constants.DEVICE_CHANNELS];
 	private int effectSize;
 	private int effectSpeed;
-	private String effect; // 0 = kein Effect
+	private String effect; // 99 = kein Effect
 	private int caseID;
 	public JSONObject usedRespons = new JSONObject();
 	ArrayList<Integer> scenenID = new ArrayList<>();
@@ -32,7 +34,17 @@ public class DashboardInput {
 	private Logger Log = Logger.getLogger(DashboardInput.class);
 	private PropertyManager.Server prop;
 	private int setupid = 1;
-
+	
+	
+	// all addresse wherer the API must be reset
+	
+	@SuppressWarnings("serial")
+	private HashMap<String, ResetValue[]> resetValues = new HashMap<String, ResetValue[]>(){{
+	    put(prop.SAVEPATH, new ResetValue[] {new ResetValue("save", "false")});
+	    put(prop.EFFECTPATH, new ResetValue[] {new ResetValue("effect", "99")});
+	    put(prop.CREATENEWSCENE, new ResetValue[] {new ResetValue("save", "false")});
+	}};
+ 
 	//Constructor
 	public DashboardInput() throws Exception {
 		prop = PropertyManager.getInstance().SERVER;
@@ -57,7 +69,7 @@ public class DashboardInput {
 		return crateNewScenePresst;
 	}
 
-	public Boolean[] getDevices() {
+	public boolean[] getDevices() {
 		return devices;
 	}
 
@@ -100,26 +112,42 @@ public class DashboardInput {
 	}
 	
 //	public int setCurrentScene()
+	
+	/**
+	 * only use for single values
+	 * @param param name
+	 * @return String value of the parameter
+	 * @throws JSONException
+	 */
+	public String getStringValue(String param) throws JSONException {
+		return usedRespons.getString(param);
+	}
+	
+	/**
+	 * only use for single values
+	 * @param param name
+	 * @return Int Value of the paramter
+	 * @throws JSONException
+	 */
+	public int getIntValue(String param) throws JSONException {
+		return usedRespons.getInt(param);
+	}
+	
+	
 
 	/**
 	 * Return All chosen Values in the Dashboard
 	 * 
 	 * @return all chosen Devices
 	 */
-	public ArrayList<Integer> getChosenDevices() {
-		ArrayList<Integer> chosenDevices = new ArrayList<>();
-		for (int i = 0; i < devices.length; i++) {
-			if (devices[i])
-				chosenDevices.add(i);
-		}
-		return chosenDevices;
+	public boolean[] getChosenDevices() {
+		return devices;
 	}
 
 	/**
 	 * Set new Values to the dasboard
 	 */
 	public void tick() {
-		// TODO senden das die EFFect taste gelesen wurde
 		usedRespons = getResponse();
 		JSONArray jsonFader = usedRespons.getJSONArray("fader");
 		JSONArray jsonDevices = usedRespons.getJSONArray("devices");
@@ -200,6 +228,7 @@ public class DashboardInput {
 		return new JSONObject(ResponsString);
 	}
 	
+	@Deprecated
 	public void setEffectRead() {
 		try {
 			URL url = new URL(prop.ADDRESS + prop.EFFECTPATH);
@@ -216,6 +245,7 @@ public class DashboardInput {
 			}
 	}
 	
+	@Deprecated
 	public void setSaveRead() {
 		try {
 			URL url = new URL(prop.ADDRESS + prop.SAVEPATH+"?save=false");
@@ -232,6 +262,7 @@ public class DashboardInput {
 			}
 	}
 	
+	@Deprecated
 	public void setCreateNewSceneRead() {
 		try {
 			URL url = new URL(prop.ADDRESS+"/"+ prop.WEB_APP + "/rest/set/setCrateNewScene" +"?save=false");
@@ -246,6 +277,32 @@ public class DashboardInput {
 			}catch (IOException e) {
 				Log.error("Fail to check Server avalibale -> wrong path", e);
 			}
+	}
+	
+	/**
+	 * Reset All Fields at the API
+	 */
+	public void resetValues() {
+		try {
+		for(Entry<String, ResetValue[]> e : resetValues.entrySet()) {
+			String values = "?";
+			for(ResetValue rv : e.getValue()) {
+				values+=rv.getPARAMETER()+"="+rv.getVALUE() +"&";
+			}
+			values = values.substring(0, values.length() -1); // cut of the last &
+			URL url = new URL(prop.ADDRESS+"/" + e.getKey() +values);
+			
+			HttpURLConnection connection = (HttpURLConnection)url.openConnection();
+			connection.setRequestMethod("GET");
+			connection.connect();
+
+			 if(connection.getResponseCode() != 200 ) {
+				 Log.error(prop.ADDRESS +" can´t reset");
+			 }
+		}
+		}catch (IOException e) {
+			Log.error("Fail to check Server avalibale -> wrong path", e);
+		}
 	}
 
 }

@@ -97,6 +97,7 @@ public class PropertyManager {
 	    /** Path for API-Request */					public final String INFORMATIONPATH;
 	    /** Path for read Effect jsp */				public final String EFFECTPATH;
 	    /** Path for read Effect jsp */				public final String SAVEPATH;
+	    /** Path for Create new Scene */			public final String CREATENEWSCENE;
 	    /** Path for check is server Available **/	public final String INDEXPATH;	    
 	    
 	    private Server(Properties serverProperties) {
@@ -109,6 +110,7 @@ public class PropertyManager {
 	    	EFFECTPATH				= "/" + WEB_APP + serverProperties.getProperty("EFFECTPATH");
 	    	SAVEPATH			= "/" + WEB_APP + serverProperties.getProperty("SAVEPATH");
 	    	INDEXPATH			= "/" + WEB_APP + serverProperties.getProperty("INDEXPATH");
+	    	CREATENEWSCENE			= "/" + WEB_APP + serverProperties.getProperty("CREATENEWSCENE");
 	    }
 	}
 	public final Server SERVER;
