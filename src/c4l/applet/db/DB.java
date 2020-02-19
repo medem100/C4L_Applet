@@ -16,6 +16,7 @@ public class DB {
 	public Insert Insert = new Insert();
 	public Update Update = new Update();
 	public Create Create = new Create();
+	public Delete Delete = new Delete();
 	//static Logger logger = Logger.getLogger(DB.class);
      private DB() { 
     	

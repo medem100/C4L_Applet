@@ -19,6 +19,8 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.NavigableMap;
+import java.util.TreeMap;
 
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
@@ -283,11 +285,11 @@ public class Select {
 	 * @param setupId
 	 * @return
 	 */
-	public HashMap<Integer, String> deviceInfos(int setupId) {
+	public NavigableMap<Integer, String> deviceInfos(int setupId) {
 		String SQL = "select d.device_id , d.device_name from device d" + " inner join setup_has_device shd"
-				+ " on shd.device_id = d.device_id" + " where shd.setup_id = " + setupId;
+				+ " on shd.device_id = d.device_id" + " where shd.setup_id = " + setupId + " order by d.start_address";
 
-		HashMap<Integer, String> devices = new HashMap<>();
+		NavigableMap<Integer, String> devices = new TreeMap<>();
 
 		try {
 			conn = dbCreate.getInstance();
