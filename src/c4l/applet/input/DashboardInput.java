@@ -21,6 +21,8 @@ import sun.util.logging.resources.logging;
 public class DashboardInput {
 
 	private boolean[] devices = new boolean[Constants.DYNAMIC_DEVICES];
+	private boolean[] channels = new boolean[Constants.DEVICE_CHANNELS];
+	
 	public int[] faders = new int[Constants.DEVICE_CHANNELS];
 	private int effectSize;
 	private int effectSpeed;
@@ -52,6 +54,8 @@ public class DashboardInput {
 	public int[] getFaders() {
 		return faders;
 	}
+	
+	
 
 	// Getter
 
@@ -153,6 +157,8 @@ public class DashboardInput {
 		JSONArray jsonFader = usedRespons.getJSONArray("fader");
 		JSONArray jsonDevices = usedRespons.getJSONArray("devices");
 		JSONArray jsonScenenID = usedRespons.getJSONArray("scenenID");
+		JSONArray jsonChannels = usedRespons.getJSONArray("selectChannels");
+		
 
 		effect = usedRespons.getString("effect");
 		effectSpeed = usedRespons.getInt("effectSpeed");
@@ -171,6 +177,10 @@ public class DashboardInput {
 			temp.add(jsonScenenID.getInt(i));
 
 		scenenID = temp;
+		
+		for(int i = 0; i < jsonChannels.length(); i++) {
+			channels[i] = jsonChannels.getBoolean(i);
+		}
 
 		// a device what wasn´t used is null
 		for (int i = 0; i < jsonDevices.length(); i++) {

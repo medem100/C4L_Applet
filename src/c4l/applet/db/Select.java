@@ -49,96 +49,9 @@ public class Select {
 		}
 	}
 
-	
-	// public String getSchuelerAnwesend(String Name ,String Vorname){
-	// dLogger.log(Level.INFO, "getSchuelerAnwesend");
-	// String[] felder = {"Vorname","Name","Anwesend"}; // mus warscheinlich noch
-	// klasse rein
-	// String SQL = " SELECT sdSchueler.Vorname,sdSchueler.Name, anwesend.Anwesend"+
-	// " FROM sdSchueler"+
-	// " INNER JOIN anwesend ON sdSchueler.ID = anwesend.SusID AND
-	// sdSchueler.Vorname = '" + Vorname + "' AND sdSchueler.Name = '"+ Name +"'"+
-	// " ORDER BY sdSchueler.Vorname";
-	// dLogger.log(Level.FINER, SQL);
-	// return getDbData(SQL,felder);
-	//
-	// }
-	//
-	// /**
-	// * giebt eine klassen liste aus der DB zurück
-	// * @param Klasse
-	// * @return name vorname satus der anwesenheit in einem json string
-	// */
-	// public String getKlasseAnwesend(String Klasse){
-	//
-	// dLogger.log(Level.INFO, "getKlasseAnwesend");
-	// String[] felder = {"Vorname","Name","Anwesend","ID"};
-	// String SQL = " SELECT sdSchueler.Vorname,sdSchueler.ID,sdSchueler.Name,
-	// anwesend.Anwesend"+
-	// " FROM sdSchueler"+
-	// " INNER JOIN anwesend ON sdSchueler.ID = anwesend.SusID AND sdSchueler.Klasse
-	// = '"+Klasse+"'"+
-	// " ORDER BY sdSchueler.Vorname";
-	// dLogger.log(Level.FINER, SQL);
-	// return getDbData(SQL,felder);
-	// }
-	//
-	// /**
-	// * abfrage von Schüler Stammdaten mit beiden oder nur einem parameter
-	// *
-	// * @param name
-	// * @param vorname
-	// * @return String mit den werten aus der DB in Json String
-	// */
-	// public String getSchueler(String name, String vorname){
-	// dLogger.log(Level.INFO, "getSchueler");
-	// String SQL = null;
-	// if(name.equals("") && (!vorname.equals(""))){
-	// SQL = "SELECT * FROM "+ constant.TSDSchueler + " where Vorname
-	// ='"+vorname+"'"; // Ungetestet
-	// }else if((!name.equals("")) && vorname.equals("")){
-	// SQL = "SELECT * FROM "+ constant.TSDSchueler + " where Name ='"+name+"'";
-	// }else{
-	// SQL = "SELECT * FROM "+ constant.TSDSchueler + " where Name ='"+name+"' AND
-	// Vorname ='"+vorname+"'";
-	// }
-	// dLogger.log(Level.FINER, SQL);
-	// return getDbData(SQL, constant.felderSDschueler);
-	// }
-	//
-	//
-
-	/*
-	 * TODO Implement
-	 * 
-	 * - Select scenen - select all scen ides an descripts - select infos for setup
-	 * -
-	 * 
-	 * - insert scene / chase / device -
-	 * 
-	 */
-
-	/*
-	 * public ArrayList<HashMap<String, String>> scene(int id) { //String SQL =
-	 * "SELECT payload FROM " + "scenes" + " where scenenID =" + id + ""; String SQL
-	 * =
-	 * "select ds.device_status_id, ds.input , d.device_description, es.effect_status_id from device_status ds "
-	 * + "inner join effect_status es "+
-	 * "on ds.device_status_id = es.Device_status_id "+ "inner join device d "+
-	 * "on ds.Device_id = d.Device_id "+ "inner join scene_has_device_status shds "+
-	 * "on ds.device_status_id = shds.Device_status_id "+
-	 * "where shds.Scene_id ="+id+";"; ArrayList<HashMap<String, String>> answer =
-	 * getDbData(SQL, Constants.FIELDS_SCENE); // return an JSON array // return
-	 * first element return answer; }
-	 * 
-	 * public String effects(int id) { String SQL = "SELECT effects FROM " +
-	 * "scenes" + " where scenenID =" + id + ""; String answer = getOneData(SQL,
-	 * "effects"); // return an JSON array return answer; }
-	 */
-	// TODO refactor without Start Addres use a.s IDX
-
 	/**
 	 * load scene
+	 * 
 	 * @param id
 	 * @return
 	 */
@@ -165,16 +78,19 @@ public class Select {
 				logger.trace(res.getInt("start_address"));
 				if (lastStartaddres != res.getInt("start_address")) {
 					logger.debug("iterate device : " + iterator + " DS : " + res.getInt("device_status_id"));
-					
-					Device_Setup DS  = new Device_Setup(toIntArray(res.getString("main_effect_channels")), toIntArray(res.getString("rotary_channels")), res.getInt("virtual_dimmer_channel"), toLinkedList(res.getString("virtual_dimming")));
-					
-//					Device device = new Device(toIntArray(res.getString("permutation")),
-//							res.getInt("virtual_dimmer_channel"), toLinkedList(res.getString("virtual_dimming")),
-//							toIntArray(res.getString("rotary_channels")), res.getInt("start_address"),
-//							toIntArray(res.getString("main_effect_channels")));
+
+					Device_Setup DS = new Device_Setup(toIntArray(res.getString("main_effect_channels")),
+							toIntArray(res.getString("rotary_channels")), res.getInt("virtual_dimmer_channel"),
+							toLinkedList(res.getString("virtual_dimming")));
+
+					// Device device = new Device(toIntArray(res.getString("permutation")),
+					// res.getInt("virtual_dimmer_channel"),
+					// toLinkedList(res.getString("virtual_dimming")),
+					// toIntArray(res.getString("rotary_channels")), res.getInt("start_address"),
+					// toIntArray(res.getString("main_effect_channels")));
 
 					Device device = new Device(DS);
-					
+
 					device.setInputs(toIntArray(res.getString("input")));
 					if (res.getString("effect_id") != null) {
 						addEffect(device, res);
@@ -211,7 +127,7 @@ public class Select {
 	 *            result set with the fields for an effect
 	 */
 	private void addEffect(Device device, ResultSet rs) {
-//		logger.debug("add effect for device " + device.getStartAddres());
+		// logger.debug("add effect for device " + device.getStartAddres());
 		try {
 			Effect e = Effect_ID.generateEffectFromID(new Effect_ID(rs.getString("effect_id")), rs.getInt("size"),
 					rs.getInt("speed"), rs.getInt("state"), rs.getBoolean("accept_input"),
@@ -223,7 +139,7 @@ public class Select {
 				device.addEffect(e);
 			}
 		} catch (SQLException e) {
-	//		logger.error("can´t add effect for " + device.getStartAddres());
+			// logger.error("can´t add effect for " + device.getStartAddres());
 			logger.error(e);
 		}
 	}
@@ -278,6 +194,40 @@ public class Select {
 		}
 
 	}
+	
+	
+	
+	
+	/**
+	 * get a name of scene
+	 * @param sceneId
+	 * @return name
+	 */
+	public String nameOfScene(int sceneId) {
+		String SQL =  "select scene_name from scene where scene_id="+ sceneId+";";
+		return getOneData(SQL, "scene_name");
+	}
+	
+	/**
+	 * get a name of a chase
+	 * @param chaseId
+	 * @return
+	 */
+	public String nameOfChase(int chaseId) {
+		String SQL =  "select chase_name from chase where chase_id ="+ chaseId+";";
+		return getOneData(SQL, "chase_name");
+	}
+	
+	/**
+	 * get a name of a chase
+	 * @param chaseId
+	 * @return
+	 */
+	public String descOfChase(int chaseId) {
+		String SQL =  "select chase_description from chase where chase_id ="+ chaseId+";";
+		return getOneData(SQL, "chase_description");
+	}
+	
 
 	/**
 	 * get names of Devices in an setup
@@ -305,6 +255,104 @@ public class Select {
 			return null;
 		}
 
+	}
+	
+	/**
+	 * get the chases of the setup
+	 * @param setupId
+	 * @return chase ides
+	 */ 
+	protected ResultSet setupHasChase(int setupId) {
+		String SQL = "select * from setup_has_chase where setUp_id="+ setupId+";";
+		try {
+			conn = dbCreate.getInstance();
+			Statement query = conn.createStatement();
+			ResultSet result = query.executeQuery(SQL);
+			return result;
+		} catch (SQLException e) {
+			logger.error(e);
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	
+	/**
+	 * get the chases of the Setup 
+	 * @param setupId
+	 * @return get the chases
+	 */
+	public Chase[] chasesOfsetup(int setupId) {
+		ArrayList<Chase> chases = new ArrayList<>();
+		ResultSet chasesList = setupHasChase(setupId);
+		
+		try {
+			while(chasesList.next()) {
+				chases.add(chase(chasesList.getInt("case_id"), setupId));
+			}
+			return chases.toArray(new Chase[chases.size()]);
+		} catch (SQLException e) {
+			logger.error(e);
+			e.printStackTrace();
+			return null;
+		}
+		
+		
+	}
+	
+
+	/**
+	 * get ohne chase
+	 * @param chaseId
+	 * @param setupId ( ist not requiert)
+	 * @return chase objeckt with all infos
+	 */
+	public Chase chase(int chaseId, int setupId) {
+		
+		String chaseName = nameOfChase(chaseId);
+		
+		ResultSet sceneinfos = scenesToChase(chaseId);
+		
+	//	ArrayList<Pair<Scene, Integer>> unsortScens = new ArrayList<>();
+		ArrayList<Scene> scenes = new ArrayList<>();
+		
+		try {
+			while(sceneinfos.next()) {
+				int sId = sceneinfos.getInt("scene_id");
+				Device[] devices = scene(sId);
+				Scene s = new Scene(devices);
+				s.setId(sId);
+				s.setName(nameOfScene(sId));
+				scenes.add(s);
+			}
+		} catch (SQLException e) {
+			logger.error(e);
+			e.printStackTrace();
+		}
+		
+		return new Chase(scenes.toArray(new Scene[scenes.size()]), new int[scenes.size()], new int[scenes.size()], chaseName, descOfChase(chaseId), chaseId, setupId);
+		
+	}
+
+	/**
+	 * get the scene informations of an chase
+	 * @param chaseId
+	 * @return result set with lines ot chase has scene
+	 */
+	protected ResultSet scenesToChase(int chaseId) {
+		String SQL = "select * from chase_has_scene where case_id=" + chaseId + " order by pos;";
+
+		try {
+			conn = dbCreate.getInstance();
+			Statement query = conn.createStatement();
+			ResultSet result = query.executeQuery(SQL);
+			return result;
+		} catch (SQLException e) {
+			logger.error(e);
+			e.printStackTrace();
+			return null;
+		}
+		
 	}
 
 	/**

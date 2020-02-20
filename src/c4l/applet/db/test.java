@@ -29,6 +29,6 @@ public class test {
 			PropertyConfigurator.configure(propM.getLog4jPropPath());
 		//Select select = new Select();
 			
-		 System.out.println(db.Select.scene(1));
+		 System.out.println(db.Select.chasesOfsetup(1));
 	 }
 }

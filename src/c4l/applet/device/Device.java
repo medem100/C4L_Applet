@@ -1,5 +1,6 @@
 package c4l.applet.device;
 
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.ListIterator;
 
@@ -166,4 +167,12 @@ public class Device {
 		}
 		return outputs;
 	}
+
+	@Override
+	public String toString() {
+		return "Device [inputs=" + Arrays.toString(inputs) + ", outputs=" + Arrays.toString(outputs) + ", my_setup="
+				+ my_setup + ", effects=" + effects + ", main_effect=" + main_effect + "]";
+	}
+	
+	
 }

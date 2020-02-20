@@ -5,6 +5,8 @@ package c4l.applet.db;
  */
 import org.apache.log4j.Logger;
 
+import com.sun.org.apache.xerces.internal.impl.xs.traversers.XSDHandler;
+
 import c4l.applet.device.Device;
 import c4l.applet.device.Effect;
 import c4l.applet.device.Effect_ID;
@@ -83,7 +85,8 @@ public class Insert {
 			// insert the device statis
 			for (int i = 0; i < Devices.length; i++) {
 				Device device = Devices[i];
-				String dId = select.getOneData(SELECT_DEVICE_ID + i* c4l.applet.main.Constants.DEVICE_CHANNELS + ";", "device_id");
+				String dId = select.getOneData(SELECT_DEVICE_ID + i * c4l.applet.main.Constants.DEVICE_CHANNELS + ";",
+						"device_id");
 				if (dId != null) {
 					int deviceID = Integer.valueOf(dId);
 					logger.debug("deviceId: " + deviceID);
@@ -101,7 +104,8 @@ public class Insert {
 					insertEffectStatis(device.effects, deviceSID, false);
 
 				} else {
-					throw new Exception("Device not Found: sid:" + setupID + " addres: " +i* c4l.applet.main.Constants.DEVICE_CHANNELS);
+					throw new Exception("Device not Found: sid:" + setupID + " addres: "
+							+ i * c4l.applet.main.Constants.DEVICE_CHANNELS);
 				}
 
 			}
@@ -275,6 +279,62 @@ public class Insert {
 			logger.error("can´t insert device", e);
 			return null;
 
+		}
+
+	}
+
+	protected void chaseHasScene(int chaseid, int[] scnenIds, int[] fadeTimes, int[] showTimes) {
+		logger.debug("insert chaseHaseScene");
+		
+		try {
+			conn = dbCreate.getInstance();
+			String SQLInsertChaseHasScene = "insert into chase_has_scene (case_id,scene_id,pos,running_time) values (?,?,?,?);";
+
+			for (int i = 0; i < scnenIds.length; i++) {
+				PreparedStatement preparedStmt2 = conn.prepareStatement(SQLInsertChaseHasScene);
+				preparedStmt2.setInt(1, chaseid);
+				preparedStmt2.setInt(2, scnenIds[i]);
+				preparedStmt2.setInt(3, i);
+				preparedStmt2.setInt(4, showTimes[i]);
+				preparedStmt2.execute();
+			}
+
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	public int chase(String name, String description, int setupID, int[] sceneIds, int[] fadeTimes, int[] showTimes) {
+		logger.debug("insert Case");
+
+		try {
+			conn = dbCreate.getInstance();
+			String SQLInsertChase = "insert into chase (chase_name,chase_description) values (?, ?);";
+			String SQLInsertChaseHasScene = "insert into chase_has_scene (case_id,scene_id,pos,running_time) values (?,?,?,?);";
+			String SQLInsertSetupHasChase = "insert into setup_has_chase( setUp_id, case_id) values(?,?)";
+
+			PreparedStatement preparedStmt = conn.prepareStatement(SQLInsertChase, Statement.RETURN_GENERATED_KEYS);
+			preparedStmt.setString(1, name);
+			preparedStmt.setString(2, description);
+			preparedStmt.execute();
+			ResultSet rs = preparedStmt.getGeneratedKeys();
+			rs.next();
+			int chaseId = rs.getInt(1);
+
+			chaseHasScene(chaseId, sceneIds, fadeTimes, showTimes);
+
+			PreparedStatement preparedStmt3 = conn.prepareStatement(SQLInsertSetupHasChase);
+			preparedStmt3.setInt(1, setupID);
+			preparedStmt3.setInt(2, chaseId);
+			preparedStmt3.execute();
+
+			return chaseId;
+
+		} catch (SQLException e) {
+			logger.error("can´t insert Chase", e);
+			e.printStackTrace();
+			return 0;
 		}
 
 	}
