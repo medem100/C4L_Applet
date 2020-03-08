@@ -68,7 +68,7 @@ public class Select {
 		Device[] devices = new Device[Constants.DYNAMIC_DEVICES];
 		int lastStartaddres = -1;
 		int iterator = 0;
-		logger.trace(SQL);
+		//logger.trace(SQL);
 		try {
 			conn = dbCreate.getInstance();
 			Statement query = conn.createStatement();

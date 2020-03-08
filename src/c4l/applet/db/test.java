@@ -28,7 +28,8 @@ public class test {
 			//Initialize Logging
 			PropertyConfigurator.configure(propM.getLog4jPropPath());
 		//Select select = new Select();
+		int[] sc = {8,46,45}; 
 			
-		 System.out.println(db.Select.chasesOfsetup(1));
+		 db.Update.chaseScens(6, sc , new int[3], new int[3]);
 	 }
 }

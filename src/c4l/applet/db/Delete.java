@@ -82,7 +82,7 @@ public class Delete {
 	 */
 	protected void chaseHasScene(int chaseId) {
 
-		String SQLDeleteChaseHaseScene = "delete from setup_has_chase where case_id="+ chaseId +";";
+		String SQLDeleteChaseHaseScene = "delete from chase_has_scene where case_id="+ chaseId +";";
 		
 		try {
 			conn = dbCreate.getInstance();

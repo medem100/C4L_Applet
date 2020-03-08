@@ -11,6 +11,7 @@ import java.io.*;
 import org.apache.log4j.Logger;
 import org.json.*;
 
+import c4l.applet.db.Select;
 import c4l.applet.main.Constants;
 import c4l.applet.main.PropertyManager;
 import sun.util.logging.resources.logging;
@@ -20,8 +21,10 @@ import sun.util.logging.resources.logging;
  */
 public class DashboardInput {
 
+	public static int[] defaultChannels = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};  
+	
 	private boolean[] devices = new boolean[Constants.DYNAMIC_DEVICES];
-	private boolean[] channels = new boolean[Constants.DEVICE_CHANNELS];
+	private int[] channels = new int[Constants.DEVICE_CHANNELS];
 	
 	public int[] faders = new int[Constants.DEVICE_CHANNELS];
 	private int effectSize;
@@ -45,11 +48,17 @@ public class DashboardInput {
 	// Constructor
 	public DashboardInput() throws Exception {
 		prop = PropertyManager.getInstance().SERVER;
-		// TODO refactor
 		resetValues.put(prop.SAVEPATH, new ResetValue[] { new ResetValue("save", "false") });
 		resetValues.put(prop.EFFECTPATH, new ResetValue[] { new ResetValue("effect", "99") });
 		resetValues.put(prop.CREATENEWSCENE, new ResetValue[] { new ResetValue("save", "false") });
-	}
+		resetValues.put(prop.STARTSCENE, new ResetValue[] { new ResetValue("scene", "0")});
+		resetValues.put(prop.STARTCHASE, new ResetValue[] { new ResetValue("chase", "0")});
+		resetValues.put(prop.STEPCHASE, new ResetValue[] { new ResetValue("value", "false")});
+		resetValues.put(prop.DELETEMAINEFFECT, new ResetValue[] { new ResetValue("value", "false")});
+		
+		
+		}
+	
 
 	public int[] getFaders() {
 		return faders;
@@ -97,6 +106,10 @@ public class DashboardInput {
 	public int getCaseID() {
 		return caseID;
 	}
+	
+	public int[] getSelectChannels() {
+		return channels;
+	}
 
 	public ArrayList<Integer> getScenenID() {
 		return scenenID;
@@ -116,6 +129,16 @@ public class DashboardInput {
 
 	// public int setCurrentScene()
 
+	/**
+	 * only single value
+	 * @param param
+	 * @return booelan value of the key in the respons
+	 * @throws JSONException
+	 */
+	public boolean getBooleanValue(String param) throws JSONException {
+		return usedRespons.getBoolean(param);
+	}
+	
 	/**
 	 * only use for single values
 	 * 
@@ -179,7 +202,7 @@ public class DashboardInput {
 		scenenID = temp;
 		
 		for(int i = 0; i < jsonChannels.length(); i++) {
-			channels[i] = jsonChannels.getBoolean(i);
+			channels[i] = jsonChannels.getInt(i);
 		}
 
 		// a device what wasn´t used is null

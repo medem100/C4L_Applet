@@ -51,8 +51,13 @@ public class DmxOut {
 		if (Value > Constants.MAXVALUE)
 			Value = 255;
 		try {
+			// TODO Ausbau nach Konfestivall 
+
+		
 			OpenDmx.setValue(Channel, Value);
-			//Log.debug("channel: " + Channel + " Value: " + Value);
+		
+			
+			if (Channel >= 480 && Channel< 488) Log.debug("channel: " + Channel + " Value: " + Value);
 		} catch (Exception e) {
 			Log.error("Fail to commit the channel :" + Channel + " for the Value : " + Value, e);
 		}

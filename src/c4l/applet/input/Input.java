@@ -1,5 +1,6 @@
 package c4l.applet.input;
 
+import c4l.applet.db.Chase;
 import c4l.applet.db.OldEffects;
 import c4l.applet.db.Scene;
 import c4l.applet.device.Device;
@@ -36,6 +37,7 @@ public class Input {
 
 	private int currentSceneId;
 	private int[] oldFaderValues = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+	private boolean[] oldselectDevice = new boolean[Constants.DYNAMIC_DEVICES];
 	/**
 	 * values to init new effects with, written by all inputs, but only on change
 	 * (so last wins)
@@ -43,6 +45,10 @@ public class Input {
 	private int currentSize, currentSpeed;
 	/** last known (and processed) position of server-effect-faders */
 	private int serverSize, serverSpeed;
+	/** current load chase **/
+	private Chase currentChase = null;
+	/** current pos in the chase **/
+	private int chaseIdx;
 	Effect[] oEffects = new Effect[30]; // test
 	// boolean setOldeffects = false;
 
@@ -104,10 +110,12 @@ public class Input {
 
 		// Handle the HardwareWing
 		if (wing != null) {
+
 			wing.tick();
 
 			// check Wingcontroller for changes in device activity
 			boolean[] change = wing.checkActivity();
+
 			for (int i = 0; i < Constants.DYNAMIC_DEVICES; i++)
 				active[i] ^= change[i];
 			wing.setActiveDevices(active); // Tell wing, which devices are active (for indication-LEDs)
@@ -118,7 +126,9 @@ public class Input {
 				offset = 8;
 			for (int i = 0; i < 8; i++) {
 				temp = wing.getFader(i);
+				System.out.println(i + ": " + temp);
 				if (Math.abs(temp - h_faders[i]) > wing.FADER_TOLERANCE) {
+					// log.debug("finder fade change wing");
 					if (temp <= wing.FADER_TOLERANCE)
 						temp = 0; // for a correction factor larger than the tolerance this should happen
 									// implicitly when dividing by the first... TODO: Think whether to remove this
@@ -147,7 +157,7 @@ public class Input {
 					case 1:
 						for (int j = 0; j < Constants.DYNAMIC_DEVICES; j++) {
 							if (active[j])
-								parent.state.getDevice(j).setMainSpeed(h_xfaders[i] / wing.CORRECTION_DIVISOR);
+								parent.state.getDevice(j).setMainSize(h_xfaders[i] / wing.CORRECTION_DIVISOR);
 						} /* for */
 						currentSize = h_xfaders[i] / wing.CORRECTION_DIVISOR;
 						break;
@@ -186,14 +196,36 @@ public class Input {
 			server.tick();
 			// Only when there are new data from the Dashboard
 			if (!(server.usedRespons.toString().equals(OldResponse.toString()))) { // TODO
-				log.debug("New Respons");
-
+			//	log.debug("New Respons");
+			//	log.debug(Arrays.toString(active));
+				// start Scene
 				if (currentSceneId != server.getScenenID().get(0)) {
+
 					loadScene(server.getScenenID().get(0));
 					currentSceneId = server.getScenenID().get(0);
-				} else {
 
-					active = server.getChosenDevices();
+				} else if (0 != server.getIntValue("startChase")) {
+					loadChase(server.getIntValue("startChase"));
+					parent.state.newFade(currentChase.getSCENES()[chaseIdx].getId(), server.getIntValue("defaultFadeTime")); // TODO Fade Time
+				} else if (server.getBooleanValue("stepChase")) {
+					if (chaseIdx == currentChase.getSCENES().length) {
+						chaseIdx = 0;
+					} else {
+						chaseIdx++;
+					}
+					parent.state.newFade(currentChase.getSCENES()[chaseIdx].getId(), server.getIntValue("defaultFadeTime")); // TODO Fade Time
+				} else {
+				//	log.debug("cange devices");
+
+					boolean[] newSelectDevice = server.getChosenDevices();
+
+					
+					for (int i = 0; i < Constants.DYNAMIC_DEVICES; i++) {
+						if(newSelectDevice[i] != oldselectDevice[i])
+							active[i] = new Boolean(newSelectDevice[i]);
+					}
+					oldselectDevice = newSelectDevice.clone();
+
 					if (wing != null) {
 						wing.setActiveDevices(active, true);
 					}
@@ -222,16 +254,34 @@ public class Input {
 						currentSpeed = serverSpeed;
 					}
 
-					String effectId = server.getEffectID();
+					String effectId = server.getEffectID().trim();
 
+					// Handel inputs for devices
 					for (int i = 0; i < active.length; i++) {
 						if (active[i]) {
+							
+							if (server.getBooleanValue("deleteMainEffect")) {
+								log.error("delete Effect");
+								if(!parent.state.getDevice(i).main_effect.isEmpty()) {
+									// main effect is only on first positon
+									parent.state.getDevice(i).deleteMainEffect(0);
+								}
+								
+							}
 
 							if (!(effectId.equals("99"))) {
+								log.debug("set Effect " + effectId);
 								Effect_ID eid = new Effect_ID(Integer.valueOf(effectId.substring(0, 1)),
 										Integer.valueOf(effectId.substring(1, 2)));
+							
+								// Check Effect Channels
+								int[] effectChannels = parent.state.getDevice(i).getMainEffetChannels().clone();
+								if(!(Arrays.equals(DashboardInput.defaultChannels, server.getSelectChannels()))) {
+									effectChannels = server.getSelectChannels().clone();
+								}
+																
 								Effect e = Effect_ID.generateEffectFromID(eid, currentSpeed, currentSize, 0,
-										parent.state.getDevice(i).getMainEffetChannels());
+										effectChannels);
 
 								// add every effect to First Main effect
 								if (!(parent.state.getDevice(i).main_effect.isEmpty()))
@@ -251,106 +301,37 @@ public class Input {
 
 						}
 					}
-					//
-					// for (int i : server.getChosenDevices()) {
-
-					// active[i] = true;
-
-					// String effectId = server.getEffectID();
-					//
-					// if(effectId != 0 ) {
-					// String effect = String.valueOf(effectId);
-					// int eId1 = Integer.valueOf(effect.substring(0, 1));
-					// int eid2 = Integer.valueOf(effect.substring(1));
-					//
-
-					// //
-					// if (!(effectId.equals("99"))) {
-					// Effect_ID eid = new Effect_ID(Integer.valueOf(effectId.substring(0, 1)),
-					// Integer.valueOf(effectId.substring(1, 2)));
-					// Effect e = Effect_ID.generateEffectFromID(eid, currentSpeed, currentSize, 0,
-					// parent.state.getDevice(i).getMainEffetChannels()); // TODO get info from
-					// // device
-
-					// if (Effect_ID.getEffectID(e)
-					// .equals(Effect_ID.getEffectID(parent.deviceHandle[i].main_effect.get(0)))) {
-					// parent.deviceHandle[i].deleteMainEffect(0);
-					// } else {
-					// if (!(parent.state.getDevice(i).main_effect.isEmpty()))
-					// parent.state.getDevice(i).deleteMainEffect(0);
-					// parent.state.getDevice(i).addMainEffect(e, 0);
-					// // }
-					// }
-
-					// if (effectId != 0) {
-					// Effect_ID eid = null;
-					// switch (effectId) {
-					// case 1:
-					// eid = new Effect_ID(0, 0);
-					// break;
-					// case 2:
-					// eid = new Effect_ID(0, 1);
-					// break;
-					// case 3:
-					// eid = new Effect_ID(1, 0);
-					// break;
-					// case 4:
-					// eid = new Effect_ID(1, 1);
-					// break;
-					// } // TODO testen !
-
-					// if (Effect_ID.getEffectID(e)
-					// .equals(Effect_ID.getEffectID(parent.deviceHandle[i].main_effect.get(0)))) {
-					// parent.deviceHandle[i].deleteMainEffect(0);
-					// } else {
-					// parent.deviceHandle[i].addMainEffect(e);
-					// }
-
-					// }
-					// parent.deviceHandle[i].setSpeed(server.getEffectSpeed());
-					// parent.deviceHandle[i].setSize(server.getEffectSize());
-					// if (changeSpeed)
-					// parent.state.getDevice(i).setMainSpeed(server.getEffectSpeed());
-					// if (changeSize)
-					// parent.state.getDevice(i).setMainSize(server.getEffectSize());
-					//
-					// for (int key : changFader.keySet()) {
-					// parent.state.getDevice(i).setInput(key, changFader.get(key));
-					// }
-					// ;
-
-					// }
-					// for (int j = 0; j < Constants.DEVICE_CHANNELS; j++) {
-					// parent.deviceHandle[i].setInput(j, server.getFader(j));
-					// }
-
-					// parent.deviceHandle[i].addEffect(e);
 
 				}
+				if (server.isSavePresst()) {
+					saveScene();
+				}
+
+				if (server.isCrateNewScenePresst()) {
+					crateNewScene();
+				}
+
+				server.resetValues();
+				OldResponse = server.usedRespons;
 
 			}
 			//
-			if (server.isSavePresst()) {
-				saveScene();
-			}
-
-			if (server.isCrateNewScenePresst()) {
-				crateNewScene();
-			}
-
-			server.resetValues();
-			OldResponse = server.usedRespons;
 
 		}
 	}
 
 	// Help Funcktions
 
+	private void loadChase(int chaseId) {
+		currentChase = parent.db.Select.chase(chaseId, 1);
+	}
+
 	private void loadScene(int id) {
+		log.error("new Scene");
 		log.debug("load scene: " + id + " in setup: " + server.getsetupID());
 		// parent.deviceHandle = parent.db.Select.scene(id);
 		// parent.state.newScene(id);
-		parent.state.newFade(id, 200);
+		parent.state.newFade(id, server.getIntValue("defaultFadeTime"));
 		currentSceneId = id;
 
 	}

@@ -1,5 +1,7 @@
 package c4l.applet.scenes;
 
+import java.util.Arrays;
+
 import c4l.applet.db.DB;
 import c4l.applet.device.Device;
 import c4l.applet.device.Static_Device;
@@ -191,6 +193,7 @@ public class State {
 				output[i] = new_scene_out[i];
 			}
 		}
+	//	System.out.println(Arrays.toString(output));
 		return output;
 		
 	}
