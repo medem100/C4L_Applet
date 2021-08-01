@@ -7,6 +7,8 @@ import com.juanjo.openDmx.OpenDmx;
 import c4l.applet.main.Constants;
 import c4l.applet.main.Util;
 
+import java.util.Arrays;
+
 /**
  * @author Andre for the output whit the ENTEC USB DMX plug.
  * 
@@ -70,15 +72,12 @@ public class DmxOut {
 	 */
 	public void setOutput(int[] out) {	
 		try {
-			for (int i = 0; i < Constants.OUTPUT_LENGTH; i++) {
-				// for Debug runs Without Entec dongel
-				if (!(Util.getTestRun())) {
-					// no test Run
+			if(!(Util.getTestRun())){
+				for (int i = 0; i < Constants.OUTPUT_LENGTH; i++) {
 					setValue(i, out[i]);
-				} else {
-					// test Run
-					Log.info("addresse :" + i + " " + out[i]);
 				}
+			}else {
+				Log.info(Arrays.toString(out));
 			}
 		} catch (Exception e) {
 			Log.error("Failed to output array: " + out, e); //TODO: Andre: Is there anything inside try{} that could throw an exception?

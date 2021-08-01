@@ -27,8 +27,9 @@ public class Device {
 	/**
 	 * Main constructor to construct a new Device from scratch
 	 * 
-	 * @param v_dim_channel		Dimmer-Channel (if you don't use the virtual dimmer, you can give any int here)
-	 * @param virtual_dimmer	Linked List of channels to be dimmed virtually (may be empty if not needed)
+	// * @param v_dim_channel		Dimmer-Channel (if you don't use the virtual dimmer, you cangive any int here)
+	// * @param virtual_dimmer	Linked List of channels to be dimmed virtually (may be empty if
+	 not needed)
 	 * @param setup				Device_Setup-reference for this device
 	 */
 	public Device(Device_Setup setup) {

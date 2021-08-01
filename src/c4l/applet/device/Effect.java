@@ -113,7 +113,8 @@ public class Effect {
 	
 	/**
 	 * Apply effect.
-	 * @param in	Array of length {@value Constants.#DEVICE_CHANNELS}, which is modified by the effect
+	 * @param in	Array of length Constants.DEVICE_CHANNELS, which is modified by
+	 *                 the effect
 	 * @return		Array of same length with modified values.
 	 */
 	public int[] apply(int[] in) {

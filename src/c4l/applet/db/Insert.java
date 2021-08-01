@@ -5,7 +5,7 @@ package c4l.applet.db;
  */
 import org.apache.log4j.Logger;
 
-import com.sun.org.apache.xerces.internal.impl.xs.traversers.XSDHandler;
+
 
 import c4l.applet.device.Device;
 import c4l.applet.device.Effect;
@@ -129,7 +129,7 @@ public class Insert {
 	/**
 	 * insert new effect status
 	 * 
-	 * @param effect
+	 *
 	 */
 	protected ResultSet insertEffectStatis(LinkedList<Effect> effects, int deviceStatusId, boolean isMain) {
 		logger.debug("insert effect status for device statusID: " + deviceStatusId);

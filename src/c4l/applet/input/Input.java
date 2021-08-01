@@ -199,12 +199,13 @@ public class Input {
 			//	log.debug("New Respons");
 			//	log.debug(Arrays.toString(active));
 				// start Scene
-				if (currentSceneId != server.getScenenID().get(0)) {
+				if (!server.getScenenID().isEmpty() && currentSceneId != server.getScenenID().get(0)) {
 
 					loadScene(server.getScenenID().get(0));
 					currentSceneId = server.getScenenID().get(0);
 
-				} else if (0 != server.getIntValue("startChase")) {
+				}
+			/*	else if (0 != server.getIntValue("startChase")) {
 					loadChase(server.getIntValue("startChase"));
 					parent.state.newFade(currentChase.getSCENES()[chaseIdx].getId(), server.getIntValue("defaultFadeTime")); // TODO Fade Time
 				} else if (server.getBooleanValue("stepChase")) {
@@ -214,7 +215,9 @@ public class Input {
 						chaseIdx++;
 					}
 					parent.state.newFade(currentChase.getSCENES()[chaseIdx].getId(), server.getIntValue("defaultFadeTime")); // TODO Fade Time
-				} else {
+				}
+			*/	else {
+
 				//	log.debug("cange devices");
 
 					boolean[] newSelectDevice = server.getChosenDevices();
