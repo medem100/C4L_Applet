@@ -1,7 +1,11 @@
 package c4l.applet.input;
 
 import java.net.HttpURLConnection;
+import java.net.URI;
 import java.net.URL;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -55,8 +59,8 @@ public class DashboardInput {
         resetValues.put(prop.STARTSCENE, new ResetValue[] { new ResetValue("scene", "0") });
         resetValues.put(prop.STARTCHASE, new ResetValue[] { new ResetValue("chase", "0") });
         resetValues.put(prop.STEPCHASE, new ResetValue[] { new ResetValue("value", "false") });
-        resetValues
-                .put(prop.DELETEMAINEFFECT, new ResetValue[] { new ResetValue("value", "false") });
+        resetValues.put(prop.DELETEMAINEFFECT,
+                new ResetValue[] { new ResetValue("value", "false") });
 
     }
 
@@ -268,17 +272,25 @@ public class DashboardInput {
 
     @Deprecated public void setEffectRead() {
         try {
-            URL url = new URL(prop.ADDRESS + prop.EFFECTPATH);
+          /*  URL url = new URL(prop.ADDRESS + prop.EFFECTPATH);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
-            connection.connect();
+            connection.connect(); */
+            HttpClient client = HttpClient.newHttpClient();
+            HttpRequest request =
+                    HttpRequest.newBuilder().uri(URI.create(prop.ADDRESS + prop.EFFECTPATH))
+                            .method("PATCH", HttpRequest.BodyPublishers.ofString("{\"id\":\"99\"}"))
+                            .header("Content-Type", "application/json").build();
 
-            if (connection.getResponseCode() != 200) {
+            HttpResponse<String> respons =
+                    client.send(request, HttpResponse.BodyHandlers.ofString());
+
+            if (respons.statusCode() != 200) {
                 Log.error("Effect can´t reset");
-                ;
+                throw new RuntimeException();
             }
 
-        } catch (IOException e) {
+        } catch (IOException | InterruptedException e) {
             Log.error("Fail to check Server avalibale -> wrong path", e);
         }
     }
@@ -310,7 +322,7 @@ public class DashboardInput {
 
             if (connection.getResponseCode() != 200) {
                 Log.error("CrateNewScene can´t reset");
-                ;
+
             }
 
         } catch (IOException e) {
@@ -335,8 +347,9 @@ public class DashboardInput {
                 connection.setRequestMethod("GET");
                 connection.connect();
 
-                if (connection.getResponseCode() != 200) {
+                if (300 > connection.getResponseCode() && connection.getResponseCode() > 199) {
                     Log.error(prop.ADDRESS + " can´t reset");
+
                 }
             }
         } catch (IOException e) {

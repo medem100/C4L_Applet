@@ -40,6 +40,8 @@ public class Select {
 	// private Logger dLogger = dbCreate.initLogger();
 	static Logger logger = Logger.getLogger(Select.class);
 
+
+
 	public Select() {
 		try {
 			this.conn = dbCreate.getInstance();
@@ -358,7 +360,7 @@ public class Select {
 	/**
 	 * 
 	 * @param SQL
-	 * @param felde
+	 * @param feld
 	 * @return
 	 */
 	public String getOneData(String SQL, String feld) {
