@@ -31,7 +31,8 @@ public class Effect {
 		
 		this.acceptInput = acceptInput;
 	}
-	
+
+
 	/**
 	 * Set the size of an effect. The effect may discard the change, if intern variable acceptInput says so.
 	 * Use setSize(int, bool) to force change.

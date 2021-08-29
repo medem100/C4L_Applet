@@ -1,11 +1,11 @@
 package c4l.applet.scenes;
 
-import java.util.Arrays;
-
 import c4l.applet.db.DB;
 import c4l.applet.device.Device;
 import c4l.applet.device.Static_Device;
 import c4l.applet.main.Constants;
+
+import java.io.IOException;
 
 public class State {
 	private Setup setup;
@@ -75,8 +75,8 @@ public class State {
 	/**
 	 * Gives reference to a device object so that Input can manipulate it.
 	 * 
-	 * @param index
-	 *            of the requested device (0 <= index < Contants.DYNAMIC_DEVICES
+	 *
+	 *             the requested device (0 <= index < Contants.DYNAMIC_DEVICES
 	 *            (THIS IS NOT CHECKED HERE AND MY CAUSE UNEXPECTED BEHAVIOUR IF
 	 *            VIOLATED))
 	 * @return reference to new_scene.devices
@@ -103,7 +103,7 @@ public class State {
 	 * @param speed
 	 *            speed with which the fade should happen
 	 */
-	public void newFade(int sceneId, int speed) {
+	public void newFade(int sceneId, int speed) throws IOException, InterruptedException {
 		this.fade_speed = speed;
 		this.fade_state = 0;
 		this.old_scene = this.new_scene;
@@ -117,7 +117,7 @@ public class State {
 	 * @param sceneId
 	 *            storage id of the new Scene
 	 */
-	public void newScene(int sceneId) {
+	public void newScene(int sceneId) throws IOException, InterruptedException {
 		this.fade_speed = 0;
 		this.fade_state = Constants.SCENE_FADE_LENGTH;
 		this.old_scene = this.new_scene;
@@ -128,7 +128,7 @@ public class State {
 	/**
 	 * Loads a scene from db into new_scene, using old_scene to fill empty spots
 	 */
-	private void loadNewScene(int scenenId) {
+	private void loadNewScene(int scenenId) throws IOException, InterruptedException {
 		// TODO Andre: Load the new scene into this.new_scene
 		/*
 		 * Function parameters can be adjusted to provided needed information. Such
@@ -144,7 +144,7 @@ public class State {
 
 		// TODO Scnene Bundel
 		// TODO Storage of Static Devices
-		this.new_scene = new Scene(setup, DB.getInstance().Select.scene(scenenId), this.new_scene.static_device);
+		this.new_scene = new Scene(setup, DB.getInstance().Select.devicesFromScene(scenenId), this.new_scene.static_device);
 
 	}
 

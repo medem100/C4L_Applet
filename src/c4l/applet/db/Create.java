@@ -9,15 +9,9 @@
  */
 package c4l.applet.db;
 
-import java.io.BufferedInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.Properties;
-
-import c4l.applet.db.Constants;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -51,9 +45,9 @@ public class Create {
 	    try {
 	    	logger.log(Level.TRACE, "crate database... ");
 	      Class.forName("com.mysql.jdbc.Driver");
-	       conn = DriverManager.getConnection("jdbc:mysql://" + Constants.dbHost + ":"
-	          + Constants.dbPort + "/" + Constants.database + "?" + "user=" + Constants.dbUser + "&"
-	          + "password=" + Constants.dbPassword);
+	       conn = DriverManager.getConnection("jdbc:mysql://" + DBConstants.dbHost + ":"
+	          + DBConstants.dbPort + "/" + DBConstants.database + "?" + "user=" + DBConstants.dbUser + "&"
+	          + "password=" + DBConstants.dbPassword);
 	       logger.log(Level.INFO, "conn was created");
 	    } catch (Exception e) {
 	      logger.log(Level.FATAL, "Treiber nicht gefunden");

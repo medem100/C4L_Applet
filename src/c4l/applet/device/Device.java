@@ -6,6 +6,7 @@ import java.util.ListIterator;
 
 import c4l.applet.main.Constants;
 import c4l.applet.scenes.Device_Setup;
+import com.google.gson.annotations.SerializedName;
 
 /**
  * Definition of a single Device, consisting of Input values, a list of Effects and an Output permutation
@@ -17,7 +18,8 @@ import c4l.applet.scenes.Device_Setup;
 public class Device {
 	private int[] inputs;
 	private int[] outputs;
-		
+
+	@SerializedName(value = "setup")
 	private Device_Setup my_setup;
 	
 	public LinkedList<Effect> effects;
@@ -44,6 +46,9 @@ public class Device {
 	//Getters and Setters
 	public int[] getInputs() {
 		return inputs;
+	}
+	public Device_Setup getSetup(){
+		return my_setup;
 	}
 	public void setInputs(int[] inputs) {
 		this.inputs = inputs;
@@ -172,7 +177,7 @@ public class Device {
 	@Override
 	public String toString() {
 		return "Device [inputs=" + Arrays.toString(inputs) + ", outputs=" + Arrays.toString(outputs) + ", my_setup="
-				+ my_setup + ", effects=" + effects + ", main_effect=" + main_effect + "]";
+				+ my_setup + ", effects=" + effects + ", main_effect=" + main_effect.get(0).toString() + "]";
 	}
 	
 	

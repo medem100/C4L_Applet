@@ -1,16 +1,13 @@
 package c4l.applet.input;
 
 import c4l.applet.db.Chase;
-import c4l.applet.db.OldEffects;
-import c4l.applet.db.Scene;
-import c4l.applet.device.Device;
 import c4l.applet.device.Effect;
 import c4l.applet.input.arduino.WingController;
 import c4l.applet.main.C4L_Launcher;
 import c4l.applet.main.Constants;
 import c4l.applet.device.Effect_ID;
-import c4l.applet.device.Effect_Representative;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Properties;
@@ -105,7 +102,7 @@ public class Input {
 		this.wing = wing;
 	}
 
-	public void tick() {
+	public void tick() throws IOException, InterruptedException {
 		int temp = 0;
 
 		// Handle the HardwareWing
@@ -269,7 +266,6 @@ public class Input {
 									// main effect is only on first positon
 									parent.state.getDevice(i).deleteMainEffect(0);
 								}
-								
 							}
 
 							if (!(effectId.equals("99"))) {
@@ -300,7 +296,7 @@ public class Input {
 							for (int key : changFader.keySet()) {
 								parent.state.getDevice(i).setInput(key, changFader.get(key));
 							}
-							;
+
 
 						}
 					}
@@ -329,7 +325,7 @@ public class Input {
 		currentChase = parent.db.Select.chase(chaseId, 1);
 	}
 
-	private void loadScene(int id) {
+	private void loadScene(int id) throws IOException, InterruptedException {
 		log.error("new Scene");
 		log.debug("load scene: " + id + " in setup: " + server.getsetupID());
 		// parent.deviceHandle = parent.db.Select.scene(id);

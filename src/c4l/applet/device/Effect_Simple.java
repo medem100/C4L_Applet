@@ -1,6 +1,7 @@
 package c4l.applet.device;
 
 import java.awt.Color;
+import java.util.Arrays;
 
 import c4l.applet.main.Constants;
 
@@ -117,5 +118,9 @@ public class Effect_Simple extends Effect {
 		last_state = state;
 		return in;
 	} /* apply*/
-	
+
+	@Override public String toString() {
+		return "Effect_Simple{" + "size=" + size + ", channels=" + Arrays.toString(channels)
+				+ ", state=" + state + ", last_state=" + last_state + ", type=" + type + '}';
+	}
 }

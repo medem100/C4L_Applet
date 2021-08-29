@@ -7,13 +7,13 @@ import org.apache.log4j.Logger;
 
 
 import c4l.applet.db.DB;
-import c4l.applet.device.Device;
-import c4l.applet.device.Static_Device;
 import c4l.applet.input.Input;
 import c4l.applet.input.arduino.WingController;
 import c4l.applet.output.DmxOut;
 import c4l.applet.scenes.Setup;
 import c4l.applet.scenes.State;
+
+import java.io.IOException;
 
 /**
  * @author Timon
@@ -71,7 +71,7 @@ public class C4L_Launcher {
 	}
 
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IOException, InterruptedException {
 		long last_time = System.currentTimeMillis();
 		long time = last_time;
 		C4L_Launcher program = new C4L_Launcher();

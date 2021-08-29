@@ -1,7 +1,5 @@
 package c4l.applet.db;
 
-import c4l.applet.device.Device;
-import c4l.applet.device.Effect;
 import c4l.applet.device.Effect_Representative;
 
 public class OldEffects {

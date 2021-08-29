@@ -6,40 +6,17 @@ import c4l.applet.device.Device;
 
 public class Scene {
 	
-	private Device[] dev;
-	private String name;
-	private int id;
-	
+	private Device[] devices;
+
 	public Scene(Device[] dev) {
-		this.dev = dev;
+		this.devices = dev;
 	}
 	
 	public Device[] getDevices() {
-		return dev;
+		return devices;
 	}
 
-	public String getName() {
-		return name;
+	@Override public String toString() {
+		return "Scene{" + "dev=" + Arrays.toString(devices) + '}';
 	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public int getId() {
-		return id;
-	}
-
-	public void setId(int id) {
-		this.id = id;
-	}
-
-	@Override
-	public String toString() {
-		return "Scene [dev=" + Arrays.toString(dev) + ", name=" + name + ", id=" + id + "]";
-	}
-	
-	
-	
-
 }

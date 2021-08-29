@@ -147,7 +147,7 @@ public class Update {
 	private String toSaveString(int[] array) {
 		String result = "";
 		for (int e : array) {
-			result += e + Constants.DELIMITER;
+			result += e + DBConstants.DELIMITER;
 		}
 		return result.substring(0, result.length() - 1);
 	}
