@@ -3,14 +3,14 @@ package c4l.applet.db;
 import c4l.applet.device.Device;
 import com.google.gson.annotations.SerializedName;
 
-public class DeviceStatesSaveMoodle {
+public class DeviceStatesSaveModel {
     @SerializedName(value = "devices")
-    private final DeviceStateSaveMoodle[] deviceStateSaveMoodles;
+    private final DeviceStateSaveModel[] deviceStateSaveMoodles;
 
-    public DeviceStatesSaveMoodle(Device[] devices) {
-        deviceStateSaveMoodles = new DeviceStateSaveMoodle[devices.length];
+    public DeviceStatesSaveModel(Device[] devices) {
+        deviceStateSaveMoodles = new DeviceStateSaveModel[devices.length];
         for(int i = 0; i < deviceStateSaveMoodles.length ; i++){
-            deviceStateSaveMoodles[i] = new DeviceStateSaveMoodle(devices[i]);
+            deviceStateSaveMoodles[i] = new DeviceStateSaveModel(devices[i]);
         }
 
     }

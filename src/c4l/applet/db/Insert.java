@@ -79,7 +79,7 @@ public class Insert {
     public int devicesToScene(Device[] devices, int sceneId)
             throws IOException, InterruptedException {
 
-        String jsonPayload = GSON.toJson(new DeviceStatesSaveMoodle(devices));
+        String jsonPayload = GSON.toJson(new DeviceStatesSaveModel(devices));
 
         HttpRequest httpRequest = HttpRequest.newBuilder().uri(URI.create(
                         DBConstants.DB_SERVER_BASE + "/" + DBConstants.SCENES + "/" + sceneId + "/"

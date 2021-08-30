@@ -7,7 +7,7 @@ import c4l.applet.scenes.Device_Setup;
 
 import java.util.List;
 
-public class DeviceStateSaveMoodle {
+public class DeviceStateSaveModel {
     Device_Setup setup;
     List<Effect> effects;
     int[] input;
@@ -19,7 +19,7 @@ public class DeviceStateSaveMoodle {
     boolean mainEffectAcceptInput;
     int[] mainEffectChannels;
 
-    public DeviceStateSaveMoodle(Device device){
+    public DeviceStateSaveModel(Device device){
         this.setup = device.getSetup();
         this.effects = device.effects;
         this.input = device.getInputs();

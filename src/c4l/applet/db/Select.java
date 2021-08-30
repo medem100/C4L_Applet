@@ -71,8 +71,8 @@ public class Select {
         HttpResponse<String> response =
                 CLIENT.send(httpRequest, HttpResponse.BodyHandlers.ofString());
 
-        DeviceStatesSaveMoodle
-                deviceStates = GSON.fromJson(response.body(), DeviceStatesSaveMoodle.class);
+        DeviceStatesSaveModel
+                deviceStates = GSON.fromJson(response.body(), DeviceStatesSaveModel.class);
         return deviceStates.getDevices();
     }
 

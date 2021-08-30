@@ -27,13 +27,13 @@ public class Input {
 	/** object holding and managing the hardware-wing-pult */
 	private WingController wing;
 	private Boolean ServerAvailable;
-	private DashboardInput server;
+	private GuiInput server;
 	private JSONObject OldResponse = new JSONObject("{}");
 	/** reference to the main-object, used to access stuff beyond input */
 	C4L_Launcher parent;
 
 	private int currentSceneId;
-	private int[] oldFaderValues = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+	private int[] oldFaderValues = { 0, 0, 0, 0, 0, 0, 0, 0};
 	private boolean[] oldselectDevice = new boolean[Constants.DYNAMIC_DEVICES];
 	/**
 	 * values to init new effects with, written by all inputs, but only on change
@@ -77,7 +77,7 @@ public class Input {
 		this.wing = wing;
 		if (ServerAvailable) {
 			try {
-				this.server = new DashboardInput();
+				this.server = new NewServerInput();
 			} catch (Exception e) {
 				e.printStackTrace();
 				this.ServerAvailable = false;
@@ -192,14 +192,15 @@ public class Input {
 		if (ServerAvailable) {
 			server.tick();
 			// Only when there are new data from the Dashboard
-			if (!(server.usedRespons.toString().equals(OldResponse.toString()))) { // TODO
+			if (server.hasChanged()) {
+				System.out.println("new Values !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
 			//	log.debug("New Respons");
 			//	log.debug(Arrays.toString(active));
 				// start Scene
-				if (!server.getScenenID().isEmpty() && currentSceneId != server.getScenenID().get(0)) {
+				if (!server.getSceneIds().isEmpty() && currentSceneId != server.getSceneIds().get(0)) {
 
-					loadScene(server.getScenenID().get(0));
-					currentSceneId = server.getScenenID().get(0);
+					loadScene(server.getSceneIds().get(0));
+					currentSceneId = server.getSceneIds().get(0);
 
 				}
 			/*	else if (0 != server.getIntValue("startChase")) {
@@ -233,9 +234,9 @@ public class Input {
 					HashMap<Integer, Integer> changFader = new HashMap<>();
 					for (int i = 0; i < oldFaderValues.length; i++) {
 
-						if (oldFaderValues[i] != server.getFader(i)) {
-							changFader.put(i, server.getFader(i));
-							oldFaderValues[i] = server.getFader(i);
+						if (oldFaderValues[i] != server.getFaderValue(i)) {
+							changFader.put(i, server.getFaderValue(i));
+							oldFaderValues[i] = server.getFaderValue(i);
 						}
 					}
 
@@ -260,7 +261,7 @@ public class Input {
 					for (int i = 0; i < active.length; i++) {
 						if (active[i]) {
 							
-							if (server.getBooleanValue("deleteMainEffect")) {
+							if (server.getDeleteMainEffect()) {
 								log.error("delete Effect");
 								if(!parent.state.getDevice(i).main_effect.isEmpty()) {
 									// main effect is only on first positon
@@ -310,8 +311,8 @@ public class Input {
 					crateNewScene();
 				}
 
-				server.resetValues();
-				OldResponse = server.usedRespons;
+			//	server.resetValues();
+			//	OldResponse = server.usedRespons;
 
 			}
 			//
@@ -327,10 +328,10 @@ public class Input {
 
 	private void loadScene(int id) throws IOException, InterruptedException {
 		log.error("new Scene");
-		log.debug("load scene: " + id + " in setup: " + server.getsetupID());
+		log.debug("load scene: " + id + " in setup: " + server.getSetupID());
 		// parent.deviceHandle = parent.db.Select.scene(id);
 		// parent.state.newScene(id);
-		parent.state.newFade(id, server.getIntValue("defaultFadeTime"));
+		parent.state.newFade(id, server.getDefaultFadeTime());
 		currentSceneId = id;
 
 	}
@@ -338,7 +339,7 @@ public class Input {
 	private void crateNewScene() {
 		// logger.debug("crate new scene");
 		try {
-			parent.db.Insert.scene(parent.state.getDevices().clone(), server.getsetupID());
+			parent.db.Insert.scene(parent.state.getDevices().clone(), server.getSetupID());
 			// server.set
 		} catch (Exception e) {
 			log.error(e);
@@ -346,7 +347,7 @@ public class Input {
 	}
 
 	private void saveScene() {
-		log.debug("save scene: " + currentSceneId + " in setup: " + server.getsetupID());
+		log.debug("save scene: " + currentSceneId + " in setup: " + server.getSetupID());
 		parent.db.Update.scene(parent.state.getDevices().clone(), currentSceneId);
 
 	}
