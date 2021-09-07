@@ -43,7 +43,7 @@ public class NewServerInput implements GuiInput {
         return allValues.isSavePressed();
     }
 
-    @Override public boolean isCrateNewScenePresst() {
+    @Override public int CrateNewSceneWithIdPresst() {
         return allValues.isCreateNewScenePressed();
     }
 

@@ -37,10 +37,10 @@ public class test {
 
         DB db = DB.getInstance();
 
-        //System.out.println(db.Insert.devicesToScene(getDevices(), 1));
+        System.out.println(db.Insert.devicesToScene(getDevices(), 12));
 
        // System.out.println(db.Select.devicesFromScene(1)[0].main_effect.get(0).getSize());
-        System.out.println(db.Insert.devicesToScene(db.Select.devicesFromScene(1), 1));
+      //  System.out.println(db.Insert.devicesToScene(db.Select.devicesFromScene(11), 1));
     }
 
     private static Device[] getDevices() {

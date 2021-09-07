@@ -307,8 +307,8 @@ public class Input {
 					saveScene();
 				}
 
-				if (server.isCrateNewScenePresst()) {
-					crateNewScene();
+				if (-1 != server.CrateNewSceneWithIdPresst()) {
+					crateNewScene(server.CrateNewSceneWithIdPresst());
 				}
 
 			//	server.resetValues();
@@ -336,19 +336,20 @@ public class Input {
 
 	}
 
-	private void crateNewScene() {
+	private void crateNewScene(int sceneID) {
 		// logger.debug("crate new scene");
 		try {
-			parent.db.Insert.scene(parent.state.getDevices().clone(), server.getSetupID());
+			log.debug("Create new Scene");
+			parent.db.Insert.devicesToScene(parent.state.getDevices().clone(), sceneID);
 			// server.set
 		} catch (Exception e) {
 			log.error(e);
 		}
 	}
 
-	private void saveScene() {
+	private void saveScene() throws IOException, InterruptedException {
 		log.debug("save scene: " + currentSceneId + " in setup: " + server.getSetupID());
-		parent.db.Update.scene(parent.state.getDevices().clone(), currentSceneId);
+		parent.db.Insert.devicesToScene(parent.state.getDevices().clone(), currentSceneId);
 
 	}
 }

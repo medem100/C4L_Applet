@@ -15,7 +15,7 @@ public class DashboardValuesModel {
     String effectId;
     int caseId;
     boolean savePressed;
-    boolean createNewScenePressed;
+    int createNewScene;
     boolean deleteMainEffect;
     int defaultFadeTime;
     int setupId;
@@ -48,8 +48,8 @@ public class DashboardValuesModel {
         return savePressed;
     }
 
-    public boolean isCreateNewScenePressed() {
-        return createNewScenePressed;
+    public int isCreateNewScenePressed() {
+        return createNewScene;
     }
 
     public boolean isDeleteMainEffect() {

@@ -12,7 +12,7 @@ public interface GuiInput {
 
     boolean isSavePresst();
 
-    boolean isCrateNewScenePresst();
+    int CrateNewSceneWithIdPresst();
 
     boolean[] getDevicesSelectionState();
 
