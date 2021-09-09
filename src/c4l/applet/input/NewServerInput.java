@@ -76,7 +76,7 @@ public class NewServerInput implements GuiInput {
         for (int i = 0; i < faderSelectValues.length; i++) {
             faderSelectValues[i] = allValues.getFaderValues()[i].isSelect() ? 1 : 0;
         }
-        return new int[0];
+        return faderSelectValues;
     }
 
     @Override public List<Integer> getSceneIds() {

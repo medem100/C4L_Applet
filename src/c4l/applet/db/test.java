@@ -1,6 +1,7 @@
 package c4l.applet.db;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 import c4l.applet.device.Device;
 import c4l.applet.device.Effect_ID;
@@ -37,9 +38,10 @@ public class test {
 
         DB db = DB.getInstance();
 
-        System.out.println(db.Insert.devicesToScene(getDevices(), 12));
+        //System.out.println(db.Insert.devicesToScene(getDevices(), 12));
 
-       // System.out.println(db.Select.devicesFromScene(1)[0].main_effect.get(0).getSize());
+        System.out.println(Arrays.toString(
+                db.Select.devicesFromScene(1)[0].getSetup().getMain_effect_channels()));
       //  System.out.println(db.Insert.devicesToScene(db.Select.devicesFromScene(11), 1));
     }
 

@@ -276,9 +276,10 @@ public class Input {
 							
 								// Check Effect Channels
 								int[] effectChannels = parent.state.getDevice(i).getMainEffetChannels().clone();
-								if(!(Arrays.equals(DashboardInput.defaultChannels, server.getSelectChannels()))) {
+							/*	if(!(Arrays.equals(DashboardInput.defaultChannels,
+										server.getSelectChannels()))) {
 									effectChannels = server.getSelectChannels().clone();
-								}
+								}*/
 																
 								Effect e = Effect_ID.generateEffectFromID(eid, currentSpeed, currentSize, 0,
 										effectChannels);
