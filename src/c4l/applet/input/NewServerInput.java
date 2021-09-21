@@ -3,6 +3,7 @@ package c4l.applet.input;
 import c4l.applet.db.DBConstants;
 import c4l.applet.db.DeviceStatesSaveModel;
 import c4l.applet.input.ServerModels.DashboardValuesModel;
+import c4l.applet.main.Constants;
 import c4l.applet.main.PropertyManager;
 import com.google.gson.Gson;
 import org.json.JSONException;
@@ -72,8 +73,8 @@ public class NewServerInput implements GuiInput {
     }
 
     @Override public int[] getSelectChannels() {
-        int[] faderSelectValues = new int[allValues.getFaderValues().length];
-        for (int i = 0; i < faderSelectValues.length; i++) {
+        int[] faderSelectValues = new int[Constants.DEVICE_CHANNELS];
+        for (int i = 0; i < allValues.getFaderValues().length; i++) {
             faderSelectValues[i] = allValues.getFaderValues()[i].isSelect() ? 1 : 0;
         }
         return faderSelectValues;
