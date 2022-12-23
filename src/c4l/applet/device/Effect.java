@@ -31,7 +31,8 @@ public class Effect {
 		
 		this.acceptInput = acceptInput;
 	}
-	
+
+
 	/**
 	 * Set the size of an effect. The effect may discard the change, if intern variable acceptInput says so.
 	 * Use setSize(int, bool) to force change.
@@ -113,7 +114,8 @@ public class Effect {
 	
 	/**
 	 * Apply effect.
-	 * @param in	Array of length {@value Constants.#DEVICE_CHANNELS}, which is modified by the effect
+	 * @param in	Array of length Constants.DEVICE_CHANNELS, which is modified by
+	 *                 the effect
 	 * @return		Array of same length with modified values.
 	 */
 	public int[] apply(int[] in) {

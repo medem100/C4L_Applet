@@ -132,11 +132,22 @@ public class Update {
 
 		}
 	}
+	
+	public void chaseName(int chaseid , String name) {
+		String SQL = "update chase set chase_name='"+ name+ "' where chase_id="+ chaseid +";";
+		updatDbData(SQL);
+	}
+	
+	public void chaseScens(int chaseId ,int[] sceneIds , int[] fadeTimes, int[] showTimes) {
+		DB db = DB.getInstance();
+		db.Delete.chaseHasScene(chaseId);
+		db.Insert.chaseHasScene(chaseId, sceneIds, fadeTimes, showTimes);
+	}
 
 	private String toSaveString(int[] array) {
 		String result = "";
 		for (int e : array) {
-			result += e + Constants.DELIMITER;
+			result += e + DBConstants.DELIMITER;
 		}
 		return result.substring(0, result.length() - 1);
 	}

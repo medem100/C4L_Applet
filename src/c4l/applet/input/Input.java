@@ -1,18 +1,17 @@
 package c4l.applet.input;
 
-import c4l.applet.db.OldEffects;
-import c4l.applet.db.Scene;
-import c4l.applet.device.Device;
+import c4l.applet.db.Chase;
 import c4l.applet.device.Effect;
 import c4l.applet.input.arduino.WingController;
 import c4l.applet.main.C4L_Launcher;
 import c4l.applet.main.Constants;
 import c4l.applet.device.Effect_ID;
-import c4l.applet.device.Effect_Representative;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Properties;
+
 import org.apache.log4j.Logger;
 import org.json.*;
 
@@ -20,411 +19,402 @@ import org.json.*;
  * Manages all inputs to the program (wing, server, MIDI, other APIs) and
  * filters out what to adjust. This especially includes figuring out, which
  * input stream on the same item (e.g. fader value) has the latest update
- * 
- * @author Timon
  *
+ * @author Timon
  */
 public class Input {
-	private Logger log = Logger.getLogger(Input.class);
-	/** object holding and managing the hardware-wing-pult */
-	private WingController wing;
-	private Boolean ServerAvailable;
-	private DashboardInput server;
-	private JSONObject OldResponse = new JSONObject("{}");
-	/** reference to the main-object, used to access stuff beyond input */
-	C4L_Launcher parent;
+    private Logger log = Logger.getLogger(Input.class);
+    /**
+     * object holding and managing the hardware-wing-pult
+     */
+    private WingController wing;
+    private Boolean ServerAvailable;
+    private GuiInput server;
+    private JSONObject OldResponse = new JSONObject("{}");
+    /**
+     * reference to the main-object, used to access stuff beyond input
+     */
+    C4L_Launcher parent;
 
-	private int currentSceneId;
-	private int[] currentFaderValues = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-	/** values to init new effects with, written by all inputs, but only on change (so last wins) */
-	private int currentSize, currentSpeed;
-	/** last known (and processed) position of server-effect-faders */
-	private int serverSize, serverSpeed;
-	Effect[] oEffects = new Effect[30]; // test
-	// boolean setOldeffects = false;
+    private int currentSceneId;
+    private int[] oldFaderValues = { 0, 0, 0, 0, 0, 0, 0, 0 };
+    private boolean[] oldselectDevice = new boolean[Constants.DYNAMIC_DEVICES];
+    /**
+     * values to init new effects with, written by all inputs, but only on change
+     * (so last wins)
+     */
+    private int currentSize, currentSpeed;
+    /**
+     * last known (and processed) position of server-effect-faders
+     */
+    private int serverSize, serverSpeed;
+    /**
+     * current load chase
+     **/
+    private Chase currentChase = null;
+    /**
+     * current pos in the chase
+     **/
+    private int chaseIdx;
+    Effect[] oEffects = new Effect[30]; // test
+    // boolean setOldeffects = false;
 
-	/** last know (and processed) hardware-fader position */
-	private int[] h_faders;
-	/** last know (and processed) hardware-fader position */
-	private int[] h_bfaders;
-	/** last know (and processed) hardware-x-fader position */
-	private int[] h_xfaders;
-	/** last know (and processed) hardware-rotary encoder position */
-	private int[] h_rotary;
-	/**
-	 * Array indicating, which devices are active, that is to say they are affected
-	 * by current inputs
-	 */
-	private boolean[] active;
+    /**
+     * last know (and processed) hardware-fader position
+     */
+    private int[] h_faders;
+    /**
+     * last know (and processed) hardware-fader position
+     */
+    private int[] h_bfaders;
+    /**
+     * last know (and processed) hardware-x-fader position
+     */
+    private int[] h_xfaders;
+    /**
+     * last know (and processed) hardware-rotary encoder position
+     */
+    private int[] h_rotary;
+    /**
+     * Array indicating, which devices are active, that is to say they are affected
+     * by current inputs
+     */
+    private boolean[] active;
 
-	// Constructors
-	public Input(C4L_Launcher parent, Properties arduinoProperties, Boolean ServerAvailable) {
-		this(parent, new WingController(arduinoProperties), ServerAvailable);
-	}
+    // Constructors
+    public Input(C4L_Launcher parent, Properties arduinoProperties, Boolean ServerAvailable) {
+        this(parent, new WingController(arduinoProperties), ServerAvailable);
+    }
 
-	public Input(C4L_Launcher parent, String arduinoPropertiesPath, Boolean ServerAvailable) {
-		this(parent, new WingController(WingController.openPropertiesFile(arduinoPropertiesPath)), ServerAvailable);
-	}
+    public Input(C4L_Launcher parent, String arduinoPropertiesPath, Boolean ServerAvailable) {
+        this(parent, new WingController(WingController.openPropertiesFile(arduinoPropertiesPath)),
+                ServerAvailable);
+    }
 
-	public Input(C4L_Launcher parent, WingController wing, Boolean ServerAvailable) {
-		this.ServerAvailable = ServerAvailable;
-		this.wing = wing;
-		if (ServerAvailable) {
-			try {
-				this.server = new DashboardInput();
-			} catch (Exception e) {
-				e.printStackTrace();
-				this.ServerAvailable = false;
-			} /* try/catch */ // TODO modify Constructor if necessary
-		} /* if */
-		this.parent = parent;
+    public Input(C4L_Launcher parent, WingController wing, Boolean ServerAvailable) {
+        this.ServerAvailable = ServerAvailable;
+        this.wing = wing;
+        if (ServerAvailable) {
+            try {
+                this.server = new NewServerInput();
+            } catch (Exception e) {
+                e.printStackTrace();
+                this.ServerAvailable = false;
+            } /* try/catch */ // TODO modify Constructor if necessary
+        } /* if */
+        this.parent = parent;
 
-		this.h_faders = new int[8];
-		this.h_bfaders = new int[8];
-		this.h_xfaders = new int[4];
-		this.h_rotary = new int[3];
-		this.active = new boolean[30]; // should be initialized with false
-		if (wing != null)
-			wing.setActiveDevices(active, true);
-	}
+        this.h_faders = new int[8];
+        this.h_bfaders = new int[8];
+        this.h_xfaders = new int[4];
+        this.h_rotary = new int[3];
+        this.active = new boolean[30]; // should be initialized with false
+        if (wing != null) {
+            wing.setActiveDevices(active, true);
+        }
+    }
 
-	public void deleteWing() {
-		this.wing = null;
-	}
+    public void deleteWing() {
+        this.wing = null;
+    }
 
-	public void setWing(WingController wing) {
-		this.wing = wing;
-	}
+    public void setWing(WingController wing) {
+        this.wing = wing;
+    }
 
-	public void tick() {
-		int temp = 0;
+    public void tick() throws IOException, InterruptedException {
+        int temp = 0;
 
-		// Handle the HardwareWing
-		if (wing != null) {
-			wing.tick();
+        // Handle the HardwareWing
+        if (wing != null) {
 
-			// check Wingcontroller for changes in device activity
-			boolean[] change = wing.checkActivity();
-			for (int i = 0; i < Constants.DYNAMIC_DEVICES; i++)
-				active[i] ^= change[i];
-			wing.setActiveDevices(active); // Tell wing, which devices are active (for indication-LEDs)
+            wing.tick();
 
-			// check wing-faders
-			int offset = 0;
-			if (wing.getAnalogBank() != 0)
-				offset = 8;
-			for (int i = 0; i < 8; i++) {
-				temp = wing.getFader(i);
-				if (Math.abs(temp - h_faders[i]) > wing.FADER_TOLERANCE) {
-					if (temp <= wing.FADER_TOLERANCE)
-						temp = 0; // for a correction factor larger than the tolerance this should happen
-									// implicitly when dividing by the first... TODO: Think whether to remove this
-									// for optimization
-					h_faders[i] = temp;
-					for (int j = 0; j < Constants.DYNAMIC_DEVICES; j++) {
-						if (active[j])
-							parent.deviceHandle[j].setInput(i + offset, h_faders[i] / wing.CORRECTION_DIVISOR);
-					} /* for */
-				} /* if */
-			} /* for */
+            // check Wingcontroller for changes in device activity
+            boolean[] change = wing.checkActivity();
 
-			// check wing-x-faders
-			for (int i = 0; i < 4; i++) {
-				temp = wing.getXFader(i);
-				if (Math.abs(temp - h_xfaders[i]) > wing.FADER_TOLERANCE) {
-					h_xfaders[i] = temp;
-					switch (i) {
-					case 0:
-						for (int j = 0; j < Constants.DYNAMIC_DEVICES; j++) {
-							if (active[j])
-								parent.deviceHandle[j].setMainSpeed(h_xfaders[i] / wing.CORRECTION_DIVISOR);
-						} /* for */
-						currentSpeed = h_xfaders[i] / wing.CORRECTION_DIVISOR;
-						break;
-					case 1:
-						for (int j = 0; j < Constants.DYNAMIC_DEVICES; j++) {
-							if (active[j])
-								parent.deviceHandle[j].setMainSpeed(h_xfaders[i] / wing.CORRECTION_DIVISOR);
-						} /* for */
-						currentSize = h_xfaders[i] / wing.CORRECTION_DIVISOR;
-						break;
-					} /* switch */
-					// TODO Define use of fader 3 and specify 4
-				} /* if */
-			} /* for */
+            for (int i = 0; i < Constants.DYNAMIC_DEVICES; i++) {
+                active[i] ^= change[i];
+            }
+            wing.setActiveDevices(
+                    active); // Tell wing, which devices are active (for indication-LEDs)
 
-			// check rotary encoders
-			for (int i = 0; i < wing.NUM_ROTARYS; i++) {
-				temp = wing.getRotary(i) - h_rotary[i];
-				h_rotary[i] += temp;
-				if (temp > wing.ROTARY_RANGE / 2)
-					temp -= wing.ROTARY_RANGE;
-				if (temp < -wing.ROTARY_RANGE / 2)
-					temp += wing.ROTARY_RANGE;
-				for (int j = 0; j < Constants.DYNAMIC_DEVICES; j++) {
-					if (active[j])
-						parent.deviceHandle[j].applyRotary(i, temp);
-				} /* for devices */
-			} /* for rotary encoders */
+            // check wing-faders
+            int offset = 0;
+            if (wing.getAnalogBank() != 0) {
+                offset = 8;
+            }
+            for (int i = 0; i < 8; i++) {
+                temp = wing.getFader(i);
+                System.out.println(i + ": " + temp);
+                if (Math.abs(temp - h_faders[i]) > wing.FADER_TOLERANCE) {
+                    // log.debug("finder fade change wing");
+                    if (temp <= wing.FADER_TOLERANCE) {
+                        temp =
+                                0; // for a correction factor larger than the tolerance this should happen
+                    }
+                    // implicitly when dividing by the first... TODO: Think whether to remove this
+                    // for optimization
+                    h_faders[i] = temp;
+                    for (int j = 0; j < Constants.DYNAMIC_DEVICES; j++) {
+                        if (active[j]) {
+                            parent.state.getDevice(j)
+                                    .setInput(i + offset, h_faders[i] / wing.CORRECTION_DIVISOR);
+                        }
+                    } /* for */
+                } /* if */
+            } /* for */
 
-			// TODO B-faders
-			for (int i = 0; i < wing.NUM_BFADERS; i++) {
-				temp = wing.getBFader(i);
-				if (Math.abs(temp - h_bfaders[i]) > wing.FADER_TOLERANCE) {
-					h_bfaders[i] = temp;
-					parent.staticDevice.setInput(h_bfaders[i] / wing.CORRECTION_DIVISOR, i);
-				} /* if */
-			} /* for bfaders */
-		} /* if wing exists */
+            // check wing-x-faders
+            for (int i = 0; i < 4; i++) {
+                temp = wing.getXFader(i);
+                if (Math.abs(temp - h_xfaders[i]) > wing.FADER_TOLERANCE) {
+                    h_xfaders[i] = temp;
+                    switch (i) {
+                        case 0:
+                            for (int j = 0; j < Constants.DYNAMIC_DEVICES; j++) {
+                                if (active[j]) {
+                                    parent.state.getDevice(j)
+                                            .setMainSpeed(h_xfaders[i] / wing.CORRECTION_DIVISOR);
+                                }
+                            } /* for */
+                            currentSpeed = h_xfaders[i] / wing.CORRECTION_DIVISOR;
+                            break;
+                        case 1:
+                            for (int j = 0; j < Constants.DYNAMIC_DEVICES; j++) {
+                                if (active[j]) {
+                                    parent.state.getDevice(j)
+                                            .setMainSize(h_xfaders[i] / wing.CORRECTION_DIVISOR);
+                                }
+                            } /* for */
+                            currentSize = h_xfaders[i] / wing.CORRECTION_DIVISOR;
+                            break;
+                    } /* switch */
+                    // TODO Define use of fader 3 and specify 4
+                } /* if */
+            } /* for */
 
-		// TODO check dashboard
+            // check rotary encoders
+            for (int i = 0; i < wing.NUM_ROTARYS; i++) {
+                temp = wing.getRotary(i) - h_rotary[i];
+                h_rotary[i] += temp;
+                if (temp > wing.ROTARY_RANGE / 2) {
+                    temp -= wing.ROTARY_RANGE;
+                }
+                if (temp < -wing.ROTARY_RANGE / 2) {
+                    temp += wing.ROTARY_RANGE;
+                }
+                for (int j = 0; j < Constants.DYNAMIC_DEVICES; j++) {
+                    if (active[j]) {
+                        parent.state.getDevice(j).applyRotary(i, temp);
+                    }
+                } /* for devices */
+            } /* for rotary encoders */
 
-		if (ServerAvailable) {
+            // TODO B-faders
+            for (int i = 0; i < wing.NUM_BFADERS; i++) {
+                temp = wing.getBFader(i);
+                if (Math.abs(temp - h_bfaders[i]) > wing.FADER_TOLERANCE) {
+                    h_bfaders[i] = temp;
+                    parent.state.getStaticDevice()
+                            .setInput(h_bfaders[i] / wing.CORRECTION_DIVISOR, i);
+                } /* if */
+            } /* for bfaders */
+        } /* if wing exists */
 
-			server.tick();
+        // TODO check dashboard
 
-			// set old effects
+        if (ServerAvailable) {
+            server.tick();
+            // Only when there are new data from the Dashboard
+            if (server.hasChanged()) {
+                System.out.println("new Values !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+                //	log.debug("New Respons");
+                //	log.debug(Arrays.toString(active));
+                // start Scene
+                if (!server.getSceneIds().isEmpty() && currentSceneId != server.getSceneIds()
+                        .get(0)) {
 
-			// Only when there are new data from the Dashboard
-			if (!(server.usedRespons.toString().equals(OldResponse.toString()))) { // TODO
-				// log.debug("New Respons");
+                    loadScene(server.getSceneIds().get(0));
+                    currentSceneId = server.getSceneIds().get(0);
 
-				// if(setOldeffects) {
-				// for (int i = 0; i < oEffects.length; i++) {
-				// if (oEffects[i] != null) {
-				// if (!(parent.deviceHandle[i].main_effect.isEmpty()))
-				// parent.deviceHandle[i].deleteMainEffect(0);
-				// parent.deviceHandle[i].addMainEffect(oEffects[i], 0);
-				// }
-				// }
-				// setOldeffects = false;
-				// }
-
-				// }
-				// setOldeffects = false;
-				// }
-
-				if (currentSceneId != server.getScenenID().get(0)) {
-					loadScene(server.getScenenID().get(0));
-					currentSceneId = server.getScenenID().get(0);
-				} else {
-
-					for (int i = 0; i < active.length; i++) {
-						//active[i] = false;
+                }
+			/*	else if (0 != server.getIntValue("startChase")) {
+					loadChase(server.getIntValue("startChase"));
+					parent.state.newFade(currentChase.getSCENES()[chaseIdx].getId(), server.getIntValue("defaultFadeTime")); // TODO Fade Time
+				} else if (server.getBooleanValue("stepChase")) {
+					if (chaseIdx == currentChase.getSCENES().length) {
+						chaseIdx = 0;
+					} else {
+						chaseIdx++;
 					}
-
-					HashMap<Integer, Integer> changFader = new HashMap<>();
-					for (int i = 0; i < currentFaderValues.length; i++) {
-
-						if (currentFaderValues[i] != server.getFader(i)) {
-							changFader.put(i, server.getFader(i));
-							currentFaderValues[i] = server.getFader(i);
-						}
-					}
-
-					boolean changeSize = false;
-					boolean changeSpeed = false;
-					
-					if (serverSize != server.getEffectSize()) {
-						changeSize = true;
-						serverSize = server.getEffectSize();
-						currentSize = serverSize;
-					}
-
-					if (serverSpeed != server.getEffectSpeed()) {
-						changeSpeed = true;
-						serverSpeed = server.getEffectSpeed();
-						currentSpeed = serverSpeed;
-					}
-
-					String effectId = server.getEffectID();
-
-					for (int i = 0; i < active.length; i++) {
-						if (active[i]) {
-
-							if (!(effectId.equals("99"))) {
-								Effect_ID eid = new Effect_ID(Integer.valueOf(effectId.substring(0, 1)),
-										Integer.valueOf(effectId.substring(1, 2)));
-								Effect e = Effect_ID.generateEffectFromID(eid, currentSpeed,
-										currentSize, 0,
-										parent.deviceHandle[i].getMaineffetChannels());
-
-								// if (Effect_ID.getEffectID(e)
-								// .equals(Effect_ID.getEffectID(parent.deviceHandle[i].main_effect.get(0)))) {
-								// parent.deviceHandle[i].deleteMainEffect(0);
-								// } else {
-								if (!(parent.deviceHandle[i].main_effect.isEmpty()))
-									parent.deviceHandle[i].deleteMainEffect(0);
-								parent.deviceHandle[i].addMainEffect(e, 0);
-
-							}
-						}
-					}
-
-					for (int i : server.getChosenDevices()) {
-
-						//active[i] = true;
-
-						// String effectId = server.getEffectID();
-						//
-						// if(effectId != 0 ) {
-						// String effect = String.valueOf(effectId);
-						// int eId1 = Integer.valueOf(effect.substring(0, 1));
-						// int eid2 = Integer.valueOf(effect.substring(1));
-						//
-
-						//
-						if (!(effectId.equals("99"))) {
-							Effect_ID eid = new Effect_ID(Integer.valueOf(effectId.substring(0, 1)),
-									Integer.valueOf(effectId.substring(1, 2)));
-							Effect e = Effect_ID.generateEffectFromID(eid, currentSpeed,
-									currentSize, 0,
-									parent.deviceHandle[i].getMaineffetChannels()); // TODO get info from
-																									// device
-
-							// if (Effect_ID.getEffectID(e)
-							// .equals(Effect_ID.getEffectID(parent.deviceHandle[i].main_effect.get(0)))) {
-							// parent.deviceHandle[i].deleteMainEffect(0);
-							// } else {
-							if (!(parent.deviceHandle[i].main_effect.isEmpty()))
-								parent.deviceHandle[i].deleteMainEffect(0);
-							parent.deviceHandle[i].addMainEffect(e, 0);
-							// }
-						}
-
-						// if (effectId != 0) {
-						// Effect_ID eid = null;
-						// switch (effectId) {
-						// case 1:
-						// eid = new Effect_ID(0, 0);
-						// break;
-						// case 2:
-						// eid = new Effect_ID(0, 1);
-						// break;
-						// case 3:
-						// eid = new Effect_ID(1, 0);
-						// break;
-						// case 4:
-						// eid = new Effect_ID(1, 1);
-						// break;
-						// } // TODO testen !
-
-						// if (Effect_ID.getEffectID(e)
-						// .equals(Effect_ID.getEffectID(parent.deviceHandle[i].main_effect.get(0)))) {
-						// parent.deviceHandle[i].deleteMainEffect(0);
-						// } else {
-						// parent.deviceHandle[i].addMainEffect(e);
-						// }
-
-						// }
-						// parent.deviceHandle[i].setSpeed(server.getEffectSpeed());
-						// parent.deviceHandle[i].setSize(server.getEffectSize());
-						if (changeSpeed)
-							parent.deviceHandle[i].setMainSpeed(server.getEffectSpeed());
-						if (changeSize)
-							parent.deviceHandle[i].setMainSize(server.getEffectSize());
-
-						for (int key : changFader.keySet()) {
-							parent.deviceHandle[i].setInput(key, changFader.get(key));
-						}
-						;
-
-					}
-					// for (int j = 0; j < Constants.DEVICE_CHANNELS; j++) {
-					// parent.deviceHandle[i].setInput(j, server.getFader(j));
-					// }
-
-					// parent.deviceHandle[i].addEffect(e);
-
+					parent.state.newFade(currentChase.getSCENES()[chaseIdx].getId(), server.getIntValue("defaultFadeTime")); // TODO Fade Time
 				}
+			*/
+                else {
 
-			}
+                    //	log.debug("cange devices");
 
-			if (server.isSavePresst()) {
-				saveScene();
-				server.setSaveRead();
-			}
+                    boolean[] newSelectDevice = server.getChosenDevices();
 
-			if (server.isCrateNewScenePresst()) {
-				crateNewScene();
-				server.setCreateNewSceneRead();
-			}
+                    for (int i = 0; i < Constants.DYNAMIC_DEVICES; i++) {
+                        if (newSelectDevice[i] != oldselectDevice[i]) {
+                            active[i] = new Boolean(newSelectDevice[i]);
+                        }
+                    }
+                    oldselectDevice = newSelectDevice.clone();
 
-			OldResponse = server.usedRespons;
+                    if (wing != null) {
+                        wing.setActiveDevices(active, true);
+                    }
 
-		}
-	}
+                    HashMap<Integer, Integer> changFader = new HashMap<>();
+                    for (int i = 0; i < oldFaderValues.length; i++) {
 
-	// Help Funcktions
+                        if (oldFaderValues[i] != server.getFaderValue(i)) {
+                            changFader.put(i, server.getFaderValue(i));
+                            oldFaderValues[i] = server.getFaderValue(i);
+                        }
+                    }
 
-	private void loadScene(int id) {
-		log.debug("load scene: " + id + " in setup: " + server.getsetupID());
-		parent.deviceHandle = parent.db.Select.scene(id);
-		currentSceneId = id;
-		// TODO check scenen exist
-		/*
-		 * System.out.println("load Scene " + id); String payload =
-		 * parent.db.Select.scene(id); String eff = parent.db.Select.effects(id); if
-		 * (!(payload.isEmpty())) { payload = payload.replace("\\", ""); Scene scene =
-		 * parent.gson.fromJson(payload, Scene.class); OldEffects oEff =
-		 * parent.gson.fromJson(eff, OldEffects.class); //
-		 * System.out.println(devs[0].getOutput_unticked().toString()); Device[] oDev =
-		 * scene.getDevices(); Effect_Representative[] toSetEff = oEff.getEffects();
-		 * 
-		 * // Effect_ID.getEffectID(e)
-		 * 
-		 * // for (int i = 0; i < oEffects.length; i++) { // if
-		 * (oDev[i].main_effect.isEmpty()) { // oEffects[i] = null; // } else { //
-		 * oEffects[i] = oDev[i].main_effect.get(0); // oDev[i].deleteMainEffect(0); //
-		 * // oEffects[i]. // } // } // parent.deviceHandle = oDev; // setOldeffects =
-		 * true;
-		 * 
-		 * // set effects new
-		 * 
-		 * for (int i = 0; i < toSetEff.length; i++) { if (toSetEff[i] != null) { //
-		 * Effect_ID eid = Effect_ID.getEffectID(toSetEff[i]); // Effect e =
-		 * Effect_ID.generateEffectFromID(eid, toSetEff[i].getSpeed(), //
-		 * toSetEff[i].getSize(), 0, // new int[] { 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-		 * 0, 0, 0, 0 });
-		 * 
-		 * parent.deviceHandle[i].addMainEffect(toSetEff[i].generateEffect(), 0); } } }
-		 */
+                    boolean changeSize = false;
+                    boolean changeSpeed = false;
 
-	}
+                    if (serverSize != server.getEffectSize()) {
+                        changeSize = true;
+                        serverSize = server.getEffectSize();
+                        currentSize = serverSize;
+                    }
 
-	private void crateNewScene() {
-		// logger.debug("crate new scene");
-		try {
-			parent.db.Insert.scene(parent.deviceHandle.clone(), server.getsetupID());
-			// server.set
-		} catch (Exception e) {
-			log.error(e);
-		}
-	}
+                    if (serverSpeed != server.getEffectSpeed()) {
+                        changeSpeed = true;
+                        serverSpeed = server.getEffectSpeed();
+                        currentSpeed = serverSpeed;
+                    }
 
-	private void saveScene() {
-		log.debug("save scene: " + currentSceneId + " in setup: " + server.getsetupID());
-		parent.db.Update.scene(parent.deviceHandle.clone(), currentSceneId);
+                    String effectId = server.getEffectID().trim();
 
-		/*
-		 * Effect[] Effects = new Effect[30]; Device[] oDev =
-		 * Arrays.copyOf(parent.deviceHandle, 30);
-		 * 
-		 * for (int i = 0; i < oEffects.length; i++) { if
-		 * (oDev[i].main_effect.isEmpty()) { Effects[i] = null; } else { Effects[i] =
-		 * oDev[i].main_effect.get(0); oDev[i].deleteMainEffect(0); // oEffects[i]. } }
-		 * 
-		 * Scene scene = new Scene(oDev); String payload = parent.gson.toJson(scene);
-		 * 
-		 * Effect_Representative[] ER = new Effect_Representative[30];
-		 * 
-		 * for (int i = 0; i < Effects.length; i++) { if (Effects[i] != null) { ER[i] =
-		 * new Effect_Representative(Effects[i]); } }
-		 * 
-		 * OldEffects ef = new OldEffects(ER); String saveEf = parent.gson.toJson(ef);
-		 * 
-		 * int id = server.getScenenID().get(0); parent.db.Update.scen(id, payload,
-		 * saveEf);
-		 */
-	}
+                    // Handel inputs for devices
+                    for (int i = 0; i < active.length; i++) {
+                        if (active[i]) {
+
+                            if (server.getDeleteMainEffect()) {
+                                log.error("delete Effect");
+                                if (!parent.state.getDevice(i).main_effect.isEmpty()) {
+                                    // main effect is only on first positon
+                                    parent.state.getDevice(i).deleteMainEffect(0);
+                                }
+                            }
+                            // add New Effect
+                            if (!(effectId.equals("99"))) {
+                                log.debug("set Effect " + effectId);
+                                Effect_ID eid =
+                                        new Effect_ID(Integer.valueOf(effectId.substring(0, 1)),
+                                                Integer.valueOf(effectId.substring(1, 2)));
+
+                                // Check Effect Channels
+                                int[] effectChannels =
+                                        parent.state.getDevice(i).getMainEffetChannels().clone();
+                                if (!(Arrays.equals(DashboardInput.defaultChannels,
+                                        server.getSelectChannels()))) {
+                                    effectChannels = server.getSelectChannels().clone();
+                                }
+
+                                Effect e = Effect_ID.generateEffectFromID(eid, currentSpeed,
+                                        currentSize, 0, effectChannels);
+
+
+                                // First slot is Main Effect ...
+                                if (server.getEffectSlots()[0]) {
+                                    if (!(parent.state.getDevice(i).main_effect.isEmpty())) {
+                                        parent.state.getDevice(i).deleteMainEffect(0);
+                                    }
+                                    parent.state.getDevice(i).addMainEffect(e, 0);
+                                }
+                                if (server.getEffectSlots()[1]) {
+                                    if (!(parent.state.getDevice(i).effects.isEmpty())) {
+                                        parent.state.getDevice(i).effects.remove(0);
+                                    }
+                                    parent.state.getDevice(i).effects.add(0, e);
+                                }
+
+                            }
+                            if (changeSpeed) {
+                                if (server.getEffectSlots()[0]) {
+                                    parent.state.getDevice(i).setMainSpeed(server.getEffectSpeed());
+                                }
+                                // second effect Slot
+                                if (server.getEffectSlots()[1]) {
+                                    parent.state.getDevice(i).effects.get(0)
+                                            .setSpeed(server.getEffectSpeed());
+                                }
+                            }
+                            if (changeSize) {
+                                if (server.getEffectSlots()[0]) {
+                                    parent.state.getDevice(i).setMainSize(server.getEffectSize());
+                                }
+                                // second effect Slot
+                                if (server.getEffectSlots()[1]) {
+                                    parent.state.getDevice(i).effects.get(0)
+                                            .setSize(server.getEffectSize());
+                                }
+                            }
+
+                            for (int key : changFader.keySet()) {
+                                parent.state.getDevice(i).setInput(key, changFader.get(key));
+                            }
+
+                        }
+                    }
+
+                }
+                if (server.isSavePresst()) {
+                    saveScene();
+                }
+
+                if (-1 != server.CrateNewSceneWithIdPresst()) {
+                    crateNewScene(server.CrateNewSceneWithIdPresst());
+                }
+
+                //	server.resetValues();
+                //	OldResponse = server.usedRespons;
+
+            }
+            //
+
+        }
+    }
+
+    // Help Funcktions
+
+    private void loadChase(int chaseId) {
+        currentChase = parent.db.Select.chase(chaseId, 1);
+    }
+
+    private void loadScene(int id) throws IOException, InterruptedException {
+        log.error("new Scene");
+        log.debug("load scene: " + id + " in setup: " + server.getSetupID());
+        // parent.deviceHandle = parent.db.Select.scene(id);
+        // parent.state.newScene(id);
+        parent.state.newFade(id, server.getDefaultFadeTime());
+        currentSceneId = id;
+
+    }
+
+    private void crateNewScene(int sceneID) {
+        // logger.debug("crate new scene");
+        try {
+            log.debug("Create new Scene");
+            parent.db.Insert.devicesToScene(parent.state.getDevices().clone(), sceneID);
+            // server.set
+        } catch (Exception e) {
+            log.error(e);
+        }
+    }
+
+    private void saveScene() throws IOException, InterruptedException {
+        log.debug("save scene: " + currentSceneId + " in setup: " + server.getSetupID());
+        parent.db.Insert.devicesToScene(parent.state.getDevices().clone(), currentSceneId);
+
+    }
 }

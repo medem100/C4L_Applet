@@ -7,11 +7,13 @@ import org.apache.log4j.Logger;
 
 
 import c4l.applet.db.DB;
-import c4l.applet.device.Device;
-import c4l.applet.device.Static_Device;
 import c4l.applet.input.Input;
 import c4l.applet.input.arduino.WingController;
 import c4l.applet.output.DmxOut;
+import c4l.applet.scenes.Setup;
+import c4l.applet.scenes.State;
+
+import java.io.IOException;
 
 /**
  * @author Timon
@@ -20,8 +22,7 @@ import c4l.applet.output.DmxOut;
 public class C4L_Launcher {
 	DmxOut dmxHandle;
 	Input inputHandle;
-	public Device[] deviceHandle;
-	public Static_Device staticDevice;
+	public State state;
 	String resourcePath;
 	public Gson gson = new Gson();
 	public DB db = c4l.applet.db.DB.getInstance();
@@ -66,34 +67,24 @@ public class C4L_Launcher {
 			inputHandle = new Input(this, (WingController) null, serverOnline);
 		}
 		
-		//Generate deviceHandle
-		deviceHandle = new Device[Constants.DYNAMIC_DEVICES];
-		for (int i = 0; i < Constants.DYNAMIC_DEVICES; i++) {
-			deviceHandle[i] = new Device(Constants.STANDART_PERMUTATION, i * Constants.DEVICE_CHANNELS);
-		}
-
-
-		float[][] matrix = new float[Constants.STATIC_CHANNELS][Constants.STATIC_INPUT];
-		for (int i = 0; i < Math.min(Constants.STATIC_CHANNELS, Constants.STATIC_INPUT); i++)
-			matrix[i][i] = 1;
-		staticDevice = new Static_Device(matrix, Constants.DYNAMIC_DEVICES*Constants.DEVICE_CHANNELS);
-
+		state = new State(new Setup());
 	}
 
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IOException, InterruptedException {
 		long last_time = System.currentTimeMillis();
 		long time = last_time;
 		C4L_Launcher program = new C4L_Launcher();
 		
 		while (!quit) {
 			program.inputHandle.tick();
-			program.dmxHandle.setOutput(program.deviceHandle, program.staticDevice);
+			program.dmxHandle.setOutput(program.state.generateOutput());
 			time = System.currentTimeMillis();
 			if (time - last_time > Constants.EFFECTTICKMILLIS) {
 				last_time += Constants.EFFECTTICKMILLIS;
-				for (Device d : program.deviceHandle) d.tick();
+				program.state.tick();
 			} /* if */
 		} /* while */
+		
 	} /* main */
 }

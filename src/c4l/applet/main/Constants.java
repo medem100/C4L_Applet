@@ -19,9 +19,14 @@ public class Constants {
 	/** Number of input channels on static device */
 	public final static int STATIC_INPUT = 8;
 	
+	//State constants
+	public final static int SCENE_FADE_LENGTH = 65536;
+	public final static int OUTPUT_LENGTH = 512;
+	
 	//Device generation
 	public final static int[] STANDART_PERMUTATION = {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15};
 	public final static int[] STANDART_ROTARY_CHANNELS = {0,1,2};
+	public final static int[] STANDART_MAIN_EFFECT_CHANNELS = {1,2,3,0,0,0,0,0,0,0,0,0,0,0,0,0};
 	
 	// Output constants
 	/** Last Channel for Enttec-Output **/
