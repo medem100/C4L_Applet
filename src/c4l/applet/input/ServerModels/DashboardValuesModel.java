@@ -16,9 +16,14 @@ public class DashboardValuesModel {
     int caseId;
     boolean savePressed;
     int createNewScene;
-    boolean deleteMainEffect;
+    boolean deleteEffect;
     int defaultFadeTime;
     int setupId;
+    Boolean[] effectSlots;
+
+    public Boolean[] getEffectSlots() {
+        return effectSlots;
+    }
 
     public int getSetupId() {
         return setupId;
@@ -52,8 +57,8 @@ public class DashboardValuesModel {
         return createNewScene;
     }
 
-    public boolean isDeleteMainEffect() {
-        return deleteMainEffect;
+    public boolean isDeleteEffect() {
+        return deleteEffect;
     }
 
     public int getDefaultFadeTime() {

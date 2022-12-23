@@ -1,7 +1,5 @@
 package c4l.applet.input;
 
-import c4l.applet.db.DBConstants;
-import c4l.applet.db.DeviceStatesSaveModel;
 import c4l.applet.input.ServerModels.DashboardValuesModel;
 import c4l.applet.main.Constants;
 import c4l.applet.main.PropertyManager;
@@ -75,7 +73,7 @@ public class NewServerInput implements GuiInput {
     @Override public int[] getSelectChannels() {
         int[] faderSelectValues = new int[Constants.DEVICE_CHANNELS];
         for (int i = 0; i < allValues.getFaderValues().length; i++) {
-            faderSelectValues[i] = allValues.getFaderValues()[i].isSelect() ? 1 : 0;
+            faderSelectValues[i] = allValues.getFaderValues()[i].getSelectState();
         }
         return faderSelectValues;
     }
@@ -113,7 +111,7 @@ public class NewServerInput implements GuiInput {
     }
 
     @Override public boolean getDeleteMainEffect() {
-        return allValues.isDeleteMainEffect();
+        return allValues.isDeleteEffect();
     }
 
     @Override public void tick() throws IOException, InterruptedException {
@@ -131,5 +129,9 @@ public class NewServerInput implements GuiInput {
 
     @Override public boolean hasChanged() {
         return lastResponseCode != 304;
+    }
+
+    @Override public  Boolean[] getEffectSlots() {
+        return allValues.getEffectSlots();
     }
 }

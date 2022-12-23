@@ -45,4 +45,6 @@ public interface GuiInput {
     void tick() throws IOException, InterruptedException;
 
     boolean hasChanged();
+
+    Boolean[] getEffectSlots();
 }

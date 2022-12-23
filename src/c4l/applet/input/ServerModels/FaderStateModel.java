@@ -7,7 +7,7 @@ public class FaderStateModel {
     private String channel;
     @SerializedName(value = "device")
     private String name;
-    private boolean isSelect;
+    private int selectState;
     private int value;
 
     public int getLum() {
@@ -22,8 +22,8 @@ public class FaderStateModel {
         return name;
     }
 
-    public boolean isSelect() {
-        return isSelect;
+    public int getSelectState() {
+        return selectState ;
     }
 
     public int getValue() {
