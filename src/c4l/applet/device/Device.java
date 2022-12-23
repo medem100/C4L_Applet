@@ -1,10 +1,12 @@
 package c4l.applet.device;
 
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.ListIterator;
 
 import c4l.applet.main.Constants;
 import c4l.applet.scenes.Device_Setup;
+import com.google.gson.annotations.SerializedName;
 
 /**
  * Definition of a single Device, consisting of Input values, a list of Effects and an Output permutation
@@ -16,7 +18,8 @@ import c4l.applet.scenes.Device_Setup;
 public class Device {
 	private int[] inputs;
 	private int[] outputs;
-		
+
+	@SerializedName(value = "setup")
 	private Device_Setup my_setup;
 	
 	public LinkedList<Effect> effects;
@@ -26,8 +29,9 @@ public class Device {
 	/**
 	 * Main constructor to construct a new Device from scratch
 	 * 
-	 * @param v_dim_channel		Dimmer-Channel (if you don't use the virtual dimmer, you can give any int here)
-	 * @param virtual_dimmer	Linked List of channels to be dimmed virtually (may be empty if not needed)
+	// * @param v_dim_channel		Dimmer-Channel (if you don't use the virtual dimmer, you cangive any int here)
+	// * @param virtual_dimmer	Linked List of channels to be dimmed virtually (may be empty if
+	 not needed)
 	 * @param setup				Device_Setup-reference for this device
 	 */
 	public Device(Device_Setup setup) {
@@ -42,6 +46,9 @@ public class Device {
 	//Getters and Setters
 	public int[] getInputs() {
 		return inputs;
+	}
+	public Device_Setup getSetup(){
+		return my_setup;
 	}
 	public void setInputs(int[] inputs) {
 		this.inputs = inputs;
@@ -166,4 +173,12 @@ public class Device {
 		}
 		return outputs;
 	}
+
+	@Override
+	public String toString() {
+		return "Device [inputs=" + Arrays.toString(inputs) + ", outputs=" + Arrays.toString(outputs) + ", my_setup="
+				+ my_setup + ", effects=" + effects + ", main_effect=" + main_effect.get(0).toString() + "]";
+	}
+	
+	
 }

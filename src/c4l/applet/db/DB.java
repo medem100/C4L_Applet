@@ -4,22 +4,24 @@
  */
 package c4l.applet.db;
 
-import java.sql.SQLException;
+import java.net.http.HttpClient;
 
-import org.apache.log4j.Logger;
-
+import com.google.gson.Gson;
 
 public class DB {
-	
-	private static DB OBJ = getInstance(); 
-	public Select Select = new Select();
-	public Insert Insert = new Insert();
+
+	private static final HttpClient CLIENT = HttpClient.newHttpClient(); ;
+	private static final Gson GSON = new Gson();
+	private static DB OBJ = getInstance();
+	public Select Select = new Select(CLIENT, GSON);
+	public Insert Insert = new Insert(CLIENT, GSON);
 	public Update Update = new Update();
 	public Create Create = new Create();
+	public Delete Delete = new Delete();
+
+
 	//static Logger logger = Logger.getLogger(DB.class);
-     private DB() { 
-    	
-       
+     private DB() {
      } 
      
      public static synchronized DB getInstance() {
@@ -29,6 +31,14 @@ public class DB {
     	    }
     	    return DB.OBJ;
      };
+
+     protected HttpClient getCLIENT(){
+     	return CLIENT;
+	 }
+
+	 protected Gson getGSON(){
+     	return GSON;
+	 }
      
      /*public static db getInstance() { 
        return OBJ; 

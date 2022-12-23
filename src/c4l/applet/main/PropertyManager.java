@@ -98,7 +98,11 @@ public class PropertyManager {
 	    /** Path for read Effect jsp */				public final String EFFECTPATH;
 	    /** Path for read Effect jsp */				public final String SAVEPATH;
 	    /** Path for Create new Scene */			public final String CREATENEWSCENE;
-	    /** Path for check is server Available **/	public final String INDEXPATH;	    
+	    /** Path for check is server Available **/	public final String INDEXPATH;	   
+	    											public final String STARTSCENE;
+	    											public final String STARTCHASE;
+	    											public final String STEPCHASE;
+	    											public final String DELETEMAINEFFECT;
 	    
 	    private Server(Properties serverProperties) {
 	    	IP						= serverProperties.getProperty("IP", "localhost");
@@ -111,6 +115,11 @@ public class PropertyManager {
 	    	SAVEPATH			= "/" + WEB_APP + serverProperties.getProperty("SAVEPATH");
 	    	INDEXPATH			= "/" + WEB_APP + serverProperties.getProperty("INDEXPATH");
 	    	CREATENEWSCENE			= "/" + WEB_APP + serverProperties.getProperty("CREATENEWSCENE");
+	    	STARTSCENE				= "/" + WEB_APP + serverProperties.getProperty("STARTSCENE");
+	    	STARTCHASE				= "/" + WEB_APP + serverProperties.getProperty("STARTCHASE");
+	    	STEPCHASE				= "/" + WEB_APP + serverProperties.getProperty("STEPCHASE");
+	    	DELETEMAINEFFECT		= "/" + WEB_APP + serverProperties.getProperty("DELETEMAINEFFECT");
+		    
 	    }
 	}
 	public final Server SERVER;

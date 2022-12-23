@@ -27,7 +27,7 @@ public class Device_Setup {
 		this(main_effect_channels, rotary_channels, 3, new LinkedList<Integer>());
 	}
 	public Device_Setup() {
-		this(Constants.STANDART_ROTARY_CHANNELS,Constants.STANDART_ROTARY_CHANNELS);
+		this(Constants.STANDART_MAIN_EFFECT_CHANNELS,Constants.STANDART_ROTARY_CHANNELS);
 	}
 	
 	//Getters and Setters

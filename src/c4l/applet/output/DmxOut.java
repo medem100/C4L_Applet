@@ -7,77 +7,86 @@ import com.juanjo.openDmx.OpenDmx;
 import c4l.applet.main.Constants;
 import c4l.applet.main.Util;
 
+import java.util.Arrays;
+
 /**
  * @author Andre for the output whit the ENTEC USB DMX plug.
- * 
- *         19.01.26 : Konfiguration der DLL und implementierung der Constants
+ * <p>
+ * 19.01.26 : Konfiguration der DLL und implementierung der Constants
  */
 
 public class DmxOut {
 
-	private Logger Log = Logger.getLogger(DmxOut.class);
-	
+    private Logger Log = Logger.getLogger(DmxOut.class);
 
-	public DmxOut() {
-		if (!(Util.getTestRun())) {
-			if (!OpenDmx.connect(OpenDmx.OPENDMX_TX)) {
-				Log.error("Open Dmx widget not detected!");
-				return;
-			}
-		}else {
-			Log.warn("TEST RUN Output !!!");
-		}
+    public DmxOut() {
+        if (!(Util.getTestRun())) {
+            if (!OpenDmx.connect(OpenDmx.OPENDMX_TX)) {
+                Log.error("Open Dmx widget not detected!");
+                return;
+            }
+        } else {
+            Log.warn("TEST RUN Output !!!");
+        }
 
-	}
+    }
 
-	public void Close() {
-		OpenDmx.disconnect();
-	}
+    public void Close() {
+        OpenDmx.disconnect();
+    }
 
-	/**
-	 * Send value to ENTEC Dongel
-	 * 
-	 * @param Channel
-	 * @param Value
-	 * @return
-	 */
-	public void setValue(int Channel, int Value) {
-		if (Channel < Constants.MINCHANNEL)
+    /**
+     * Send value to ENTEC Dongel
+     *
+     * @param Channel
+     * @param Value
+     * @return
+     */
+    public void setValue(int Channel, int Value) {
+		if (Channel < Constants.MINCHANNEL) {
 			Channel = 0;
-		if (Channel > Constants.MAXCHANNEL)
+		}
+		if (Channel > Constants.MAXCHANNEL) {
 			Channel = 511;
-		if (Value < Constants.MINVALUE)
+		}
+		if (Value < Constants.MINVALUE) {
 			Value = 0;
-		if (Value > Constants.MAXVALUE)
+		}
+		if (Value > Constants.MAXVALUE) {
 			Value = 255;
-		try {
-			OpenDmx.setValue(Channel, Value);
-			//Log.debug("channel: " + Channel + " Value: " + Value);
-		} catch (Exception e) {
-			Log.error("Fail to commit the channel :" + Channel + " for the Value : " + Value, e);
 		}
+        try {
+            // TODO Ausbau nach Konfestivall
 
-	}
+            OpenDmx.setValue(Channel, Value);
 
-	/**of a full universe to The entec Dongel
-	 * 
-	 * @param out 512-int-array of DMX-values.
-	 */
-	public void setOutput(int[] out) {	
-		try {
-			for (int i = 0; i < Constants.OUTPUT_LENGTH; i++) {
-				// for Debug runs Without Entec dongel
-				if (!(Util.getTestRun())) {
-					// no test Run
-					setValue(i, out[i]);
-				} else {
-					// test Run
-					Log.info("addresse :" + i + " " + out[i]);
-				}
+			if (Channel >= 480 && Channel < 488) {
+				Log.debug("channel: " + Channel + " Value: " + Value);
 			}
-		} catch (Exception e) {
-			Log.error("Failed to output array: " + out, e); //TODO: Andre: Is there anything inside try{} that could throw an exception?
-		}
-	}
+        } catch (Exception e) {
+            Log.error("Fail to commit the channel :" + Channel + " for the Value : " + Value, e);
+        }
+
+    }
+
+    /**
+     * of a full universe to The entec Dongel
+     *
+     * @param out 512-int-array of DMX-values.
+     */
+    public void setOutput(int[] out) {
+        try {
+            if (!(Util.getTestRun())) {
+                for (int i = 0; i < Constants.OUTPUT_LENGTH; i++) {
+                    setValue(i, out[i]);
+                }
+            } else {
+                Log.info(Arrays.toString(out));
+            }
+        } catch (Exception e) {
+            Log.error("Failed to output array: " + out,
+                    e); //TODO: Andre: Is there anything inside try{} that could throw an exception?
+        }
+    }
 
 }
